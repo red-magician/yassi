@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI FES 2026 自動集計競技 受賞選定ツール（Buzz / シーンメーカー / クルーアワード）</title>
+<style>
+:root{
+  --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
+  --gold:#FFCD00; --gold-dim:#c9a300;
+  --paper:#f4f6f9; --card:#fff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
+  --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Yu Gothic UI","Meiryo","Segoe UI",-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:22px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;min-width:210px}
+.brand .en{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.brand .jp{font-size:16px;font-weight:700}
+.hstat{display:flex;gap:20px;flex:1;flex-wrap:wrap}
+.hstat .item{display:flex;flex-direction:column;line-height:1.3}
+.hstat .k{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.hstat .v{font-size:18px;font-weight:700}
+.hstat .v small{font-size:11px;font-weight:400;color:#9fb3cd}
+.hstat .v.warn{color:#ff9aa6}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld label{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.fld input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 9px;border-radius:4px;font:inherit;font-size:13px;width:130px}
+.fld input::placeholder{color:#9fb3cd}
+.tabs{background:var(--navy-deep);padding:0 22px;display:flex;gap:4px;flex-wrap:wrap}
+.tab{background:none;border:none;color:#9fb3cd;font:inherit;font-size:13px;font-weight:700;padding:11px 18px;cursor:pointer;border-bottom:3px solid transparent}
+.tab:hover{color:#e7edf5}
+.tab.on{color:#fff;border-bottom-color:var(--gold)}
+.tab small{display:block;font-size:10px;font-weight:400;color:#8ba0bd}
+.toolbar{background:#1b355f;padding:9px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparent;padding:7px 13px;transition:.15s}
+.btn{background:rgba(255,255,255,.09);color:#e7edf5;border-color:rgba(255,255,255,.22)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700}
+.btn-gold:hover{background:#ffd93a}
+.sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
+.hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:360px}
+main{padding:22px 26px;max-width:1400px;margin:0 auto}
+.drop{border:2px dashed #c3cfdd;border-radius:10px;background:#fff;padding:30px;text-align:center;color:var(--mute);margin-bottom:16px;transition:.15s;cursor:pointer}
+.drop.on{border-color:var(--gold);background:#fffdf3}
+.drop b{display:block;font-size:15px;color:var(--navy);margin-bottom:5px}
+.drop span{font-size:12px}
+.pastdrop{border:1.5px dashed #c3cfdd;border-radius:8px;background:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer;font-size:12px;color:var(--mute)}
+.pastdrop.on{border-color:var(--gold);background:#fffdf3}
+.pastdrop b{color:var(--navy);font-weight:700;font-size:13px;flex-shrink:0}
+.files{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.fchip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--navy);border-radius:6px;padding:7px 11px;font-size:11.5px}
+.fchip b{color:var(--navy)}
+.fchip .cnt{color:var(--mute)}
+.fchip button{background:none;border:none;color:var(--mute);padding:0 2px;font-size:15px;line-height:1}
+.fchip button:hover{color:var(--warn)}
+.warnbar{background:#fff8e8;border:1px solid #f0dfa0;border-left:4px solid var(--amber);border-radius:6px;padding:10px 14px;font-size:12.5px;color:#7a5b00;margin-bottom:14px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.panel h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.panel h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
+.empty{padding:36px;text-align:center;color:var(--mute);font-size:13px}
+.award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:16px 18px}
+.acard{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fbfcfe;display:flex;flex-direction:column}
+.acard.empty2{align-items:center;justify-content:center;color:var(--mute);font-size:12px;min-height:110px}
+.ahead{background:var(--navy);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ahead .rk{background:var(--gold);color:var(--navy-deep);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.ahead select{margin-left:auto;font-size:12px;padding:4px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;max-width:220px}
+.ahead select option{color:#000}
+.abody{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ainfo b{display:block;font-size:13px;color:var(--navy-deep)}
+.ainfo span{font-size:11px;color:var(--mute)}
+.ascore{display:flex;gap:10px;font-size:11px;color:var(--mute);flex-wrap:wrap}
+.ascore b{color:var(--navy);font-size:13px}
+.acard textarea{width:100%;font:inherit;font-size:12px;padding:8px;border:1px solid var(--line);border-radius:5px;resize:vertical;min-height:38px}
+.acard textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.acard label{font-size:10.5px;color:var(--mute);font-weight:600}
+.toolrow{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.chip{font-size:11px;padding:4px 11px;border:1px solid var(--line);background:#fff;color:var(--mute);border-radius:99px;cursor:pointer}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.table-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+thead th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;padding:9px 8px;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:3}
+thead th.n{text-align:center}
+tbody td{padding:8px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+tbody tr:hover{background:#f7f9fc}
+tbody tr.excluded{opacity:.5}
+tbody tr.awarded{background:#fffbea}
+td.n{text-align:center}
+td.who b{display:block;color:var(--navy-deep)}
+td.who span{font-size:10.5px;color:var(--mute)}
+.val{font-weight:700;color:var(--navy);font-size:15px}
+.likepill{background:#fdf0f2;color:#a3183a;border:1px solid #f3c6d1;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid;white-space:nowrap;display:inline-block}
+.badge.win{background:#fffbea;color:#8a6d00;border-color:#f0dfa0}
+.badge.excl{background:#fdf0f2;color:var(--warn);border-color:#f0c2c9}
+.legend{display:flex;gap:16px;padding:11px 18px;background:#f8fafc;border-top:1px solid var(--line);font-size:11px;color:var(--mute);flex-wrap:wrap}
+.legend b{color:var(--ink)}
+/* crew merge */
+.merge-help{padding:11px 18px;font-size:12px;color:var(--mute);background:#f8fafc;border-bottom:1px solid var(--line);line-height:1.7}
+.merge-help b{color:var(--ink)}
+.merge-tbl td{padding:7px 8px}
+.merge-tbl input[type=text]{width:100%;max-width:220px;font:inherit;font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:5px}
+.merge-tbl input[type=text]:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.merge-tbl input[type=checkbox]{width:15px;height:15px;cursor:pointer}
+.rawname{font-weight:600;color:var(--navy-deep)}
+.rawname.multi{color:var(--amber)}
+tr.invalid{opacity:.45}
+.rk-sel{font-size:12px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:#fff}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-deep);color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(13,33,64,.3);z-index:200;opacity:0;transition:.25s;border-left:3px solid var(--gold)}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.modal{position:fixed;inset:0;background:rgba(13,33,64,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:10px;max-width:640px;width:100%;max-height:80vh;overflow:auto;padding:26px 28px}
+.mbox h3{font-size:16px;color:var(--navy-deep);margin-bottom:4px}
+.mbox .sub{font-size:12px;color:var(--mute);margin-bottom:16px}
+.issue{padding:10px 13px;border-radius:5px;margin-bottom:8px;font-size:13px;display:flex;gap:9px;align-items:flex-start}
+.issue.err{background:#fdf0f2;border-left:3px solid var(--warn)}
+.issue.warn{background:#fff8e8;border-left:3px solid var(--amber)}
+.issue.ok{background:#eefaf4;border-left:3px solid var(--ok)}
+.issue b{flex-shrink:0}
+.mbox .close{margin-top:16px;background:var(--navy);color:#fff;width:100%;padding:10px;font-weight:600;border:none}
+@media print{ .tabs,.toolbar,.drop,.pastdrop,.files,header .btn{display:none !important} thead th{position:static} main{padding:0} table{font-size:9px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="en">AI FES 2026 / AUTO-TALLY</span>
+    <span class="jp" id="brandJp">自動集計競技 受賞選定ツール</span>
+  </div>
+  <div class="hstat">
+    <div class="item"><span class="k" id="k1">対象</span><span class="v" id="hPeople">0<small> 名</small></span></div>
+    <div class="item"><span class="k">受賞候補</span><span class="v" id="hAwards">0<small> / 6</small></span></div>
+    <div class="item"><span class="k">受賞済み（同競技）除外</span><span class="v" id="hExcl">0<small> 名</small></span></div>
+    <div class="item" id="hMergeWrap" style="display:none"><span class="k">未処理の生名</span><span class="v" id="hMerge">0<small> 件</small></span></div>
+  </div>
+  <div class="fld"><label>作業者名</label><input type="text" id="staffName" placeholder="例）城間"></div>
+  <div class="fld"><label>期・回</label><input type="text" id="period" placeholder="例）最終"></div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-comp="buzz">Buzzステージ<small>被いいね数の合計</small></button>
+  <button class="tab" data-comp="scene">シーンメーカー<small>通期累計いいね</small></button>
+  <button class="tab" data-comp="crew">クルーアワード<small>支援名の記載数</small></button>
+</div>
+
+<div class="toolbar">
+  <button class="btn" id="btnLoad">マスターExcelを読み込む</button>
+  <input type="file" id="fileMaster" accept=".xlsx,.xlsm" hidden>
+  <span class="sep"></span>
+  <button class="btn" id="btnLoadPast">過去の受賞者Excelを追加</button>
+  <input type="file" id="filePast" accept=".xlsx,.xlsm" multiple hidden>
+  <span class="sep"></span>
+  <button class="btn" id="btnCheck">入力チェック</button>
+  <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
+  <button class="btn" id="btnPrint">印刷 / PDF</button>
+  <button class="btn" id="btnClear">この競技の入力を消去</button>
+  <span class="hint" id="topHint"></span>
+</div>
+
+<main>
+  <div class="drop" id="drop">
+    <b>ここにマスターExcelをドロップ</b>
+    <span>クリックして選択も可。01_EntryINDEX ＋ 03_いいね集計 を含む集計マスターを読み込みます。競技はタブで切り替えます。</span>
+  </div>
+  <div class="pastdrop" id="pastDrop">
+    <b>過去の受賞者Excel</b>
+    <span id="pastHint">同じ競技で先に書き出した「受賞一覧」をドロップすると、その受賞者を今回の対象から除外します（Buzzの中間→最終など）。競技をまたいだ除外はしません。</span>
+  </div>
+  <div class="files" id="pastFiles"></div>
+  <div id="out"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="checkModal"><div class="mbox">
+  <h3>入力チェック</h3><div class="sub">書き出し前に確認してください。</div>
+  <div id="checkBody"></div>
+  <button class="close" id="checkClose">閉じる</button>
+</div></div>
+
+<script>__SHEETJS__</script>
+<script>
+const AWARD_SLOTS = 6;
+const STORE_PREFIX = 'aiFesAutoTally_v1::';
+const COMP_META = {
+  buzz:  {jp:'Buzzステージ', valLabel:'累計いいね', unit:'名', persona:'先駆者として情報発信し続ける人',
+          hint:'buzz投稿の被いいねを人ごとに合計し、上位6名が受賞候補になります。中間受賞者は過去の受賞者Excelを読み込んで最終から除外します。'},
+  scene: {jp:'シーンメーカー', valLabel:'通期累計いいね', unit:'名', persona:'半年間継続発信し続けたアンバサダー・先駆者',
+          hint:'IsSceneEligible の人の、全競技横断の通期累計いいねで順位付けします。対象が6名未満なら該当者のみが受賞候補になります。'},
+  crew:  {jp:'クルーアワード', valLabel:'記載数', unit:'名', persona:'他者を支援した結果、名前を書いてもらえる人',
+          hint:'支援アンバサダー名の記載数で順位付けします。表記ゆれや複数名は下の名寄せパネルでまとめてから集計してください。'},
+};
+
+let COMP = 'buzz';
+let ENTRIES01 = [];        // {code, comp, period, name, dept, pkey, buzzElig, sceneElig, amb, target}
+let LIKES = {};            // EntryCode -> likes (from 03_いいね集計)
+let PEOPLE = [];           // 現在の競技の集計結果（recomputeで生成）
+// 競技×期ごとに保持する状態
+let staffName = '', period = '';
+let stateByComp = {};      // comp -> {pinned, pinnedOut, notes, pastFiles, crewCanon, crewInvalid}
+function S(){ return stateByComp[COMP] || (stateByComp[COMP] = {pinned:{}, pinnedOut:{}, notes:{}, pastFiles:[], crewCanon:{}, crewInvalid:{}}); }
+let ranks = {};            // pkey -> 1..6（recompute/autoRankが算出）
+
+/* ---------- utils ---------- */
+function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function num(x){ const n=Number(x); return (x===''||x==null||isNaN(n))?0:n; }
+function truthy(x){ const s=String(x).trim().toLowerCase(); return s==='true'||s==='1'||s==='yes'||s==='はい'; }
+function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+let tt; function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3400); }
+function surnameOf(who){ return (who||'').split(/[\/／]/)[0].trim(); }
+function splitNames(raw){
+  if(!raw) return [];
+  return String(raw).split(/[\n\r,、\/／;；]+/).map(s=>s.trim()).filter(Boolean);
+}
+
+/* ---------- Excel 読み込み ---------- */
+function sheetRows(wb, name){ return XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''}); }
+function pickSheet(wb, mustHave, nameHint){
+  let best=null;
+  for(const name of wb.SheetNames){
+    const rows = sheetRows(wb, name); if(!rows.length) continue;
+    const head = rows[0].map(x=>String(x).trim());
+    if(!mustHave.every(h=>head.includes(h))) continue;
+    const hit = {name, rows, head};
+    if(nameHint && name.includes(nameHint)) return hit;
+    if(!best) best = hit;
+  }
+  return best;
+}
+function idxer(head){ return n => head.indexOf(n); }
+function loadMasterFile(file){
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
+      const idxSheet = pickSheet(wb, ['EntryCode','CompetitionKey','SubmitterDisplayName'], 'EntryINDEX');
+      if(!idxSheet){ toast(`${file.name}：01_EntryINDEX 相当のシートが見つかりません`); return; }
+      const h = idxSheet.head, c = idxer(h);
+      const col = {
+        code:c('EntryCode'), comp:c('CompetitionKey'), period:c('PeriodKey'),
+        name:c('SubmitterDisplayName'), email:c('SubmitterEmail'), entra:c('SubmitterEntraId'),
+        dept:c('Department'), buzz:c('IsBuzzEligible'), scene:c('IsSceneEligible'),
+        amb:c('SupportAmbassadorNames'), target:c('審査対象フラグ'),
+      };
+      ENTRIES01 = idxSheet.rows.slice(1).map(r=>{
+        const g = k => col[k]>=0 ? String(r[col[k]]??'').trim() : '';
+        const name = g('name'), dept = g('dept');
+        const entra = g('entra'), email = g('email').toLowerCase();
+        return {
+          code:g('code'), comp:g('comp').toLowerCase(), period:g('period'),
+          name, dept, who: dept? `${name}/${dept}` : name,
+          pkey: entra || email || name,
+          buzzElig:g('buzz'), sceneElig:g('scene'), amb:g('amb'),
+          target: col.target<0 ? true : truthy(g('target')) || g('target')==='',
+        };
+      }).filter(e=>e.code);
+
+      // いいね集計（EntryCode -> LikesReceived）
+      LIKES = {};
+      const likeSheet = pickSheet(wb, ['EntryCode','LikesReceived（もらう）'], 'いいね');
+      if(likeSheet){
+        const lh=likeSheet.head, lc=idxer(lh);
+        const iCode=lc('EntryCode'), iLr=lc('LikesReceived（もらう）');
+        likeSheet.rows.slice(1).forEach(r=>{ const code=String(r[iCode]??'').trim(); if(code) LIKES[code]=num(r[iLr]); });
+      }
+      // 04_受賞者マスタ（内蔵の過去受賞者）
+      MASTER_AWARDS = readMasterAwards(wb);
+
+      recompute(); render();
+      const likeNote = likeSheet ? '' : '（いいね列が見つからないため、いいね系の集計は0になります）';
+      toast(`読み込み：${ENTRIES01.length}エントリー${likeNote}`);
+    }catch(err){ toast(`${file.name} を開けませんでした`); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+let MASTER_AWARDS = [];   // {name, comp}
+function readMasterAwards(wb){
+  const s = pickSheet(wb, ['受賞者（本人）','CompetitionKey'], '受賞者マスタ');
+  if(!s) return [];
+  const c=idxer(s.head), iName=c('受賞者（本人）'), iComp=c('CompetitionKey');
+  return s.rows.slice(1).map(r=>({name:String(r[iName]??'').trim(), comp:String(r[iComp]??'').trim().toLowerCase()}))
+    .filter(x=>x.name);
+}
+function loadPastFile(file){
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
+      const s = pickSheet(wb, ['受賞順位'], null) || pickSheet(wb, ['受賞一覧'], null);
+      let sheet=null;
+      for(const name of wb.SheetNames){ const rows=sheetRows(wb,name); if(rows.length){ const head=rows[0].map(x=>String(x).trim()); if(head.includes('氏名・部署')||head.includes('応募者・部署')){ sheet={name,rows,head}; break; } } }
+      if(!sheet){ toast(`${file.name}：受賞一覧シートが見つかりません`); return; }
+      const c=idxer(sheet.head);
+      const iWho = sheet.head.includes('氏名・部署')?c('氏名・部署'):c('応募者・部署');
+      const iComp = c('競技'); const iPeriod=c('期（中間・最終）')>=0?c('期（中間・最終）'):c('対象月');
+      const names=new Set(); let label='';
+      sheet.rows.slice(1).forEach(r=>{ const who=String(r[iWho]??'').trim(); if(!who) return; names.add(surnameOf(who)); if(iPeriod>=0&&r[iPeriod]) label=String(r[iPeriod]).trim(); });
+      if(!names.size){ toast(`${file.name}：受賞者が見つかりません`); return; }
+      const st=S(); st.pastFiles = st.pastFiles.filter(p=>p.name!==file.name);
+      st.pastFiles.push({name:file.name, label:label||file.name, names:[...names]});
+      recompute(); render(); toast(`${file.name}：${names.size}名を除外に追加`);
+    }catch(err){ toast(`${file.name} を開けませんでした`); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+function excludedMap(){
+  // このタブの競技に限定した過去受賞者（氏名 -> ラベル）
+  const m = new Map();
+  S().pastFiles.forEach(p=>p.names.forEach(n=>{ if(!m.has(n)) m.set(n, p.label); }));
+  MASTER_AWARDS.filter(a=>a.comp===COMP).forEach(a=>{ const n=surnameOf(a.name); if(!m.has(n)) m.set(n,'04_受賞者マスタ'); });
+  return m;
+}
+
+/* ---------- 集計 ---------- */
+function recompute(){
+  const excl = excludedMap();
+  const people = {};
+  const add = (key, name, dept) => people[key] || (people[key] = {key, name, dept, who: dept?`${name}/${dept}`:name, likes:0, count:0, posts:0, comps:new Set(), depts:new Set(), raws:new Set()});
+  if(COMP==='buzz'){
+    ENTRIES01.filter(e=>e.comp==='buzz' && truthy(e.buzzElig) && e.target).forEach(e=>{
+      const p=add(e.pkey, e.name, e.dept); p.likes += (LIKES[e.code]||0); p.posts++; p.comps.add('buzz');
+    });
+    PEOPLE = finalize(people, 'likes');
+  }else if(COMP==='scene'){
+    const sceneKeys = new Set(ENTRIES01.filter(e=>truthy(e.sceneElig)).map(e=>e.pkey));
+    ENTRIES01.filter(e=>sceneKeys.has(e.pkey)).forEach(e=>{
+      const p=add(e.pkey, e.name, e.dept); p.likes += (LIKES[e.code]||0); p.posts++; p.comps.add(e.comp);
+    });
+    PEOPLE = finalize(people, 'likes');
+  }else{ // crew
+    const st=S();
+    ENTRIES01.forEach(e=>{
+      splitNames(e.amb).forEach(raw=>{
+        if(st.crewInvalid[raw]) return;
+        const canon = (st.crewCanon[raw]||'').trim() || raw;
+        const p=add(canon, canon, ''); p.count++; p.comps.add(e.comp); if(e.dept) p.depts.add(e.dept); p.raws.add(raw);
+      });
+    });
+    PEOPLE = finalize(people, 'count');
+  }
+  autoRank();
+}
+function finalize(people, valKey){
+  const arr = Object.values(people).map(p=>{
+    p.value = p[valKey];
+    p.avg = p.posts ? Math.round(p.likes/p.posts*10)/10 : 0;
+    p.excluded = excludedMap().has(surnameOf(p.name));
+    return p;
+  });
+  arr.sort((a,b)=>{
+    if(b.value!==a.value) return b.value-a.value;
+    if(COMP==='crew'){ if(b.comps.size!==a.comps.size) return b.comps.size-a.comps.size; return b.depts.size-a.depts.size; }
+    if(b.avg!==a.avg) return b.avg-a.avg;
+    return b.posts-a.posts;
+  });
+  return arr;
+}
+
+/* ---------- ランキング（固定＋自動補充） ---------- */
+function eligibleSorted(){ return PEOPLE.filter(p=>!p.excluded && p.value>0); }
+function autoRank(){
+  const st=S(), pinned=st.pinned, pinnedOut=st.pinnedOut;
+  const valid = new Set(PEOPLE.filter(p=>!p.excluded).map(p=>p.key));
+  Object.keys(pinned).forEach(k=>{ if(!valid.has(k)) delete pinned[k]; });
+  ranks = {}; const used=new Set();
+  Object.keys(pinned).sort((a,b)=>pinned[a]-pinned[b]).forEach(k=>{ const s=pinned[k]; if(!used.has(s)){ ranks[k]=s; used.add(s); } });
+  const placed=new Set(Object.keys(ranks));
+  const cand = eligibleSorted().filter(p=>!placed.has(p.key) && !pinnedOut[p.key]);
+  for(let slot=1;slot<=AWARD_SLOTS;slot++){ if(used.has(slot)) continue; const nx=cand.shift(); if(!nx) break; ranks[nx.key]=slot; used.add(slot); }
+}
+function rankOf(key){ return ranks[key]||0; }
+function slotPerson(slot){ const k=Object.keys(ranks).find(x=>ranks[x]===slot); return k?PEOPLE.find(p=>p.key===k):null; }
+function setRank(key, slot){
+  const st=S();
+  if(slot===0){ delete st.pinned[key]; st.pinnedOut[key]=true; }
+  else{ Object.keys(st.pinned).forEach(k=>{ if(st.pinned[k]===slot&&k!==key) delete st.pinned[k]; }); st.pinned[key]=slot; delete st.pinnedOut[key]; }
+  autoRank(); render(); saveState();
+}
+function pinSlot(slot, key){
+  const st=S();
+  Object.keys(st.pinned).forEach(k=>{ if(st.pinned[k]===slot) delete st.pinned[k]; });
+  if(key){ st.pinned[key]=slot; delete st.pinnedOut[key]; }
+  autoRank(); render(); saveState();
+}
+
+/* ---------- 保存/復元 ---------- */
+function stateKey(){ return STORE_PREFIX + (staffName||'__anon__') + '::' + COMP + '::' + (period||'__def__'); }
+function saveState(){
+  const st=S();
+  const data = { staffName, period,
+    pinned:st.pinned, pinnedOut:st.pinnedOut, notes:st.notes, crewCanon:st.crewCanon, crewInvalid:st.crewInvalid,
+    pastFiles: st.pastFiles.map(p=>({name:p.name,label:p.label,names:p.names})) };
+  try{ localStorage.setItem(stateKey(), JSON.stringify(data)); }catch(e){}
+}
+function loadState(){
+  const st = stateByComp[COMP] = {pinned:{}, pinnedOut:{}, notes:{}, pastFiles:[], crewCanon:{}, crewInvalid:{}};
+  try{
+    const raw = localStorage.getItem(stateKey()); if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d.pinned) st.pinned=d.pinned; if(d.pinnedOut) st.pinnedOut=d.pinnedOut;
+    if(d.notes) st.notes=d.notes; if(d.crewCanon) st.crewCanon=d.crewCanon; if(d.crewInvalid) st.crewInvalid=d.crewInvalid;
+    if(d.pastFiles) st.pastFiles=d.pastFiles.map(p=>({name:p.name,label:p.label,names:p.names}));
+  }catch(e){}
+}
+
+/* ---------- 描画 ---------- */
+let sortBy='value', filterBy='all';
+function render(){
+  const meta = COMP_META[COMP];
+  document.getElementById('brandJp').textContent = '自動集計競技 受賞選定ツール ― ' + meta.jp;
+  document.getElementById('k1').textContent = COMP==='crew' ? '支援者（名寄せ後）' : '対象者';
+  document.getElementById('topHint').textContent = meta.hint;
+  document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('on', t.dataset.comp===COMP));
+  document.getElementById('hMergeWrap').style.display = COMP==='crew' ? '' : 'none';
+  renderPastFiles();
+  renderHeader();
+  const out = document.getElementById('out');
+  if(!ENTRIES01.length){ out.innerHTML=''; return; }
+  out.innerHTML = `<div id="awardPanel"></div>${COMP==='crew'?'<div id="mergePanel"></div>':''}<div id="peopleTable"></div>`;
+  refreshAwardPanel();
+  if(COMP==='crew') document.getElementById('mergePanel').innerHTML = renderMergePanel(), wireMerge();
+  refreshTable();
+}
+function refreshAwardPanel(){ const el=document.getElementById('awardPanel'); if(el){ el.innerHTML=renderAwardPanel(); wireAward(); } }
+function refreshTable(){ const el=document.getElementById('peopleTable'); if(el){ el.innerHTML=renderTable(); wireTable(); } }
+function renderPastFiles(){
+  const st=S();
+  document.getElementById('pastFiles').innerHTML = st.pastFiles.map((p,i)=>
+    `<div class="fchip"><b>${esc(p.label)}</b><span class="cnt">${esc(p.name)} ・ ${p.names.length}名除外</span><button data-x="${i}">×</button></div>`).join('');
+  document.getElementById('pastFiles').querySelectorAll('[data-x]').forEach(b=> b.onclick=()=>{ st.pastFiles.splice(+b.dataset.x,1); recompute(); render(); saveState(); });
+}
+function renderHeader(){
+  const meta=COMP_META[COMP], excl=excludedMap();
+  document.getElementById('hPeople').innerHTML = PEOPLE.length + `<small> 名</small>`;
+  document.getElementById('hAwards').innerHTML = Object.keys(ranks).length + `<small> / ${AWARD_SLOTS}</small>`;
+  const exN = PEOPLE.filter(p=>excl.has(surnameOf(p.name))).length;
+  document.getElementById('hExcl').innerHTML = exN + '<small> 名</small>';
+  if(COMP==='crew'){
+    const st=S(); const rawSet=new Set();
+    ENTRIES01.forEach(e=>splitNames(e.amb).forEach(r=>rawSet.add(r)));
+    const untouched = [...rawSet].filter(r=>!st.crewInvalid[r] && !(st.crewCanon[r]&&st.crewCanon[r].trim())).length;
+    const hM=document.getElementById('hMerge'); hM.innerHTML = untouched + '<small> 件</small>'; hM.className='v';
+  }
+}
+function renderAwardPanel(){
+  const meta=COMP_META[COMP], st=S();
+  let html = `<div class="panel"><h2>受賞候補 ${AWARD_SLOTS}名 <span>${esc(meta.valLabel)}の上位から自動選出。プルダウンで入れ替え・備考を記入できます</span></h2><div class="award-grid">`;
+  for(let slot=1;slot<=AWARD_SLOTS;slot++){
+    const p=slotPerson(slot);
+    const opts=['<option value="">（対象外）</option>'].concat(eligibleSorted().concat(p?[p]:[]).filter((v,i,a)=>a.findIndex(x=>x.key===v.key)===i)
+      .sort((a,b)=>b.value-a.value).map(x=>{ const taken=rankOf(x.key)&&rankOf(x.key)!==slot; return `<option value="${esc(x.key)}" ${p&&p.key===x.key?'selected':''} ${taken?'disabled':''}>${esc(x.who)}${taken?`（${rankOf(x.key)}位）`:''}</option>`; })).join('');
+    if(!p){ html+=`<div class="acard empty2"><div style="text-align:center"><div class="ahead" style="justify-content:center"><span class="rk">${slot}位</span></div><div style="padding:12px;font-size:12px">該当なし<select class="slot-sel" data-slot="${slot}" style="margin-top:8px;display:block">${opts}</select></div></div></div>`; continue; }
+    const detail = COMP==='crew'
+      ? `<span>記載数 <b>${p.count}</b></span><span>部署 <b>${p.depts.size}</b></span><span>競技 <b>${p.comps.size}</b></span>`
+      : `<span>${esc(meta.valLabel)} <b>${p.likes}</b></span><span>投稿 <b>${p.posts}</b></span><span>平均 <b>${p.avg}</b></span>`;
+    const n=st.notes[p.key]||'';
+    html+=`<div class="acard" data-key="${esc(p.key)}"><div class="ahead"><span class="rk">${slot}位</span><select class="slot-sel" data-slot="${slot}">${opts}</select></div>
+      <div class="abody"><div class="ainfo"><b>${esc(p.name)}</b><span>${esc(p.dept||(COMP==='crew'?'支援アンバサダー':''))}</span></div>
+      <div class="ascore">${detail}</div>
+      <div><label>備考（任意）</label><textarea class="note" data-key="${esc(p.key)}" placeholder="必要なら一言">${esc(n)}</textarea></div></div></div>`;
+  }
+  return html + `</div></div>`;
+}
+function renderMergePanel(){
+  const st=S();
+  const counts={};
+  ENTRIES01.forEach(e=>splitNames(e.amb).forEach(r=>{ counts[r]=counts[r]||{raw:r,n:0,comps:new Set()}; counts[r].n++; counts[r].comps.add(e.comp); }));
+  const list=Object.values(counts).sort((a,b)=>b.n-a.n);
+  const canons=[...new Set(Object.values(st.crewCanon).map(v=>(v||'').trim()).filter(Boolean))];
+  let rows=list.map(x=>{
+    const inv=!!st.crewInvalid[x.raw]; const canon=st.crewCanon[x.raw]||'';
+    const multi = /[\n\r,、\/／;；]/.test(x.raw);
+    return `<tr class="${inv?'invalid':''}">
+      <td><span class="rawname ${multi?'multi':''}">${esc(x.raw)}</span></td>
+      <td class="n">${x.n}</td>
+      <td><input type="text" class="canon-in" list="canonList" data-raw="${esc(x.raw)}" value="${esc(canon)}" placeholder="（そのまま）" ${inv?'disabled':''}></td>
+      <td class="n"><input type="checkbox" class="invalid-in" data-raw="${esc(x.raw)}" ${inv?'checked':''}></td>
+    </tr>`;
+  }).join('');
+  return `<div class="panel"><h2>クルーアワード 名寄せ <span>表記ゆれ・あだ名を「統合先」に同じ名前で揃えると1人に集約されます。ゴミ入力は「無効」に</span></h2>
+    <div class="merge-help">支援アンバサダー名は自由記述のため、<b>同じ人の別表記</b>（例：色部 晟洋 ＝ 色部さん）を「統合先」に<b>同じ正式名</b>で入力してまとめてください。改行やカンマで複数名が入っているセルは自動で分割済みです。無効な入力（打ち間違いのゴミ等）は「無効」にチェックすると集計から除外されます。</div>
+    <datalist id="canonList">${canons.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    <div class="table-scroll"><table class="merge-tbl"><thead><tr><th>生の名前（記載単位）</th><th class="n">記載数</th><th>統合先（正式名）</th><th class="n">無効</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="empty">支援アンバサダー名の記載がありません</td></tr>'}</tbody></table></div>
+  </div>`;
+}
+function renderTable(){
+  const meta=COMP_META[COMP], excl=excludedMap();
+  let list=PEOPLE.slice();
+  if(filterBy==='award') list=list.filter(p=>rankOf(p.key));
+  if(filterBy==='excl') list=list.filter(p=>excl.has(surnameOf(p.name)));
+  const sorters={ value:(a,b)=>b.value-a.value, avg:(a,b)=>b.avg-a.avg, name:(a,b)=>(a.name||'').localeCompare(b.name||'','ja') };
+  list.sort(sorters[sortBy]||sorters.value);
+  const valCols = COMP==='crew'
+    ? `<th class="n">記載数</th><th class="n">部署数</th><th class="n">競技数</th>`
+    : `<th class="n">${esc(meta.valLabel)}</th><th class="n">投稿数</th><th class="n">平均いいね</th>`;
+  let html=`<div class="panel"><h2>${esc(meta.jp)} 集計結果 <span>${PEOPLE.length}名・${esc(meta.persona)}</span></h2>
+    <div class="toolrow">
+      <button class="chip ${sortBy==='value'?'on':''}" data-sort="value">${esc(meta.valLabel)}順</button>
+      ${COMP!=='crew'?`<button class="chip ${sortBy==='avg'?'on':''}" data-sort="avg">平均いいね順</button>`:''}
+      <button class="chip ${sortBy==='name'?'on':''}" data-sort="name">氏名順</button>
+      <span class="sep"></span>
+      <button class="chip ${filterBy==='all'?'on':''}" data-filter="all">すべて</button>
+      <button class="chip ${filterBy==='award'?'on':''}" data-filter="award">受賞候補</button>
+      <button class="chip ${filterBy==='excl'?'on':''}" data-filter="excl">受賞済み(同競技)</button>
+    </div>
+    <div class="table-scroll"><table><thead><tr><th class="n">順位</th><th>${COMP==='crew'?'支援アンバサダー':'氏名・部署'}</th>${valCols}<th>状態</th></tr></thead><tbody>`;
+  list.forEach(p=>{
+    const isExcl=excl.has(surnameOf(p.name)); const r=rankOf(p.key); const blocked=isExcl||p.value<=0;
+    let badges=''; if(r) badges+=`<span class="badge win">受賞候補 ${r}位</span> `; if(isExcl) badges+=`<span class="badge excl">受賞済み(${esc(excl.get(surnameOf(p.name)))})</span>`;
+    if(!badges) badges='<span style="color:#c3cad4">—</span>';
+    const rankOpts=[0,1,2,3,4,5,6].map(s=>`<option value="${s}" ${r===s?'selected':''} ${blocked&&s>0?'disabled':''}>${s===0?'対象外':s+'位'}</option>`).join('');
+    const valCells = COMP==='crew'
+      ? `<td class="n"><span class="val">${p.count}</span></td><td class="n">${p.depts.size}</td><td class="n">${p.comps.size}</td>`
+      : `<td class="n"><span class="val">${p.likes}</span></td><td class="n">${p.posts}</td><td class="n">${p.avg}</td>`;
+    html+=`<tr class="${[isExcl?'excluded':'', r?'awarded':''].filter(Boolean).join(' ')}">
+      <td class="n"><select class="row-rank" data-key="${esc(p.key)}" ${blocked?'disabled':''}>${rankOpts}</select></td>
+      <td class="who"><b>${esc(p.name)}</b><span>${esc(p.dept||(COMP==='crew'?'支援名':''))}</span></td>
+      ${valCells}<td>${badges}</td></tr>`;
+  });
+  html+=`</tbody></table></div>
+    <div class="legend"><span><b>受賞候補</b>＝${esc(meta.valLabel)}の上位6名（同点は${COMP==='crew'?'部署数→競技数':'平均いいね→投稿数'}）</span><span><b>受賞済み(同競技)</b>＝同じ競技の過去受賞者。競技をまたいだ除外はしません</span></div></div>`;
+  return html;
+}
+function wireAward(){
+  document.querySelectorAll('.slot-sel').forEach(s=> s.onchange=()=>pinSlot(+s.dataset.slot, s.value));
+  document.querySelectorAll('.note').forEach(t=> t.oninput=()=>{ S().notes[t.dataset.key]=t.value; saveState(); });
+}
+function wireTable(){
+  document.querySelectorAll('[data-sort]').forEach(b=> b.onclick=()=>{ sortBy=b.dataset.sort; refreshTable(); });
+  document.querySelectorAll('[data-filter]').forEach(b=> b.onclick=()=>{ filterBy=b.dataset.filter; refreshTable(); });
+  document.querySelectorAll('.row-rank').forEach(s=> s.onchange=()=>setRank(s.dataset.key, +s.value));
+}
+function rebuildMergePanel(){ const el=document.getElementById('mergePanel'); if(el){ el.innerHTML=renderMergePanel(); wireMerge(); } }
+function afterMergeChange(deferPanel){
+  recompute(); saveState(); refreshAwardPanel(); renderHeader(); refreshTable();
+  // 入力欄のblur中に自分の親パネルをinnerHTMLで消すとDOMエラーになるため、テキスト入力側は次のタイミングに遅延
+  if(deferPanel) setTimeout(rebuildMergePanel, 0); else rebuildMergePanel();
+}
+function wireMerge(){
+  const st=S();
+  document.querySelectorAll('.canon-in').forEach(inp=>{
+    inp.onchange=()=>{ const raw=inp.dataset.raw; const v=inp.value.trim(); if(v) st.crewCanon[raw]=v; else delete st.crewCanon[raw]; afterMergeChange(true); };
+  });
+  document.querySelectorAll('.invalid-in').forEach(cb=>{
+    cb.onchange=()=>{ const raw=cb.dataset.raw; if(cb.checked) st.crewInvalid[raw]=true; else delete st.crewInvalid[raw]; afterMergeChange(false); };
+  });
+}
+
+/* ---------- 入力チェック ---------- */
+function runCheck(){
+  const issues=[], st=S();
+  if(!staffName) issues.push({t:'err',m:'作業者名が入力されていません'});
+  if(!ENTRIES01.length) issues.push({t:'err',m:'マスターExcelが読み込まれていません'});
+  const filled=Object.keys(ranks).length;
+  if(filled<AWARD_SLOTS) issues.push({t:'warn',m:`受賞候補が${filled}/${AWARD_SLOTS}名です（対象者が少ない場合は該当者のみで問題ありません）`});
+  if(COMP==='crew'){
+    const rawSet=new Set(); ENTRIES01.forEach(e=>splitNames(e.amb).forEach(r=>rawSet.add(r)));
+    const untouched=[...rawSet].filter(r=>!st.crewInvalid[r] && !(st.crewCanon[r]&&st.crewCanon[r].trim()));
+    if(untouched.length) issues.push({t:'warn',m:`名寄せ未処理の生名が${untouched.length}件あります（そのまま集計されています。表記ゆれが無ければOK）`});
+  }
+  if(!issues.length) issues.push({t:'ok',m:'すべて問題ありません'});
+  document.getElementById('checkBody').innerHTML=issues.map(i=>`<div class="issue ${i.t}"><b>${i.t==='err'?'✕':i.t==='warn'?'△':'✓'}</b><span>${esc(i.m)}</span></div>`).join('');
+  document.getElementById('checkModal').classList.add('on');
+}
+
+/* ---------- 書き出し ---------- */
+function awardRows(){
+  const meta=COMP_META[COMP], st=S();
+  const head = COMP==='crew'
+    ? ['競技','期','作業者','受賞順位','支援アンバサダー','記載数','部署数','競技数','統合した生の名前','備考']
+    : ['競技','期','作業者','受賞順位','氏名・部署',meta.valLabel,'投稿数','平均いいね','備考'];
+  const rows=[head];
+  for(let slot=1;slot<=AWARD_SLOTS;slot++){ const p=slotPerson(slot); if(!p) continue; const n=st.notes[p.key]||'';
+    rows.push(COMP==='crew'
+      ? [meta.jp, period, staffName, slot, p.name, p.count, p.depts.size, p.comps.size, [...p.raws].join(' / '), n]
+      : [meta.jp, period, staffName, slot, p.who, p.likes, p.posts, p.avg, n]);
+  }
+  return rows;
+}
+function allRows(){
+  const meta=COMP_META[COMP], excl=excludedMap();
+  const head = COMP==='crew'
+    ? ['競技','支援アンバサダー','記載数','部署数','競技数','自動/手動順位','受賞済み(同競技)','統合した生の名前']
+    : ['競技','氏名・部署',meta.valLabel,'投稿数','平均いいね','自動/手動順位','受賞済み(同競技)'];
+  const rows=[head];
+  PEOPLE.forEach(p=>{ const ex=excl.has(surnameOf(p.name))?excl.get(surnameOf(p.name)):'';
+    rows.push(COMP==='crew'
+      ? [meta.jp, p.name, p.count, p.depts.size, p.comps.size, rankOf(p.key)||'', ex, [...p.raws].join(' / ')]
+      : [meta.jp, p.who, p.likes, p.posts, p.avg, rankOf(p.key)||'', ex]);
+  });
+  return rows;
+}
+function exportXLSX(){
+  if(!ENTRIES01.length){ toast('マスターExcelを読み込んでください'); return; }
+  if(!staffName){ toast('作業者名を入力してください'); return; }
+  const meta=COMP_META[COMP];
+  const wb=XLSX.utils.book_new();
+  const ws1=XLSX.utils.aoa_to_sheet(awardRows()); ws1['!freeze']={xSplit:'0',ySplit:'1'};
+  XLSX.utils.book_append_sheet(wb, ws1, '受賞一覧');
+  const ws2=XLSX.utils.aoa_to_sheet(allRows()); ws2['!freeze']={xSplit:'0',ySplit:'1'};
+  XLSX.utils.book_append_sheet(wb, ws2, '全対象者');
+  XLSX.writeFile(wb, `${meta.jp}_受賞一覧_${(period||'').replace(/[^0-9a-zA-Z一-龠ぁ-んァ-ヶ]/g,'')}_${stamp()}.xlsx`);
+  toast(`${meta.jp}の受賞一覧を書き出しました`);
+}
+
+/* ---------- wiring ---------- */
+function switchComp(comp){ COMP=comp; loadState(); recompute(); sortBy='value'; filterBy='all'; render(); }
+document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchComp(t.dataset.comp));
+document.getElementById('staffName').oninput=e=>{ staffName=e.target.value; loadState(); recompute(); render(); saveState(); };
+document.getElementById('period').oninput=e=>{ period=e.target.value; loadState(); recompute(); render(); saveState(); };
+const drop=document.getElementById('drop');
+drop.onclick=()=>document.getElementById('fileMaster').click();
+drop.ondragover=e=>{ e.preventDefault(); drop.classList.add('on'); };
+drop.ondragleave=()=>drop.classList.remove('on');
+drop.ondrop=e=>{ e.preventDefault(); drop.classList.remove('on'); if(e.dataTransfer.files[0]) loadMasterFile(e.dataTransfer.files[0]); };
+document.getElementById('btnLoad').onclick=()=>document.getElementById('fileMaster').click();
+document.getElementById('fileMaster').onchange=e=>{ if(e.target.files[0]) loadMasterFile(e.target.files[0]); e.target.value=''; };
+const pastDrop=document.getElementById('pastDrop');
+pastDrop.onclick=()=>document.getElementById('filePast').click();
+pastDrop.ondragover=e=>{ e.preventDefault(); pastDrop.classList.add('on'); };
+pastDrop.ondragleave=()=>pastDrop.classList.remove('on');
+pastDrop.ondrop=e=>{ e.preventDefault(); pastDrop.classList.remove('on'); [...e.dataTransfer.files].forEach(loadPastFile); };
+document.getElementById('btnLoadPast').onclick=()=>document.getElementById('filePast').click();
+document.getElementById('filePast').onchange=e=>{ [...e.target.files].forEach(loadPastFile); e.target.value=''; };
+document.getElementById('btnCheck').onclick=runCheck;
+document.getElementById('checkClose').onclick=()=>document.getElementById('checkModal').classList.remove('on');
+document.getElementById('btnXLS').onclick=exportXLSX;
+document.getElementById('btnPrint').onclick=()=>window.print();
+document.getElementById('btnClear').onclick=()=>{ if(confirm(`${COMP_META[COMP].jp}のこの期の入力（順位固定・名寄せ・備考・除外）を消します。よろしいですか？`)){ stateByComp[COMP]={pinned:{},pinnedOut:{},notes:{},pastFiles:[],crewCanon:{},crewInvalid:{}}; recompute(); saveState(); render(); toast('この競技の入力を消去しました'); } };
+loadState(); render();
+</script>
+</body>
+</html>

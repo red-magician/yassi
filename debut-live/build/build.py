@@ -8,6 +8,7 @@ os.makedirs(dist_dir, exist_ok=True)
 TARGETS = [
     ('template.html', 'AIFES2026_デビューライブ_受賞選定ツール.html'),
     ('template_reconcile.html', 'AIFES2026_デビューライブ_受賞突合ツール.html'),
+    ('template_auto.html', 'AIFES2026_自動集計競技_受賞選定ツール.html'),
 ]
 
 for src_name, out_name in TARGETS:
