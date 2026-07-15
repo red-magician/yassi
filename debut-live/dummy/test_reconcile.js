@@ -26,29 +26,29 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
 
   ok((await page.textContent('#hFiles')).includes('2'), '2名分のExcelが読み込まれる');
   ok((await page.textContent('#hOk')).includes('5'), '6件中5件が一致と判定される');
-  ok((await page.textContent('#hBad')).trim().startsWith('1'), '1件が不一致と判定される（1位）');
+  ok((await page.textContent('#hBad')).trim().startsWith('1'), '1件が不一致と判定される（6位）');
   ok((await page.textContent('#hScoreMismatch')).trim().startsWith('1'), 'スコア不一致が1件検出される（DEBUT-2026-0008）');
 
-  const slot1Status = await page.locator('.slot-card').first().locator('.slot-status').innerText();
-  ok(slot1Status.includes('不一致'), `1位のステータスが不一致と表示される（実際: ${slot1Status}）`);
-  const cands = await page.locator('.slot-card').first().locator('.cand').count();
-  ok(cands === 2, `1位の候補が2件表示される（実際: ${cands}）`);
-
-  // 田中さんの候補（DEBUT-2026-0013）を採用する
-  await page.locator('.slot-card').first().locator('input[value="DEBUT-2026-0013"]').check();
+  // 不一致になっているのは6位（佐藤さんが対象外の1件を6位に差し替えたため）
+  const slot6 = page.locator('.slot-card').nth(5);
+  ok((await slot6.locator('.slot-status').innerText()).includes('不一致'), '6位のステータスが不一致と表示される');
+  const cands = await slot6.locator('.cand').count();
+  ok(cands === 2, `6位の候補が2件表示される（実際: ${cands}）`);
+  // 6位でどちらかの候補を採用すると、その受賞理由が最終版に反映される
+  await slot6.locator('.cand input[type=radio]').first().check();
   await page.waitForTimeout(200);
-  const reasonVal = await page.locator('.slot-card').first().locator('textarea[data-field="reason"]').inputValue();
-  ok(reasonVal.includes('田中'), `採用した候補の受賞理由が反映される（実際: ${reasonVal}）`);
+  const reasonVal = await slot6.locator('textarea[data-field="reason"]').inputValue();
+  ok(/受賞理由/.test(reasonVal), `採用した候補の受賞理由が反映される（実際: ${reasonVal}）`);
 
-  // 2位（一致スロット）は両者とも同じ作品だが受賞理由の文言が違う→クイックフィルで差し替えられるか確認
-  const slot2 = page.locator('.slot-card').nth(1);
-  ok((await slot2.locator('.slot-status').innerText()).includes('一致'), '2位は一致と判定される');
-  const reasonBefore = await slot2.locator('textarea[data-field="reason"]').inputValue();
-  ok(reasonBefore.includes('田中') || reasonBefore.includes('佐藤'), `2位の受賞理由はどちらかの作業者の文言が初期値になる（実際: ${reasonBefore}）`);
+  // 1位（一致スロット）は両者とも同じ作品だが受賞理由の文言が違う→クイックフィルで差し替えられるか確認
+  const slot1 = page.locator('.slot-card').first();
+  ok((await slot1.locator('.slot-status').innerText()).includes('一致'), '1位は一致と判定される');
+  const reasonBefore = await slot1.locator('textarea[data-field="reason"]').inputValue();
+  ok(reasonBefore.includes('田中') || reasonBefore.includes('佐藤'), `1位の受賞理由はどちらかの作業者の文言が初期値になる（実際: ${reasonBefore}）`);
   const otherStaff = reasonBefore.includes('田中') ? '佐藤' : '田中';
-  await slot2.locator('.qf-btn', { hasText: `${otherStaff}の文言` }).first().click();
+  await slot1.locator('.qf-btn', { hasText: `${otherStaff}の文言` }).first().click();
   await page.waitForTimeout(200);
-  const reasonVal2 = await page.locator('.slot-card').nth(1).locator('textarea[data-field="reason"]').inputValue();
+  const reasonVal2 = await page.locator('.slot-card').first().locator('textarea[data-field="reason"]').inputValue();
   ok(reasonVal2.includes(otherStaff), `クイックフィルでもう一方(${otherStaff})の文言に差し替えられる（実際: ${reasonVal2}）`);
 
   // 確定チェック→書き出し

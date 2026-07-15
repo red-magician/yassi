@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const path = require('path');
 
-async function runStaff(browser, { staffName, masterFile, overrideSlot1 }) {
+async function runStaff(browser, { staffName, masterFile, overrideSlot6 }) {
   const page = await browser.newPage();
   const filePath = 'file://' + path.resolve(__dirname, '../dist/AIFES2026_デビューライブ_受賞選定ツール.html');
   await page.goto(filePath);
@@ -11,17 +11,20 @@ async function runStaff(browser, { staffName, masterFile, overrideSlot1 }) {
   await page.setInputFiles('#fileMaster', path.resolve(__dirname, masterFile));
   await page.waitForTimeout(800);
 
-  if (overrideSlot1) {
-    // 1位を、自動選出とは別のエントリーに手動で入れ替える（不一致を再現）
+  if (overrideSlot6) {
+    // 6位だけを、自動選出とは別のエントリー（対象外だった1件）に手動で差し替える。
+    // 現行の「固定」モデルでは、対象外を6位に固定すると1〜5位はそのまま・6位だけが入れ替わる
+    // → 2人の結果は5件一致・1件（6位）だけ不一致、という突合テストに使いやすい状態になる。
     const rankSelects = page.locator('.row-rank');
     const n = await rankSelects.count();
     for (let i = 0; i < n; i++) {
       const sel = rankSelects.nth(i);
       if (await sel.isEnabled() && (await sel.inputValue()) === '0') {
-        await sel.selectOption('1');
+        await sel.selectOption('6');
         break;
       }
     }
+    await page.waitForTimeout(200);
   }
 
   // 全スロットの受賞理由・講評コメントを埋める
@@ -47,7 +50,7 @@ async function runStaff(browser, { staffName, masterFile, overrideSlot1 }) {
 
 (async () => {
   const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  await runStaff(browser, { staffName: '田中', masterFile: 'master_test.xlsx', overrideSlot1: false });
-  await runStaff(browser, { staffName: '佐藤', masterFile: 'master_test_staffB.xlsx', overrideSlot1: true });
+  await runStaff(browser, { staffName: '田中', masterFile: 'master_test.xlsx', overrideSlot6: false });
+  await runStaff(browser, { staffName: '佐藤', masterFile: 'master_test_staffB.xlsx', overrideSlot6: true });
   await browser.close();
 })();

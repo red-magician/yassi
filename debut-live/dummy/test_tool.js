@@ -56,8 +56,12 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   ok(!!movedCode, '対象外だったエントリーを1位に手動で割り当てられる');
   const newTopCard = await page.locator('.acard[data-code]').first().locator('.ainfo b').innerText();
   ok(newTopCard === movedCode, `手動で1位にしたエントリー(${movedCode})が受賞候補カードの1位に反映される（実際: ${newTopCard}）`);
-  const oldTopRank = await page.locator('tbody tr', { hasText: 'DEBUT-2026-0013' }).first().locator('.row-rank').inputValue();
-  ok(oldTopRank === '0', '元1位だったエントリーは対象外に押し出される（順位の重複がない）');
+  // 受賞候補は依然として6件、順位の重複はない（固定した1件を入れた分、自動枠の最下位が1件押し出される）
+  const cardCount = await page.locator('.acard[data-code]').count();
+  ok(cardCount === 6, `受賞候補は6件のまま（実際: ${cardCount}）`);
+  const slotNums = await page.locator('.acard[data-code] .rk').allInnerTexts();
+  const uniqSlots = new Set(slotNums.map(s=>s.trim()));
+  ok(uniqSlots.size === slotNums.length, '受賞候補の順位に重複がない');
 
   // 入力チェック
   await page.click('#btnCheck');
