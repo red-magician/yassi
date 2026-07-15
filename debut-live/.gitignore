@@ -1,0 +1,10 @@
+# テスト実行のたびに再生成される派生ファイル（make_dummy.py / gen_two_staff_exports.js / test_*.js が出力する）
+dummy/master_test.xlsx
+dummy/past_test.xlsx
+dummy/master_test_staffB.xlsx
+dummy/staffA.xlsx
+dummy/staffB.xlsx
+dummy/test_output.xlsx
+dummy/test_reconcile_output.xlsx
+dummy/ダミー_採点マスター_デビューライブ_7月.xlsx
+dummy/ダミー_受賞一覧_6月.xlsx

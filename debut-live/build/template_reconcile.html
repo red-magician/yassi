@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI FES 2026 デビューライブ 受賞突合ツール（事務局用）</title>
+<style>
+:root{
+  --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
+  --gold:#FFCD00; --gold-dim:#c9a300;
+  --paper:#f4f6f9; --card:#fff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
+  --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Yu Gothic UI","Meiryo","Segoe UI",-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:22px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;min-width:250px}
+.brand .en{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.brand .jp{font-size:17px;font-weight:700}
+.hstat{display:flex;gap:24px;flex:1;flex-wrap:wrap}
+.hstat .item{display:flex;flex-direction:column;line-height:1.3}
+.hstat .k{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.hstat .v{font-size:18px;font-weight:700}
+.hstat .v small{font-size:11px;font-weight:400;color:#9fb3cd}
+.hstat .v.warn{color:#ff9aa6}
+.toolbar{background:var(--navy-deep);padding:9px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:49}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparent;padding:7px 14px;transition:.15s}
+.btn{background:rgba(255,255,255,.09);color:#e7edf5;border-color:rgba(255,255,255,.22)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700}
+.btn-gold:hover{background:#ffd93a}
+.sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
+.hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:360px}
+main{padding:22px 26px;max-width:1300px;margin:0 auto}
+.drop{border:2px dashed #c3cfdd;border-radius:10px;background:#fff;padding:34px;text-align:center;color:var(--mute);margin-bottom:20px;transition:.15s;cursor:pointer}
+.drop.on{border-color:var(--gold);background:#fffdf3}
+.drop b{display:block;font-size:15px;color:var(--navy);margin-bottom:5px}
+.drop span{font-size:12px}
+.files{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.fchip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--navy);border-radius:6px;padding:8px 12px;font-size:12px}
+.fchip b{color:var(--navy)}
+.fchip .cnt{color:var(--mute)}
+.fchip button{background:none;border:none;color:var(--mute);padding:0 2px;font-size:15px;line-height:1}
+.fchip button:hover{color:var(--warn)}
+.warnbar{background:#fff8e8;border:1px solid #f0dfa0;border-left:4px solid var(--amber);border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#7a5b00}
+.panel{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.panel h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.panel h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
+.empty{padding:40px;text-align:center;color:var(--mute);font-size:13px}
+.slot-card{border-bottom:1px solid var(--line)}
+.slot-card:last-child{border-bottom:none}
+.slot-top{display:flex;align-items:center;gap:10px;padding:12px 18px;background:#fbfcfe}
+.slot-rk{background:var(--gold);color:var(--navy-deep);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
+.slot-status{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid}
+.slot-status.ok{background:#eefaf4;color:var(--ok);border-color:#bfe6d5}
+.slot-status.bad{background:#fdf0f2;color:var(--warn);border-color:#f0c2c9}
+.slot-status.empty2{background:#f4f6f9;color:#9aa5b4;border-color:#dfe4ec}
+.slot-body{padding:12px 18px 16px;display:flex;flex-direction:column;gap:10px}
+.cand{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:#fbfcfe}
+.cand.chosen{border-color:var(--gold);background:#fffdf3}
+.cand input[type=radio]{margin-top:3px}
+.cand .ci{flex:1;min-width:0}
+.cand .ci b{color:var(--navy-deep);font-size:12.5px}
+.cand .ci .who{font-size:11px;color:var(--mute)}
+.cand .ci .sc{font-size:11px;color:var(--mute);margin-top:2px}
+.cand .ci .sc b{color:var(--navy)}
+.cand .who-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.wtag{font-size:10px;background:#eef3fa;border:1px solid #d8e3f0;color:var(--navy);padding:1px 8px;border-radius:99px}
+.manual-row{display:flex;gap:8px;align-items:center;padding:10px 12px;border:1px dashed var(--line);border-radius:7px}
+.manual-row select{flex:1;padding:6px 8px;font:inherit;border:1px solid var(--line);border-radius:5px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fl label{font-size:10.5px;color:var(--mute);font-weight:600;display:block;margin-bottom:3px}
+.fl textarea{width:100%;font:inherit;font-size:12px;padding:8px;border:1px solid var(--line);border-radius:5px;resize:vertical;min-height:44px}
+.fl textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.quickfill{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.qf-btn{font-size:10.5px;background:#eef3fa;border:1px solid #d8e3f0;color:var(--navy);padding:2px 9px;border-radius:99px;cursor:pointer}
+.qf-btn:hover{background:#dce8f7}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+thead th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;padding:9px 8px;text-align:left;white-space:nowrap}
+thead th.n{text-align:center}
+tbody td{padding:8px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+td.n{text-align:center}
+.diffsc{font-weight:700;color:var(--warn)}
+.legend{display:flex;gap:16px;padding:11px 18px;background:#f8fafc;border-top:1px solid var(--line);font-size:11px;color:var(--mute);flex-wrap:wrap}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-deep);color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(13,33,64,.3);z-index:200;opacity:0;transition:.25s;border-left:3px solid var(--gold)}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+@media print{ .toolbar,.drop,.files header .btn{display:none !important} main{padding:0} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="en">AI FES 2026 / DEBUT LIVE</span>
+    <span class="jp">デビューライブ 受賞突合ツール（事務局用）</span>
+  </div>
+  <div class="hstat">
+    <div class="item"><span class="k">読み込み人数</span><span class="v" id="hFiles">0<small> 名</small></span></div>
+    <div class="item"><span class="k">一致</span><span class="v" id="hOk">0<small> / 6</small></span></div>
+    <div class="item"><span class="k">要確認</span><span class="v" id="hBad">0<small> 件</small></span></div>
+    <div class="item"><span class="k">スコア不一致</span><span class="v" id="hScoreMismatch">0<small> 件</small></span></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn" id="btnAdd">作業者のExcelを追加</button>
+  <input type="file" id="fileIn" accept=".xlsx,.xlsm" multiple hidden>
+  <span class="sep"></span>
+  <button class="btn" id="btnCheck">確定チェック</button>
+  <button class="btn-gold" id="btnXLS">最終版Excelを書き出す</button>
+  <button class="btn" id="btnPrint">印刷 / PDF</button>
+  <button class="btn" id="btnClear">全部消す</button>
+  <span class="hint">受賞選定ツールで各作業者が書き出したExcelを2本以上まとめてドロップしてください。同じ順位で違う作品が選ばれている箇所を確認し、最終版を1本にまとめます。</span>
+</div>
+
+<main>
+  <div class="drop" id="drop">
+    <b>ここに作業者のExcel（受賞一覧）をドロップ</b>
+    <span>クリックして選択も可。2人分（複数可）まとめて読み込めます。</span>
+  </div>
+  <div class="files" id="files"></div>
+  <div id="out"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>__SHEETJS__</script>
+<script>
+const AWARD_SLOTS = 6;
+let FILES = [];          // {name, staffName, month, awards:{slot:{code,who,workLink,rubricTotal,likesRaw,likeBonus,htmlBonus,finalScore,reason,comment}}, allScores:{code:finalScore}}
+let decisions = {};      // slot -> {code, who, workLink, rubricTotal, likesRaw, likeBonus, htmlBonus, finalScore, reason, comment}
+
+function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
+function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+let tt;
+function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3200); }
+
+/* ---------- 取り込み ---------- */
+function findSheet(wb, requiredHeads, excludeHeads){
+  for(const name of wb.SheetNames){
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
+    if(!rows.length) continue;
+    const head = rows[0].map(x=>String(x).trim());
+    if(!requiredHeads.every(h=>head.includes(h))) continue;
+    if(excludeHeads && excludeHeads.some(h=>head.includes(h))) continue;
+    return {name, rows, head};
+  }
+  return null;
+}
+function readFile(file){
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
+      const awardSheet = findSheet(wb, ['EntryCode','受賞順位']);
+      if(!awardSheet){ toast(`${file.name}：受賞一覧シートが見つかりません`); return; }
+      const h = awardSheet.head;
+      const col = n => h.indexOf(n);
+      const g = (row,n) => { const i = col(n); return i>=0 ? String(row[i]??'').trim() : ''; };
+      const awards = {};
+      let staffName = '', month = '';
+      awardSheet.rows.slice(1).forEach(row=>{
+        const code = g(row,'EntryCode'); if(!code) return;
+        const slot = +g(row,'受賞順位'); if(!slot) return;
+        if(!staffName) staffName = g(row,'作業者');
+        if(!month) month = g(row,'対象月');
+        awards[slot] = {
+          code, who: g(row,'応募者・部署'), workLink: g(row,'作品リンク'),
+          rubricTotal: num(g(row,'ルーブリック合計')), likesRaw: num(g(row,'いいね（もらう）')),
+          likeBonus: num(g(row,'いいね加点')), htmlBonus: num(g(row,'HTML加点')),
+          finalScore: num(g(row,'最終スコア')), reason: g(row,'受賞理由'), comment: g(row,'講評コメント'),
+        };
+      });
+      if(!Object.keys(awards).length){ toast(`${file.name}：受賞データが見つかりません`); return; }
+      if(!staffName) staffName = file.name.replace(/\.(xlsx|xlsm)$/i,'');
+      // 全エントリー（スコア突合用・任意）
+      const allSheet = findSheet(wb, ['EntryCode','最終スコア'], ['受賞順位']);
+      const allScores = {};
+      if(allSheet){
+        const h2 = allSheet.head; const c2 = n=>h2.indexOf(n);
+        allSheet.rows.slice(1).forEach(row=>{
+          const code = String(row[c2('EntryCode')]??'').trim(); if(!code) return;
+          const sc = num(row[c2('最終スコア')]);
+          if(sc !== null) allScores[code] = sc;
+        });
+      }
+      FILES = FILES.filter(f=>f.name !== file.name);
+      FILES.push({name:file.name, staffName, month, awards, allScores});
+      render();
+      toast(`${file.name}：${staffName}さんの受賞${Object.keys(awards).length}件を読み込みました`);
+    }catch(err){ toast(`${file.name} を開けませんでした`); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+
+/* ---------- 突合ロジック ---------- */
+function slotGroups(slot){
+  const cands = FILES.map(f=>({file:f, a:f.awards[slot]})).filter(x=>x.a);
+  const groups = {};
+  cands.forEach(({file,a})=>{
+    if(!groups[a.code]) groups[a.code] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
+      likesRaw:a.likesRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore, reasons:[], staff:[]};
+    groups[a.code].staff.push(file.staffName);
+    groups[a.code].reasons.push({staff:file.staffName, reason:a.reason, comment:a.comment});
+  });
+  return Object.values(groups);
+}
+function scoreMismatches(){
+  const byCode = {};
+  FILES.forEach(f=>{
+    Object.entries(f.allScores||{}).forEach(([code,sc])=>{
+      (byCode[code] = byCode[code]||[]).push({staff:f.staffName, score:sc});
+    });
+  });
+  const out = [];
+  Object.entries(byCode).forEach(([code,list])=>{
+    const uniq = [...new Set(list.map(x=>x.score))];
+    if(uniq.length > 1) out.push({code, list});
+  });
+  return out;
+}
+function ensureDecision(slot){
+  const groups = slotGroups(slot);
+  if(!groups.length) return;
+  if(!decisions[slot] && groups.length === 1){
+    const g0 = groups[0];
+    decisions[slot] = {code:g0.code, who:g0.who, workLink:g0.workLink, rubricTotal:g0.rubricTotal,
+      likesRaw:g0.likesRaw, likeBonus:g0.likeBonus, htmlBonus:g0.htmlBonus, finalScore:g0.finalScore,
+      reason:g0.reasons[0].reason, comment:g0.reasons[0].comment};
+  }
+}
+function autoResolveAll(){ for(let s=1;s<=AWARD_SLOTS;s++) ensureDecision(s); }
+
+/* ---------- 描画 ---------- */
+function render(){
+  autoResolveAll();
+  document.getElementById('files').innerHTML = FILES.map((f,i)=>
+    `<div class="fchip"><b>${esc(f.staffName)}</b><span class="cnt">${esc(f.month||'対象月不明')} ・ 受賞${Object.keys(f.awards).length}件</span><button data-x="${i}">×</button></div>`
+  ).join('');
+  document.getElementById('files').querySelectorAll('[data-x]').forEach(b=>{
+    b.onclick = () => { FILES.splice(+b.dataset.x,1); render(); };
+  });
+
+  const out = document.getElementById('out');
+  if(!FILES.length){ out.innerHTML=''; updateHeader(); return; }
+
+  const months = [...new Set(FILES.map(f=>f.month).filter(Boolean))];
+  let html = '';
+  if(months.length > 1){
+    html += `<div class="warnbar">読み込んだファイルの対象月が一致していません（${months.map(esc).join(' / ')}）。同じ月のファイルどうしか突合しないでください。</div>`;
+  }
+
+  html += `<div class="panel"><h2>受賞候補 ${AWARD_SLOTS}件の突合 <span>順位ごとに全員の選出結果を比較します</span></h2>`;
+  for(let slot=1; slot<=AWARD_SLOTS; slot++){
+    const groups = slotGroups(slot);
+    const status = !groups.length ? 'empty2' : (groups.length===1 ? 'ok' : 'bad');
+    const statusLabel = !groups.length ? '未入力' : (groups.length===1 ? '一致' : `不一致（${groups.length}件の候補）`);
+    html += `<div class="slot-card"><div class="slot-top">
+      <span class="slot-rk">${slot}位</span>
+      <span class="slot-status ${status}">${statusLabel}</span>
+    </div><div class="slot-body">`;
+    if(!groups.length){
+      html += `<div class="empty" style="padding:10px 0">どの作業者もこの順位を選んでいません</div>`;
+    }else{
+      const dec = decisions[slot];
+      groups.forEach(g=>{
+        const chosen = dec && dec.code === g.code;
+        html += `<div class="cand ${chosen?'chosen':''}">
+          <input type="radio" name="slot${slot}" value="${esc(g.code)}" ${chosen?'checked':''} data-slot="${slot}" data-pick>
+          <div class="ci">
+            <b>${esc(g.code)}</b> <span class="who">${esc(g.who)}</span>
+            <div class="sc">ルーブリック <b>${g.rubricTotal ?? '—'}</b> ／ いいね加点 <b>+${g.likeBonus ?? 0}</b> ／ HTML加点 <b>+${g.htmlBonus ?? 0}</b> ／ 最終 <b>${g.finalScore ?? '—'}</b></div>
+            <div class="who-tags">${g.staff.map(s=>`<span class="wtag">${esc(s)}</span>`).join('')}</div>
+          </div>
+        </div>`;
+      });
+      html += `<div class="manual-row">
+        <span style="font-size:11.5px;color:var(--mute);white-space:nowrap">候補にない作品を手動指定</span>
+        <select data-manual="${slot}"><option value="">（選択しない）</option>${
+          [...new Set(FILES.flatMap(f=>Object.values(f.awards)))].filter((v,i,a)=>a.findIndex(x=>x.code===v.code)===i)
+            .map(a=>`<option value="${esc(a.code)}" ${dec&&dec.code===a.code&&!groups.some(g=>g.code===a.code)?'selected':''}>${esc(a.code)} ${esc(a.who)}</option>`).join('')
+        }</select>
+      </div>`;
+      if(dec){
+        const allReasons = groups.find(g=>g.code===dec.code)?.reasons || [];
+        html += `<div class="fields">
+          <div class="fl"><label>受賞理由（最終版）</label><textarea data-field="reason" data-slot="${slot}">${esc(dec.reason)}</textarea>
+            <div class="quickfill">${allReasons.filter(r=>r.reason).map(r=>`<span class="qf-btn" data-slot="${slot}" data-field="reason" data-text="${esc(r.reason)}">${esc(r.staff)}の文言</span>`).join('')}</div>
+          </div>
+          <div class="fl"><label>講評コメント（最終版）</label><textarea data-field="comment" data-slot="${slot}">${esc(dec.comment)}</textarea>
+            <div class="quickfill">${allReasons.filter(r=>r.comment).map(r=>`<span class="qf-btn" data-slot="${slot}" data-field="comment" data-text="${esc(r.comment)}">${esc(r.staff)}の文言</span>`).join('')}</div>
+          </div>
+        </div>`;
+      }
+    }
+    html += `</div></div>`;
+  }
+  html += `<div class="legend"><span><b>不一致</b>＝同じ順位で作業者ごとに違う作品が選ばれています。ラジオボタンでどちらを採用するか選んでください</span></div></div>`;
+
+  const mism = scoreMismatches();
+  html += `<div class="panel"><h2>スコア不一致チェック <span>「全エントリー」シートを比較し、同じ作品でスコアが違う場合に検出します（マスターExcelの版違いの可能性）</span></h2>`;
+  if(!mism.length){
+    html += `<div class="empty">不一致はありません（比較対象データがない場合も含む）</div>`;
+  }else{
+    html += `<table><thead><tr><th>EntryCode</th><th>作業者ごとの最終スコア</th></tr></thead><tbody>` +
+      mism.map(m=>`<tr><td><b>${esc(m.code)}</b></td><td>${m.list.map(x=>`<span class="diffsc">${esc(x.staff)}: ${x.score}</span>`).join(' ／ ')}</td></tr>`).join('') +
+      `</tbody></table>`;
+  }
+  html += `</div>`;
+
+  out.innerHTML = html;
+  wire();
+  updateHeader();
+}
+function updateHeader(){
+  document.getElementById('hFiles').innerHTML = FILES.length + '<small> 名</small>';
+  let okCount = 0, badCount = 0;
+  for(let s=1; s<=AWARD_SLOTS; s++){
+    const groups = slotGroups(s);
+    if(groups.length === 1) okCount++;
+    else if(groups.length > 1) badCount++;
+  }
+  document.getElementById('hOk').innerHTML = okCount + '<small> / ' + AWARD_SLOTS + '</small>';
+  const hBad = document.getElementById('hBad');
+  hBad.innerHTML = badCount + '<small> 件</small>';
+  hBad.className = 'v' + (badCount ? ' warn' : '');
+  const mismCount = scoreMismatches().length;
+  const hSm = document.getElementById('hScoreMismatch');
+  hSm.innerHTML = mismCount + '<small> 件</small>';
+  hSm.className = 'v' + (mismCount ? ' warn' : '');
+}
+function wire(){
+  document.querySelectorAll('[data-pick]').forEach(r=>{
+    r.onchange = () => {
+      const slot = +r.dataset.slot;
+      const g = slotGroups(slot).find(x=>x.code===r.value);
+      if(!g) return;
+      decisions[slot] = {code:g.code, who:g.who, workLink:g.workLink, rubricTotal:g.rubricTotal,
+        likesRaw:g.likesRaw, likeBonus:g.likeBonus, htmlBonus:g.htmlBonus, finalScore:g.finalScore,
+        reason:g.reasons[0].reason, comment:g.reasons[0].comment};
+      render();
+    };
+  });
+  document.querySelectorAll('[data-manual]').forEach(sel=>{
+    sel.onchange = () => {
+      const slot = +sel.dataset.manual;
+      if(!sel.value){ return; }
+      const a = FILES.flatMap(f=>Object.values(f.awards)).find(x=>x.code===sel.value);
+      if(!a) return;
+      decisions[slot] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
+        likesRaw:a.likesRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore,
+        reason:a.reason, comment:a.comment};
+      render();
+    };
+  });
+  document.querySelectorAll('textarea[data-field]').forEach(ta=>{
+    ta.oninput = () => {
+      const slot = +ta.dataset.slot;
+      if(!decisions[slot]) return;
+      decisions[slot][ta.dataset.field] = ta.value;
+    };
+  });
+  document.querySelectorAll('.qf-btn').forEach(b=>{
+    b.onclick = () => {
+      const slot = +b.dataset.slot;
+      if(!decisions[slot]) return;
+      decisions[slot][b.dataset.field] = b.dataset.text;
+      render();
+    };
+  });
+}
+
+/* ---------- 確定チェック ---------- */
+function runCheck(){
+  const issues = [];
+  if(!FILES.length) issues.push('ファイルが読み込まれていません');
+  for(let s=1; s<=AWARD_SLOTS; s++){
+    const groups = slotGroups(s);
+    if(!groups.length){ issues.push(`${s}位：誰も選んでいません`); continue; }
+    if(!decisions[s]) issues.push(`${s}位：不一致のため採用する候補を選んでください`);
+  }
+  const mism = scoreMismatches();
+  if(mism.length) issues.push(`スコアが一致しない作品が${mism.length}件あります（マスターExcelの版を確認してください）`);
+  toast(issues.length ? issues[0] + (issues.length>1?` 他${issues.length-1}件`:'') : 'すべて確定しています');
+  return issues;
+}
+
+/* ---------- 書き出し ---------- */
+function exportXLSX(){
+  if(!FILES.length){ toast('ファイルを読み込んでください'); return; }
+  const month = [...new Set(FILES.map(f=>f.month).filter(Boolean))][0] || '';
+  const rows = [['対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
+  for(let s=1; s<=AWARD_SLOTS; s++){
+    const d = decisions[s]; if(!d) continue;
+    rows.push([month, s, d.code, d.who, d.workLink, d.rubricTotal ?? '', d.likesRaw ?? '', d.likeBonus ?? '', d.htmlBonus ?? '', d.finalScore ?? '', d.reason||'', d.comment||'']);
+  }
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:9},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
+  ws['!freeze'] = {xSplit:'0', ySplit:'1'};
+  XLSX.utils.book_append_sheet(wb, ws, '受賞一覧');
+  XLSX.writeFile(wb, `デビューライブ_受賞一覧_確定版_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
+  toast('確定版Excelを書き出しました');
+}
+
+/* ---------- wiring ---------- */
+const drop = document.getElementById('drop');
+drop.onclick = () => document.getElementById('fileIn').click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('on'); };
+drop.ondragleave = () => drop.classList.remove('on');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); [...e.dataTransfer.files].forEach(readFile); };
+document.getElementById('btnAdd').onclick = () => document.getElementById('fileIn').click();
+document.getElementById('fileIn').onchange = e => { [...e.target.files].forEach(readFile); e.target.value=''; };
+document.getElementById('btnCheck').onclick = runCheck;
+document.getElementById('btnXLS').onclick = exportXLSX;
+document.getElementById('btnPrint').onclick = () => window.print();
+document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと突合結果を全て消します。よろしいですか？')){ FILES=[]; decisions={}; render(); } };
+render();
+</script>
+</body>
+</html>

@@ -139,6 +139,10 @@ td.ttl span{font-size:10.5px;color:var(--mute)}
     <div class="item"><span class="k">資料欠損</span><span class="v" id="hGap">0<small> 件</small></span></div>
   </div>
   <div class="month">
+    <label>作業者名</label>
+    <input type="text" id="staffName" placeholder="例）田中">
+  </div>
+  <div class="month">
     <label>対象月</label>
     <input type="text" id="targetMonth" placeholder="例）2026年7月">
   </div>
@@ -155,7 +159,7 @@ td.ttl span{font-size:10.5px;color:var(--mute)}
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">最終スコア＝ルーブリック100点＋いいね加点(上限+25)＋HTML加点(上限+10)。上位6件が自動で受賞候補になります。順位は手動でも変更できます。</span>
+  <span class="hint">最終スコア＝ルーブリック100点＋いいね加点(上限+25)＋HTML加点(上限+10)。上位6件が自動で受賞候補になります。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -196,6 +200,7 @@ let PAST_FILES = [];              // {name, month, names:Set}
 let ranks = {};                   // code -> 1..6 (手動割当を含む現在の受賞順位)
 let notes = {};                   // code -> {reason, comment}
 let targetMonth = '';
+let staffName = '';
 
 /* ---------- ユーティリティ ---------- */
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -375,9 +380,9 @@ function setRank(code, slot){
 }
 
 /* ---------- 保存 / 復元 ---------- */
-function stateKey(){ return STORE_PREFIX + (targetMonth || '__untitled__'); }
+function stateKey(){ return STORE_PREFIX + (staffName || '__anon__') + '::' + (targetMonth || '__untitled__'); }
 function saveState(){
-  const data = { targetMonth, ranks, notes, pastFiles: PAST_FILES.map(p=>({name:p.name, month:p.month, names:[...p.names]})) };
+  const data = { targetMonth, staffName, ranks, notes, pastFiles: PAST_FILES.map(p=>({name:p.name, month:p.month, names:[...p.names]})) };
   try{ localStorage.setItem(stateKey(), JSON.stringify(data)); }catch(e){}
 }
 function loadState(){
@@ -589,6 +594,7 @@ function wireTable(){
 /* ---------- 入力チェック ---------- */
 function runCheck(){
   const issues = [];
+  if(!staffName) issues.push({t:'err', m:'作業者名が入力されていません'});
   if(!targetMonth) issues.push({t:'err', m:'対象月が入力されていません'});
   if(!ENTRIES.length) issues.push({t:'err', m:'採点マスターExcelが読み込まれていません'});
   const filled = Object.keys(ranks).length;
@@ -611,11 +617,11 @@ function runCheck(){
 
 /* ---------- 書き出し ---------- */
 function awardRows(){
-  const rows = [['対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
+  const rows = [['作業者','対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
   for(let slot=1; slot<=AWARD_SLOTS; slot++){
     const e = slotEntry(slot); if(!e) continue;
     const n = notes[e.code] || {reason:'', comment:''};
-    rows.push([targetMonth, slot, e.code, e.who, e.workLink, e.rubricTotal, e.likesRaw, e.likeBonus, e.htmlBonus, e.finalScore, n.reason||'', n.comment||'']);
+    rows.push([staffName, targetMonth, slot, e.code, e.who, e.workLink, e.rubricTotal, e.likesRaw, e.likeBonus, e.htmlBonus, e.finalScore, n.reason||'', n.comment||'']);
   }
   return rows;
 }
@@ -632,19 +638,21 @@ function allRows(){
 function exportXLSX(){
   if(!ENTRIES.length){ toast('採点マスターExcelを読み込んでください'); return; }
   if(!targetMonth){ toast('対象月を入力してください'); return; }
+  if(!staffName){ toast('作業者名を入力してください'); return; }
   const wb = XLSX.utils.book_new();
   const ws1 = XLSX.utils.aoa_to_sheet(awardRows());
-  ws1['!cols'] = [{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:9},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
+  ws1['!cols'] = [{wch:10},{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:9},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
   ws1['!freeze'] = {xSplit:'0', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, ws1, '受賞一覧');
   const ws2 = XLSX.utils.aoa_to_sheet(allRows());
   ws2['!freeze'] = {xSplit:'0', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, ws2, '全エントリー');
-  XLSX.writeFile(wb, `デビューライブ_受賞一覧_${targetMonth.replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
-  toast('受賞一覧Excelを書き出しました（次月はこのファイルをそのまま除外リストとして読み込めます）');
+  XLSX.writeFile(wb, `デビューライブ_受賞一覧_${targetMonth.replace(/[^0-9a-zA-Z年月]/g,'')}_${staffName.replace(/[^0-9a-zA-Z一-龠ぁ-んァ-ヶー]/g,'')}_${stamp()}.xlsx`);
+  toast('受賞一覧Excelを書き出しました。もう1人の作業者のファイルと突合ツールで照合してください');
 }
 
 /* ---------- wiring ---------- */
+document.getElementById('staffName').oninput = e => { staffName = e.target.value; loadState(); render(); saveState(); };
 document.getElementById('targetMonth').oninput = e => { targetMonth = e.target.value; loadState(); render(); saveState(); };
 const drop = document.getElementById('drop');
 drop.onclick = () => document.getElementById('fileMaster').click();

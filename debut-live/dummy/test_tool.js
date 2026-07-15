@@ -17,6 +17,7 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   const filePath = 'file://' + path.resolve(__dirname, '../dist/AIFES2026_デビューライブ_受賞選定ツール.html');
   await page.goto(filePath);
 
+  await page.fill('#staffName', '田中');
   await page.fill('#targetMonth', '2026年7月');
   await page.setInputFiles('#fileMaster', path.resolve(__dirname, 'master_test.xlsx'));
   await page.waitForTimeout(1000);
