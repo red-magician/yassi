@@ -176,7 +176,7 @@ function readFile(file){
         if(!month) month = g(row,'対象月');
         awards[slot] = {
           code, who: g(row,'応募者・部署'), workLink: g(row,'作品リンク'),
-          rubricTotal: num(g(row,'ルーブリック合計')), likesRaw: num(g(row,'いいね（もらう）')),
+          rubricTotal: num(g(row,'ルーブリック合計')), likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
           likeBonus: num(g(row,'いいね加点')), htmlBonus: num(g(row,'HTML加点')),
           finalScore: num(g(row,'最終スコア')), reason: g(row,'受賞理由'), comment: g(row,'講評コメント'),
         };
@@ -209,7 +209,7 @@ function slotGroups(slot){
   const groups = {};
   cands.forEach(({file,a})=>{
     if(!groups[a.code]) groups[a.code] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
-      likesRaw:a.likesRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore, reasons:[], staff:[]};
+      likesRaw:a.likesRaw, likesGivenRaw:a.likesGivenRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore, reasons:[], staff:[]};
     groups[a.code].staff.push(file.staffName);
     groups[a.code].reasons.push({staff:file.staffName, reason:a.reason, comment:a.comment});
   });
@@ -235,7 +235,7 @@ function ensureDecision(slot){
   if(!decisions[slot] && groups.length === 1){
     const g0 = groups[0];
     decisions[slot] = {code:g0.code, who:g0.who, workLink:g0.workLink, rubricTotal:g0.rubricTotal,
-      likesRaw:g0.likesRaw, likeBonus:g0.likeBonus, htmlBonus:g0.htmlBonus, finalScore:g0.finalScore,
+      likesRaw:g0.likesRaw, likesGivenRaw:g0.likesGivenRaw, likeBonus:g0.likeBonus, htmlBonus:g0.htmlBonus, finalScore:g0.finalScore,
       reason:g0.reasons[0].reason, comment:g0.reasons[0].comment};
   }
 }
@@ -279,7 +279,7 @@ function render(){
           <input type="radio" name="slot${slot}" value="${esc(g.code)}" ${chosen?'checked':''} data-slot="${slot}" data-pick>
           <div class="ci">
             <b>${esc(g.code)}</b> <span class="who">${esc(g.who)}</span>
-            <div class="sc">ルーブリック <b>${g.rubricTotal ?? '—'}</b> ／ いいね加点 <b>+${g.likeBonus ?? 0}</b> ／ HTML加点 <b>+${g.htmlBonus ?? 0}</b> ／ 最終 <b>${g.finalScore ?? '—'}</b></div>
+            <div class="sc">ルーブリック <b>${g.rubricTotal ?? '—'}</b> ／ いいね加点 <b>+${g.likeBonus ?? 0}</b>（もらう${g.likesRaw ?? 0}／押す${g.likesGivenRaw ?? 0}） ／ HTML加点 <b>+${g.htmlBonus ?? 0}</b> ／ 最終 <b>${g.finalScore ?? '—'}</b></div>
             <div class="who-tags">${g.staff.map(s=>`<span class="wtag">${esc(s)}</span>`).join('')}</div>
           </div>
         </div>`;
@@ -346,7 +346,7 @@ function wire(){
       const g = slotGroups(slot).find(x=>x.code===r.value);
       if(!g) return;
       decisions[slot] = {code:g.code, who:g.who, workLink:g.workLink, rubricTotal:g.rubricTotal,
-        likesRaw:g.likesRaw, likeBonus:g.likeBonus, htmlBonus:g.htmlBonus, finalScore:g.finalScore,
+        likesRaw:g.likesRaw, likesGivenRaw:g.likesGivenRaw, likeBonus:g.likeBonus, htmlBonus:g.htmlBonus, finalScore:g.finalScore,
         reason:g.reasons[0].reason, comment:g.reasons[0].comment};
       render();
     };
@@ -358,7 +358,7 @@ function wire(){
       const a = FILES.flatMap(f=>Object.values(f.awards)).find(x=>x.code===sel.value);
       if(!a) return;
       decisions[slot] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
-        likesRaw:a.likesRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore,
+        likesRaw:a.likesRaw, likesGivenRaw:a.likesGivenRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore,
         reason:a.reason, comment:a.comment};
       render();
     };
@@ -399,14 +399,14 @@ function runCheck(){
 function exportXLSX(){
   if(!FILES.length){ toast('ファイルを読み込んでください'); return; }
   const month = [...new Set(FILES.map(f=>f.month).filter(Boolean))][0] || '';
-  const rows = [['対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
+  const rows = [['対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね（押す）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
   for(let s=1; s<=AWARD_SLOTS; s++){
     const d = decisions[s]; if(!d) continue;
-    rows.push([month, s, d.code, d.who, d.workLink, d.rubricTotal ?? '', d.likesRaw ?? '', d.likeBonus ?? '', d.htmlBonus ?? '', d.finalScore ?? '', d.reason||'', d.comment||'']);
+    rows.push([month, s, d.code, d.who, d.workLink, d.rubricTotal ?? '', d.likesRaw ?? '', d.likesGivenRaw ?? '', d.likeBonus ?? '', d.htmlBonus ?? '', d.finalScore ?? '', d.reason||'', d.comment||'']);
   }
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:9},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
+  ws['!cols'] = [{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
   ws['!freeze'] = {xSplit:'0', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, ws, '受賞一覧');
   XLSX.writeFile(wb, `デビューライブ_受賞一覧_確定版_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);

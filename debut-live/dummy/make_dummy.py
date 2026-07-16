@@ -5,7 +5,7 @@ random.seed(7)
 
 HEAD = ['EntryCode','GlobalEntryId','対象月','応募者・部署','作品リンク','ProcedureFileUrl',
         '観点①スコア','観点②スコア','観点③スコア','観点④スコア',
-        '作品ファイル形式','手順書ファイル形式','いいね（もらう）','AI講評']
+        '作品ファイル形式','手順書ファイル形式','いいね（もらう）','いいね（押す）','AI講評']
 
 names = ['山田太郎','佐藤花子','鈴木一郎','高橋美咲','田中健太','伊藤さくら','渡辺翔太','中村optimoptim',
          '小林あかり','加藤大輔','吉田陽菜','山本蓮','斎藤結衣','松本大和','井上美月']
@@ -23,12 +23,13 @@ for i, name in enumerate(names, start=1):
     axis = [random.choice([2,5,8,10]) for _ in range(4)]
     fmt_work = random.choice(fmts)
     fmt_proc = random.choice(fmts)
-    likes = random.choice([2,5,10,18,25,30,40])   # 25超えは上限テスト用
+    likes = random.choice([2,5,10,18,25,30,40])         # もらう。25超えは上限テスト用
+    likes_given = random.choice([0,3,8,13,15,20,34])    # 押す。15超えは上限テスト用
     has_work_link = i != 12   # 1件だけ資料欠損にする
     row = [code, f'GID-{i:05d}', '2026年7月', who,
            (f'https://example.com/works/{code}' if has_work_link else ''),
            f'https://example.com/proc/{code}',
-           *axis, fmt_work, fmt_proc, likes, f'{name}さんの体験談（AI生成ダミー講評）']
+           *axis, fmt_work, fmt_proc, likes, likes_given, f'{name}さんの体験談（AI生成ダミー講評）']
     ws.append(row)
 
 master_jp = os.path.join(HERE, 'ダミー_採点マスター_デビューライブ_7月.xlsx')

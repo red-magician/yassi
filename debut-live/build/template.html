@@ -168,7 +168,7 @@ tr.unscored .score-inp{background:#fff}
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック100点＋いいね加点(上限+25)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
+  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック100点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -201,6 +201,8 @@ tr.unscored .score-inp{background:#fff}
 <script>__SHEETJS__</script>
 <script>
 const LIKE_CAP = 25;        // いいね（もらう）加点の上限
+const GIVE_CAP = 15;        // いいね（押す）加点の上限
+const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう25＋押す15＝40）
 const HTML_BONUS_EACH = 5;  // 作品/手順書 それぞれのHTML加点
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
 const STORE_PREFIX = 'debutLiveTool_v1::';
@@ -286,6 +288,7 @@ const ENTRY_COLS = {
   fmtWork: ['作品ファイル形式','提出形式（作品）','提出形式 (作品)'],
   fmtProc: ['手順書ファイル形式','提出形式（手順書）','提出形式 (手順書)'],
   likes: ['いいね（もらう）','LikesReceived（もらう）','いいね数（もらう）'],
+  likesGiven: ['いいね（押す）','LikesGiven（押す）','いいね数（押す）'],
   month: ['対象月','PeriodKey'],
 };
 const SCORE_COLS = {
@@ -334,7 +337,7 @@ function tryCombinedSheet(wb){
     const fmtProc = fmtLabel(procLink, g(row,'fmtProc'));
     out.push(buildEntry({code, gid:g(row,'gid'), who, submitterKey:g(row,'submitterKey'),
       workLink, procLink, fmtWork, fmtProc, axis, rubricTotal, hasScore,
-      likesRaw:num(g(row,'likes')), aiComment:g(row,'aiComment'), month:g(row,'month')}));
+      likesRaw:num(g(row,'likes')), likesGivenRaw:num(g(row,'likesGiven')), aiComment:g(row,'aiComment'), month:g(row,'month')}));
   });
   return out;
 }
@@ -397,14 +400,17 @@ function tryJoinedSheets(wb){
     const fmtProc = fmtLabel(procLink, eg(row,'fmtProc'));
     out.push(buildEntry({code, gid:eg(row,'gid'), who, submitterKey:eg(row,'submitterKey'),
       workLink, procLink, fmtWork, fmtProc, axis, rubricTotal, hasScore,
-      likesRaw:num(eg(row,'likes')), aiComment: s ? s.aiComment : '', month:eg(row,'month')}));
+      likesRaw:num(eg(row,'likes')), likesGivenRaw:num(eg(row,'likesGiven')), aiComment: s ? s.aiComment : '', month:eg(row,'month')}));
   });
   return {entries: out, scoreSheetFound: !!scoreSheet};
 }
 function buildEntry(d){
   const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS_EACH : 0;
   const bonusProc = d.fmtProc === 'HTML' ? HTML_BONUS_EACH : 0;
-  const likeBonus = Math.min(d.likesRaw, LIKE_CAP);
+  const likesGivenRaw = d.likesGivenRaw || 0;
+  const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点（上限25）
+  const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点（上限15）
+  const likeBonus = recvBonus + giveBonus;                // いいね加点合計（上限40）
   const gap = !d.workLink;                                    // 作品リンクが無い＝提出物欠損
   // ルーブリック点数はスタッフが画面で編集できる。マスターにAI採点があれば初期値として使う（aiAxis）
   const aiAxis = d.hasScore ? d.axis.slice() : [null,null,null,null];
@@ -416,7 +422,7 @@ function buildEntry(d){
     // 以下は recomputeScores() が scores（スタッフ入力）＋aiAxis から都度計算する
     axis: aiAxis.slice(), rubricRaw: null, rubricTotal: null, hasScore: false, scoreSource: '', finalScore: null,
     fmtWork: d.fmtWork, fmtProc: d.fmtProc, bonusWork, bonusProc, htmlBonus: bonusWork+bonusProc,
-    likesRaw: d.likesRaw, likeBonus, aiComment: d.aiComment, month: d.month,
+    likesRaw: d.likesRaw, likesGivenRaw, recvBonus, giveBonus, likeBonus, aiComment: d.aiComment, month: d.month,
     gap,
   };
 }
@@ -726,7 +732,7 @@ function renderAwardPanel(){
         <div class="ainfo"><b>${esc(e.code)}</b><span>${esc(e.who)}${e.dept?'':''}</span></div>
         <div class="ascore">
           <span>ルーブリック <b>${e.rubricTotal}</b></span>
-          <span>いいね <b>${e.likesRaw}</b>（加点+${e.likeBonus}）</span>
+          <span>いいね もらう<b>${e.likesRaw}</b>／押す<b>${e.likesGivenRaw}</b>（加点+${e.likeBonus} = もらう+${e.recvBonus}／押す+${e.giveBonus}）</span>
           <span>HTML加点 <b>+${e.htmlBonus}</b></span>
           <span>最終 <b style="color:var(--navy);font-size:14px">${e.finalScore}</b></span>
         </div>
@@ -781,8 +787,8 @@ function renderTable(excl){
       <th class="n sci" title="③ 業務での変化（25%）">③</th>
       <th class="n sci" title="④ 共感・再現性（25%）">④</th>
       <th class="n" title="観点①〜④を100点満点に換算した合計">ルーブリック<br><span class="sub">/100</span></th>
-      <th class="n">いいね<br><span class="sub">もらう</span></th>
-      <th class="n">いいね加点<br><span class="sub">上限+${LIKE_CAP}</span></th>
+      <th class="n">いいね<br><span class="sub">もらう／押す</span></th>
+      <th class="n">いいね加点<br><span class="sub">上限+${LIKE_TOTAL_CAP}</span></th>
       <th class="n">HTML加点<br><span class="sub">上限+10</span></th>
       <th class="n">最終スコア</th>
       <th>状態</th>
@@ -807,8 +813,8 @@ function renderTable(excl){
       <td class="ttl"><b>${esc(e.code)}</b><span>${esc(e.who)}</span></td>
       ${scoreCell(e,0)}${scoreCell(e,1)}${scoreCell(e,2)}${scoreCell(e,3)}
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
-      <td class="n"><span class="likepill">♥ ${e.likesRaw}</span></td>
-      <td class="n">${fmtBonus(e.likeBonus, LIKE_CAP)}</td>
+      <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
+      <td class="n" title="${esc(`もらう +${e.recvBonus}／押す +${e.giveBonus}`)}">${fmtBonus(e.likeBonus, LIKE_TOTAL_CAP)}</td>
       <td class="n" title="${esc(`作品 ${e.fmtWork||'—'} → +${e.bonusWork}\n手順書 ${e.fmtProc||'—'} → +${e.bonusProc}`)}">${fmtBonus(e.htmlBonus, 10)}</td>
       <td class="n" id="fin-${esc(e.code)}"><span class="sc final ${e.hasScore?'':'na'}">${e.hasScore ? e.finalScore : '—'}</span></td>
       <td>${badges}</td>
@@ -908,20 +914,20 @@ function runCheck(){
 /* ---------- 書き出し ---------- */
 function axVal(e, i){ return e.hasScore ? e.axis[i] : ''; }
 function awardRows(){
-  const rows = [['作業者','対象月','受賞順位','EntryCode','応募者・部署','作品リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね加点','HTML加点','最終スコア','採点方法','受賞理由','講評コメント']];
+  const rows = [['作業者','対象月','受賞順位','EntryCode','応募者・部署','作品リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','HTML加点','最終スコア','採点方法','受賞理由','講評コメント']];
   for(let slot=1; slot<=AWARD_SLOTS; slot++){
     const e = slotEntry(slot); if(!e) continue;
     const n = notes[e.code] || {reason:'', comment:''};
-    rows.push([staffName, targetMonth, slot, e.code, e.who, e.workLink, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal, e.likesRaw, e.likeBonus, e.htmlBonus, e.finalScore, e.scoreSource||'', n.reason||'', n.comment||'']);
+    rows.push([staffName, targetMonth, slot, e.code, e.who, e.workLink, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal, e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus, e.htmlBonus, e.finalScore, e.scoreSource||'', n.reason||'', n.comment||'']);
   }
   return rows;
 }
 function allRows(){
   const excl = excludedMap();
-  const head = ['対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','自動/手動順位','未採点','資料欠損','受賞済み(他月)'];
+  const head = ['対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','自動/手動順位','未採点','資料欠損','受賞済み(他月)'];
   const rows = [head];
   ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1)).forEach(e=>{
-    rows.push([targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likeBonus,
+    rows.push([targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
       e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', rankOf(e.code) || '', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'']);
   });
   return rows;
@@ -932,7 +938,7 @@ function exportXLSX(){
   if(!staffName){ toast('作業者名を入力してください'); return; }
   const wb = XLSX.utils.book_new();
   const ws1 = XLSX.utils.aoa_to_sheet(awardRows());
-  ws1['!cols'] = [{wch:10},{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:7},{wch:7},{wch:7},{wch:7},{wch:11},{wch:11},{wch:9},{wch:9},{wch:9},{wch:8},{wch:44},{wch:44}];
+  ws1['!cols'] = [{wch:10},{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:7},{wch:7},{wch:7},{wch:7},{wch:11},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:9},{wch:9},{wch:8},{wch:44},{wch:44}];
   ws1['!freeze'] = {xSplit:'0', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, ws1, '受賞一覧');
   const ws2 = XLSX.utils.aoa_to_sheet(allRows());

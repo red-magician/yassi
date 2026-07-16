@@ -26,8 +26,11 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   ok((await page.textContent('#hAwards')).includes('6'), '受賞候補が自動的に6件選出される');
   ok((await page.textContent('#hGap')).includes('1'), '資料欠損1件が検出される（作品リンク未提出）');
 
-  const topCard = await page.locator('.acard[data-code]').first().locator('.ainfo b').innerText();
-  ok(topCard === 'DEBUT-2026-0013', `最終スコア1位はDEBUT-2026-0013のはず（実際: ${topCard}）`);
+  // 受賞候補カードは最終スコアの降順で並ぶ（ダミー値の変更に強いよう、特定コードではなく順序不変性を検証）
+  const cardScores = await page.locator('.acard[data-code]').evaluateAll(cards =>
+    cards.map(c => { const m = c.textContent.match(/最終\s*([\d.]+)/); return m ? Number(m[1]) : NaN; }));
+  ok(cardScores.length === 6 && cardScores.every(n => !isNaN(n)), `受賞候補6件の最終スコアが読める（実際: ${JSON.stringify(cardScores)}）`);
+  ok(cardScores.every((v,i)=> i===0 || cardScores[i-1] >= v), `受賞候補カードが最終スコア降順で並ぶ（実際: ${JSON.stringify(cardScores)}）`);
 
   // 過去の受賞者Excel（6月）を読み込み、山田太郎・佐藤花子を除外
   await page.setInputFiles('#filePast', path.resolve(__dirname, 'past_test.xlsx'));

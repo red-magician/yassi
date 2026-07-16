@@ -16,25 +16,26 @@ ws16 = wb.active
 ws16.title = '16_デビュー抽出'
 ws16.append(['EntryIndex_RowNo','EntryCode','GlobalEntryId','CompetitionKey','PeriodKey','SubmitterDisplayName',
              'SubmitterEmail','SubmitterUserKey','Department','タイトル','Status','IsHidden',
-             'PrimaryFileUrl','ProcedureFileUrl','LikesReceived（もらう）'])
+             'PrimaryFileUrl','ProcedureFileUrl','LikesReceived（もらう）','LikesGiven（押す）'])
 
 rows = []
 for i, (name, dept) in enumerate(names, start=1):
     code = f'DEBUT-2026-{i:06d}'
     ukey = f'entra-{i:04d}'
-    likes = random.choice([3,8,15,22,28,35,45])
+    likes = random.choice([3,8,15,22,28,35,45])       # もらう（25超えは上限テスト用）
+    likes_given = random.choice([0,4,13,15,20,34])    # 押す（15超えは上限テスト用・投稿者単位）
     url_ext = 'html' if i != 5 else 'md'   # 1件だけmd
     url = f'https://example.com/DebutSubmissions/entry-{i}.{url_ext}'
     proc = f'https://example.com/DebutSubmissions/entry-{i}-proc.html' if i == 3 else None   # 1件だけ手順書あり
     hidden = 'True' if i == 15 else 'False'   # 1件だけ非公開（除外されるべき）
     rows.append([i, code, f'hackathon-debut-item-{i}', 'debut', 'debut-cool2', name, f'{name.lower()}@example.com',
-                 ukey, dept, f'デビュー投稿{i}', 'Published', hidden, url, proc, likes])
+                 ukey, dept, f'デビュー投稿{i}', 'Published', hidden, url, proc, likes, likes_given])
 for r in rows: ws16.append(r)
 
 # 別競技（solo）の行も混ぜて、CompetitionKeyフィルタが効くか確認できるようにする
 ws16.append([99, 'SOLO-2026-000099', 'hackathon-solo-item-99', 'solo', 'cool1', 'Other, Person',
              'other@example.com', 'entra-9999', '他本部', 'ソロ投稿', 'Published', 'False',
-             'https://example.com/solo-99.html', None, 5])
+             'https://example.com/solo-99.html', None, 5, 5])
 
 ws02 = wb.create_sheet('02_採点結果台帳')
 ws02.append(['EntryCode','GlobalEntryId','CompetitionKey','PeriodKey','AgentKey（採点主体）',
