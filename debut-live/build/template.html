@@ -101,6 +101,15 @@ td.cmt textarea.row-comment:focus{outline:2px solid var(--gold);border-color:var
 button.rowprompt{display:inline-block;margin-top:4px;padding:2px 8px;font-size:10.5px;font-weight:700;color:var(--navy);background:#eef2ff;border:1px solid #c7d2fe;border-radius:5px;cursor:pointer}
 button.rowprompt:hover{background:#e0e7ff}
 button.rowprompt.copied{background:var(--gold);border-color:var(--gold)}
+td.ttl b.codelink{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
+td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border-radius:3px}
+#cpFloat{position:fixed;z-index:60;display:none;width:344px;max-width:calc(100vw - 24px);background:#fff;border:2px solid var(--navy);border-radius:10px;box-shadow:0 12px 34px rgba(20,30,60,.28);padding:12px}
+#cpFloat.on{display:block}
+#cpFloat h4{margin:0 0 5px;font-size:13px;color:var(--navy)}
+#cpFloat .fsub{font-size:11px;color:#7a869a;line-height:1.5;margin-bottom:8px}
+#cpFloat textarea{width:100%;height:120px;font-family:monospace;font-size:11px;padding:8px;border:1.5px solid #cbd5e1;border-radius:7px;box-sizing:border-box;resize:vertical}
+#cpFloat #cpFloatMsg{font-size:11.5px;font-weight:700;min-height:15px;margin-top:6px;color:var(--navy)}
+#cpFloat .frow{display:flex;gap:8px;margin-top:8px;justify-content:flex-end}
 .rk-sel{font-size:12px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:#fff}
 .rk-sel.on{background:var(--gold);border-color:var(--gold-dim);font-weight:700}
 .bonus{font-size:9.5px;font-weight:700;margin-top:2px;border-radius:99px;padding:1px 6px;display:inline-block;white-space:nowrap}
@@ -196,6 +205,17 @@ button.rowprompt.copied{background:var(--gold);border-color:var(--gold)}
 </main>
 
 <div class="toast" id="toast"></div>
+
+<div id="cpFloat">
+  <h4 id="cpFloatTitle">採点を登録</h4>
+  <div class="fsub">この作品の <code>===SCORE===</code> ブロックを貼り付けて「登録」すると、点数・受賞理由・講評が入ります。</div>
+  <textarea id="cpFloatText" placeholder="===SCORE=== … ===END=== を貼り付け"></textarea>
+  <div id="cpFloatMsg"></div>
+  <div class="frow">
+    <button class="btn" id="cpFloatClose">閉じる</button>
+    <button class="btn-gold" id="cpFloatApply">登録</button>
+  </div>
+</div>
 
 <div class="modal" id="checkModal">
   <div class="mbox">
@@ -536,6 +556,38 @@ function applyCopilot(text){
   if(scored){ recomputeScores(); autoRank(); }
   return {parsed: parsed.length, scored, cmt, rsn, unmatched};
 }
+// 1件だけ登録：貼り付けたブロックを指定の作品に反映（コード一致を優先、無ければ最初のブロック）
+function applyOneToCode(code, text){
+  const e = ENTRIES.find(x=>x.code===code); if(!e) return {ok:false};
+  const parsed = parseCopilotScores(text);
+  if(!parsed.length) return {ok:false, noblock:true};
+  const p = parsed.find(x=>x.code===code) || parsed[0];
+  if(!scores[code]) scores[code] = ['','','',''];
+  let any = false;
+  p.scores.forEach((v,i)=>{ if(i<RUBRIC.length && v!=='' && v!=null){ scores[code][i] = String(Math.max(0, Math.min(rubMax(i), Math.round(Number(v)||0)))); any = true; } });
+  if(p.comment || p.reason){ notes[code] = notes[code] || {reason:'', comment:''}; if(p.comment) notes[code].comment = p.comment; if(p.reason) notes[code].reason = p.reason; }
+  if(any) recomputeScores();
+  autoRank();
+  return {ok: any || !!p.comment || !!p.reason, mismatch: p.code && p.code!==code, blockCode: p.code, hasScore: any, hasComment: !!p.comment, hasReason: !!p.reason};
+}
+let cpFloatCode = '';
+function openFloat(code, targetEl){
+  cpFloatCode = code;
+  const f = document.getElementById('cpFloat');
+  document.getElementById('cpFloatTitle').textContent = code + ' の採点を登録';
+  document.getElementById('cpFloatText').value = '';
+  document.getElementById('cpFloatMsg').textContent = '';
+  f.classList.add('on');
+  const r = targetEl.getBoundingClientRect();
+  const fw = f.offsetWidth || 344, fh = f.offsetHeight || 240;
+  let left = Math.min(r.left, window.innerWidth - fw - 12);
+  let top = r.bottom + 6;
+  if(top + fh > window.innerHeight - 8) top = Math.max(8, r.top - fh - 6);
+  f.style.left = Math.max(8, left) + 'px';
+  f.style.top = Math.max(8, top) + 'px';
+  document.getElementById('cpFloatText').focus();
+}
+function closeFloat(){ document.getElementById('cpFloat').classList.remove('on'); cpFloatCode = ''; }
 // スタッフ入力（scores）とAI採点（aiAxis）から各エントリーの実効スコアを再計算する
 function recomputeScores(){
   ENTRIES.forEach(e=>{
@@ -921,7 +973,7 @@ function renderTable(excl){
     }).join('');
     html += `<tr class="${rowCls}">
       <td class="n"><select class="row-rank" data-code="${esc(e.code)}" ${blocked?'disabled title="資料欠損・未採点・受賞済みのいずれかのため選出できません"':''}>${rankOptions}</select></td>
-      <td class="ttl"><b>${esc(e.code)}</b><span>${esc(e.who)}</span><button class="rowprompt" data-code="${esc(e.code)}" title="この作品だけの採点プロンプトをコピー（1件ずつ・精度重視）">プロンプト</button></td>
+      <td class="ttl"><b class="codelink" data-code="${esc(e.code)}" title="クリックして採点結果（===SCORE===）を貼り付け登録">${esc(e.code)}</b><span>${esc(e.who)}</span><button class="rowprompt" data-code="${esc(e.code)}" title="この作品だけの採点プロンプトをコピー（1件ずつ・精度重視）">プロンプト</button></td>
       ${scoreCell(e,0)}${scoreCell(e,1)}${scoreCell(e,2)}${scoreCell(e,3)}
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
       <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
@@ -981,6 +1033,9 @@ function wireTable(){
   });
   document.querySelectorAll('.rowprompt').forEach(btn=>{
     btn.onclick = () => { const e = ENTRIES.find(x=>x.code===btn.dataset.code); if(e){ copyText(buildDebutPrompt([e]), btn); toast('この作品の採点プロンプトをコピーしました'); } };
+  });
+  document.querySelectorAll('.codelink').forEach(el=>{
+    el.onclick = (ev) => { ev.stopPropagation(); openFloat(el.dataset.code, el); };
   });
   document.querySelectorAll('.score-inp').forEach(inp=>{
     const clamp = (raw, normalize) => {
@@ -1133,6 +1188,24 @@ document.getElementById('cpImport').onclick = () => {
 };
 document.getElementById('cpClose').onclick = () => document.getElementById('cpModal').classList.remove('on');
 document.getElementById('cpModal').onclick = ev => { if(ev.target.id==='cpModal') ev.currentTarget.classList.remove('on'); };
+document.getElementById('cpFloatClose').onclick = closeFloat;
+document.getElementById('cpFloatApply').onclick = () => {
+  const txt = document.getElementById('cpFloatText').value;
+  const msg = document.getElementById('cpFloatMsg');
+  if(!txt.trim()){ msg.textContent = '===SCORE=== ブロックを貼り付けてください。'; return; }
+  const r = applyOneToCode(cpFloatCode, txt);
+  if(!r.ok){ msg.textContent = r.noblock ? '※ ===SCORE=== ブロックが見つかりません。' : '※ 反映できる内容がありませんでした。'; return; }
+  const code = cpFloatCode;
+  saveState(); render();
+  const parts = [r.hasScore?'点数':'', r.hasComment?'講評':'', r.hasReason?'受賞理由':''].filter(Boolean).join('・');
+  toast(`${code} に登録しました（${parts}）` + (r.mismatch ? ` ／ 貼付のEntryCode ${r.blockCode} は異なります` : ''));
+  closeFloat();
+};
+document.addEventListener('mousedown', ev => {
+  const f = document.getElementById('cpFloat');
+  if(f.classList.contains('on') && !f.contains(ev.target) && !(ev.target.classList && ev.target.classList.contains('codelink'))) closeFloat();
+});
+document.addEventListener('keydown', ev => { if(ev.key === 'Escape') closeFloat(); });
 document.getElementById('btnXLS').onclick = exportXLSX;
 document.getElementById('btnPrint').onclick = () => window.print();
 document.getElementById('btnClear').onclick = () => {
