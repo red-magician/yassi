@@ -167,7 +167,8 @@ td.cmt textarea.row-comment:focus{outline:2px solid var(--gold);border-color:var
   <button class="btn" id="btnLoadPast">過去の受賞者Excelを追加</button>
   <input type="file" id="filePast" accept=".xlsx,.xlsm" multiple hidden>
   <span class="sep"></span>
-  <button class="btn" id="btnCopilot">Copilot採点を取り込む</button>
+  <button class="btn" id="btnCopyPrompt">① 採点プロンプトをコピー</button>
+  <button class="btn" id="btnCopilot">② Copilot結果を取り込む</button>
   <button class="btn" id="btnCheck">入力チェック</button>
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
@@ -1084,6 +1085,11 @@ document.getElementById('filePast').onchange = e => { [...e.target.files].forEac
 
 document.getElementById('btnCheck').onclick = runCheck;
 document.getElementById('checkClose').onclick = () => document.getElementById('checkModal').classList.remove('on');
+document.getElementById('btnCopyPrompt').onclick = ev => {
+  if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
+  copyText(buildDebutPrompt(), ev.currentTarget);
+  toast('採点プロンプトをコピーしました。Copilot Chatに貼り付けてください');
+};
 document.getElementById('btnCopilot').onclick = () => {
   if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
   document.getElementById('cpResult').textContent = '';
