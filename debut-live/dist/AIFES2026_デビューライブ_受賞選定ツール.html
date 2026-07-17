@@ -95,6 +95,9 @@ th.sci{background:var(--navy-soft)}
 .score-inp:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 .score-inp::-webkit-outer-spin-button,.score-inp::-webkit-inner-spin-button{margin:0}
 tr.unscored .score-inp{background:#fff}
+th.cmt-h{min-width:210px}
+td.cmt textarea.row-comment{width:205px;height:52px;font:inherit;font-size:11.5px;line-height:1.45;padding:5px 6px;border:1px solid var(--line);border-radius:6px;resize:vertical;background:#fff;color:var(--ink);box-sizing:border-box}
+td.cmt textarea.row-comment:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 .rk-sel{font-size:12px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:#fff}
 .rk-sel.on{background:var(--gold);border-color:var(--gold-dim);font-weight:700}
 .bonus{font-size:9.5px;font-weight:700;margin-top:2px;border-radius:99px;padding:1px 6px;display:inline-block;white-space:nowrap}
@@ -169,7 +172,7 @@ tr.unscored .score-inp{background:#fff}
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック100点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
+  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック100点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -478,16 +481,20 @@ ${entries}
 
 ──────────
 【取り込み用ブロック（必須）】各エントリーについて、次のブロックを続けて出力してください（1エントリー1ブロック・ラベルとEntryCodeは変えない・点数は整数）。
+- 「講評」は**全エントリー必須**（総評コメント・200字前後）。
+- 「受賞理由」は**受賞に推す作品だけ**書き、それ以外の作品では空欄（行ごと省略可）。
 ===SCORE===
 EntryCode: <そのエントリーのEntryCode>
 ${tpl}
-講評: <200字前後のコメント>
+受賞理由: <受賞に推す場合のみ・なぜ受賞に値するか。推さない作品は空欄>
+講評: <全件必須・総評コメント200字前後>
 ===END===`;
 }
-// Copilot出力を解析して {code, scores[4]} の配列を返す
+// Copilot出力を解析して {code, scores[4], reason, comment} の配列を返す
 function parseCopilotScores(text){
   const out = [];
   const idxMap = {'①':0,'②':1,'③':2,'④':3,'1':0,'2':1,'3':2,'4':3,'１':0,'２':1,'３':2,'４':3};
+  const clean = s => s.trim().replace(/^[<「『]|[>」』]$/g,'').trim();
   const blocks = String(text||'').split(/===\s*SCORE\s*===/i).slice(1);
   blocks.forEach(b=>{
     const raw = b.split(/===\s*END\s*===/i)[0];
@@ -496,14 +503,16 @@ function parseCopilotScores(text){
     const sc4 = ['','','',''];
     const re = /観点\s*([①②③④1-4１-４])[^:：\n]*[:：]\s*(\d+)/g;
     let m; while((m = re.exec(raw))){ const i = idxMap[m[1]]; if(i!=null) sc4[i] = m[2]; }
-    out.push({code: cm[1].trim(), scores: sc4});
+    const rr = raw.match(/受賞理由\s*[:：]\s*([\s\S]*?)(?=\n\s*(?:===|観点|EntryCode|講評|推薦)|$)/);
+    const rv = raw.match(/講評\s*[:：]\s*([\s\S]*?)(?=\n\s*(?:===|観点|EntryCode|受賞理由|推薦)|$)/);
+    out.push({code: cm[1].trim(), scores: sc4, reason: rr?clean(rr[1]):'', comment: rv?clean(rv[1]):''});
   });
   return out;
 }
-// 解析結果を scores へ反映（EntryCode一致のみ・0〜満点にクランプ）。matched件数と未一致コードを返す
+// 解析結果を scores / notes へ反映（EntryCode一致のみ）。講評=全件、受賞理由=あれば。件数を返す
 function applyCopilot(text){
   const parsed = parseCopilotScores(text);
-  let matched = 0; const unmatched = [];
+  let scored = 0, cmt = 0, rsn = 0; const unmatched = [];
   parsed.forEach(p=>{
     const e = ENTRIES.find(x=>x.code===p.code);
     if(!e){ if(p.code) unmatched.push(p.code); return; }
@@ -512,10 +521,15 @@ function applyCopilot(text){
     p.scores.forEach((v,i)=>{
       if(i<RUBRIC.length && v!=='' && v!=null){ scores[e.code][i] = String(Math.max(0, Math.min(rubMax(i), Math.round(Number(v)||0)))); any = true; }
     });
-    if(any) matched++;
+    if(any) scored++;
+    if(p.comment || p.reason){
+      notes[e.code] = notes[e.code] || {reason:'', comment:''};
+      if(p.comment){ notes[e.code].comment = p.comment; cmt++; }
+      if(p.reason){ notes[e.code].reason = p.reason; rsn++; }
+    }
   });
-  if(matched){ recomputeScores(); autoRank(); }
-  return {parsed: parsed.length, matched, unmatched};
+  if(scored){ recomputeScores(); autoRank(); }
+  return {parsed: parsed.length, scored, cmt, rsn, unmatched};
 }
 // スタッフ入力（scores）とAI採点（aiAxis）から各エントリーの実効スコアを再計算する
 function recomputeScores(){
@@ -883,6 +897,7 @@ function renderTable(excl){
       <th class="n">HTML加点<br><span class="sub">上限+10</span></th>
       <th class="n">最終スコア</th>
       <th>状態</th>
+      <th class="cmt-h">講評コメント<br><span class="sub">全件・任意</span></th>
     </tr></thead><tbody>`;
   list.forEach(e=>{
     const isExcl = excl.has(e.submitter);
@@ -909,6 +924,7 @@ function renderTable(excl){
       <td class="n" title="${esc(`作品 ${e.fmtWork||'—'} → +${e.bonusWork}\n手順書 ${e.fmtProc||'—'} → +${e.bonusProc}`)}">${fmtBonus(e.htmlBonus, 10)}</td>
       <td class="n" id="fin-${esc(e.code)}"><span class="sc final ${e.hasScore?'':'na'}">${e.hasScore ? e.finalScore : '—'}</span></td>
       <td>${badges}</td>
+      <td class="cmt"><textarea class="row-comment" data-code="${esc(e.code)}" placeholder="講評コメント（全件・任意）">${esc((notes[e.code]||{}).comment||'')}</textarea></td>
     </tr>`;
   });
   html += `</tbody></table></div>
@@ -949,6 +965,14 @@ function wireTable(){
   document.querySelectorAll('[data-filter]').forEach(b=> b.onclick = () => { filterBy = b.dataset.filter; render(); });
   document.querySelectorAll('.row-rank').forEach(sel=>{
     sel.onchange = () => { setRank(sel.dataset.code, +sel.value); };
+  });
+  document.querySelectorAll('.row-comment').forEach(ta=>{
+    ta.oninput = () => {
+      const code = ta.dataset.code;
+      notes[code] = notes[code] || {reason:'', comment:''};
+      notes[code].comment = ta.value;
+      saveState();
+    };
   });
   document.querySelectorAll('.score-inp').forEach(inp=>{
     const clamp = (raw, normalize) => {
@@ -1015,11 +1039,11 @@ function awardRows(){
 }
 function allRows(){
   const excl = excludedMap();
-  const head = ['対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','自動/手動順位','未採点','資料欠損','受賞済み(他月)'];
+  const head = ['対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','自動/手動順位','未採点','資料欠損','受賞済み(他月)','講評コメント'];
   const rows = [head];
   ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1)).forEach(e=>{
     rows.push([targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
-      e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', rankOf(e.code) || '', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'']);
+      e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', rankOf(e.code) || '', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'', (notes[e.code]||{}).comment||'']);
   });
   return rows;
 }
@@ -1074,7 +1098,7 @@ document.getElementById('cpImport').onclick = () => {
   const r = applyCopilot(txt); saveState(); render();
   const msg = r.parsed===0
     ? '※ ===SCORE=== ブロックが見つかりませんでした。出力形式をご確認ください。'
-    : `取り込み ${r.matched} 件` + (r.unmatched.length ? ` ／ 未一致 ${r.unmatched.length} 件（${r.unmatched.slice(0,5).join(', ')}${r.unmatched.length>5?'…':''}）` : '');
+    : `取り込み — 点数 ${r.scored}件 ／ 講評 ${r.cmt}件 ／ 受賞理由 ${r.rsn}件` + (r.unmatched.length ? ` ／ 未一致 ${r.unmatched.length} 件（${r.unmatched.slice(0,5).join(', ')}${r.unmatched.length>5?'…':''}）` : '');
   box.textContent = msg; toast(msg);
 };
 document.getElementById('cpClose').onclick = () => document.getElementById('cpModal').classList.remove('on');
