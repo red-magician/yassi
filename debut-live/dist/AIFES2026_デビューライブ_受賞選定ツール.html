@@ -98,6 +98,9 @@ tr.unscored .score-inp{background:#fff}
 th.cmt-h{min-width:210px}
 td.cmt textarea.row-comment{width:205px;height:52px;font:inherit;font-size:11.5px;line-height:1.45;padding:5px 6px;border:1px solid var(--line);border-radius:6px;resize:vertical;background:#fff;color:var(--ink);box-sizing:border-box}
 td.cmt textarea.row-comment:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+button.rowprompt{display:inline-block;margin-top:4px;padding:2px 8px;font-size:10.5px;font-weight:700;color:var(--navy);background:#eef2ff;border:1px solid #c7d2fe;border-radius:5px;cursor:pointer}
+button.rowprompt:hover{background:#e0e7ff}
+button.rowprompt.copied{background:var(--gold);border-color:var(--gold)}
 .rk-sel{font-size:12px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:#fff}
 .rk-sel.on{background:var(--gold);border-color:var(--gold-dim);font-weight:700}
 .bonus{font-size:9.5px;font-weight:700;margin-top:2px;border-radius:99px;padding:1px 6px;display:inline-block;white-space:nowrap}
@@ -207,10 +210,13 @@ td.cmt textarea.row-comment:focus{outline:2px solid var(--gold);border-color:var
   <div class="mbox" style="max-width:720px">
     <h3>Copilotで採点 → 取り込み</h3>
     <div class="sub">① プロンプトをコピー → Copilot Chatに貼る → ② 返ってきた <code>===SCORE===</code> ブロックを下に貼り付け → ③ 取り込む。<b>EntryCodeで自動照合</b>して観点①〜④（0〜10）が入ります。1件でも複数件でもまとめてOK。</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center">
-      <button class="btn" id="cpCopyAll">① 全件の採点プロンプトをコピー</button>
-      <span style="font-size:12px;color:#7a869a">件数が多いと1回で採点しきれない場合があります。その時は数件ずつでOK（取り込みは何回でも追記できます）。</span>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center;font-size:13px">
+      <label><input type="checkbox" id="cpUnscored" checked> 未採点だけ</label>
+      <label>何件ずつ <input type="number" id="cpBatch" value="5" min="1" style="width:56px;padding:3px;border:1.5px solid #cbd5e1;border-radius:5px"></label>
+      <button class="btn" id="cpCopyBatch">この件数分をコピー</button>
+      <button class="btn" id="cpCopyAll">全件まとめてコピー</button>
     </div>
+    <div style="font-size:12px;color:#7a869a;margin-bottom:8px"><b>精度重視なら数件ずつ（3〜5件）</b>か、各作品行の「プロンプト」ボタンで1件ずつ採点するのがおすすめ。一括は速いですが、件数が多いと精度が落ちる・件数が間引かれることがあります。取り込みは何回でも追記OK（「未採点だけ」なら採点済みは自動で対象外に）。</div>
     <textarea id="cpPaste" placeholder="② ここに Copilot の出力（===SCORE=== … ===END===）を貼り付け" style="width:100%;height:220px;font-family:monospace;font-size:12px;padding:10px;border:1.5px solid #cbd5e1;border-radius:8px;box-sizing:border-box"></textarea>
     <div id="cpResult" class="sub" style="margin-top:8px;min-height:18px;font-weight:700"></div>
     <div style="display:flex;gap:8px;margin-top:12px">
@@ -467,17 +473,24 @@ async function copyText(text, btn){
   }catch(_){ toast('コピーに失敗しました'); }
 }
 // 全件分の採点プロンプト（デビュー競技ルーブリック＋対象エントリー＋取り込み用テンプレ）
-function buildDebutPrompt(){
+function buildDebutPrompt(list){
+  const es = (list && list.length) ? list : ENTRIES;
   const rubric = RUBRIC.map((c,i)=>`${'①②③④'[i]} ${c.name}（${c.weight}%・0〜${rubMax(i)}点）\n` + c.levels.map(l=>`　${l[0]}点：${l[1]}`).join('\n')).join('\n\n');
-  const entries = ENTRIES.map((e,i)=>`【${i+1}】EntryCode: ${e.code}\n　応募者: ${e.who}\n　作品リンク: ${e.workLink||'（なし）'}\n　手順書: ${e.procLink||'（なし）'}`).join('\n\n');
+  const entries = es.map((e,i)=>`【${i+1}】EntryCode: ${e.code}\n　応募者: ${e.who}\n　作品リンク: ${e.workLink||'（なし）'}\n　手順書: ${e.procLink||'（なし）'}`).join('\n\n');
   const tpl = RUBRIC.map((c,i)=>`観点${'①②③④'[i]}: <0〜${rubMax(i)}の整数>`).join('\n');
+  const one = es.length === 1;
   return `あなたは AI Fes 2026「デビューライブ」の採点AIです。核心思想は「ハードルを乗り越えた初体験を語れる人」。
-下記ルーブリックに厳密に従い、各観点を 0〜10 点で採点してください（各25%・合計100点満点）。印象で加点せず、投稿本文の根拠にもとづき、迷ったら低い方に寄せてください。作品リンク・手順書を開いて内容を読み込んでから採点してください。
+下記ルーブリックに厳密に従い、各観点を 0〜10 点で採点してください（各25%・合計100点満点）。
+
+【精度のための厳守事項】
+- 各エントリーの**作品リンク・手順書を必ず開いて本文を読み込んでから**採点する。開けない場合はその旨を明記し、推測で点数をつけない。
+- ${one ? 'この1件を丁寧に精読して' : `${es.length}件すべてを、1件ずつ根拠を確認して`}採点する。件数の間引き・省略・「以下同様」は禁止（全件それぞれにブロックを出す）。
+- 印象で加点せず、必ず投稿本文からの根拠（引用または要約）にもとづき、迷ったら1段下の点数を選ぶ。
 
 ## ルーブリック（デビューライブ）
 ${rubric}
 
-## 評価対象エントリー（全${ENTRIES.length}件）
+## 評価対象エントリー（${es.length}件）
 ${entries}
 
 ──────────
@@ -917,7 +930,7 @@ function renderTable(excl){
     }).join('');
     html += `<tr class="${rowCls}">
       <td class="n"><select class="row-rank" data-code="${esc(e.code)}" ${blocked?'disabled title="資料欠損・未採点・受賞済みのいずれかのため選出できません"':''}>${rankOptions}</select></td>
-      <td class="ttl"><b>${esc(e.code)}</b><span>${esc(e.who)}</span></td>
+      <td class="ttl"><b>${esc(e.code)}</b><span>${esc(e.who)}</span><button class="rowprompt" data-code="${esc(e.code)}" title="この作品だけの採点プロンプトをコピー（1件ずつ・精度重視）">プロンプト</button></td>
       ${scoreCell(e,0)}${scoreCell(e,1)}${scoreCell(e,2)}${scoreCell(e,3)}
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
       <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
@@ -974,6 +987,9 @@ function wireTable(){
       notes[code].comment = ta.value;
       saveState();
     };
+  });
+  document.querySelectorAll('.rowprompt').forEach(btn=>{
+    btn.onclick = () => { const e = ENTRIES.find(x=>x.code===btn.dataset.code); if(e){ copyText(buildDebutPrompt([e]), btn); toast('この作品の採点プロンプトをコピーしました'); } };
   });
   document.querySelectorAll('.score-inp').forEach(inp=>{
     const clamp = (raw, normalize) => {
@@ -1095,7 +1111,24 @@ document.getElementById('btnCopilot').onclick = () => {
   document.getElementById('cpResult').textContent = '';
   document.getElementById('cpModal').classList.add('on');
 };
-document.getElementById('cpCopyAll').onclick = ev => { if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; } copyText(buildDebutPrompt(), ev.currentTarget); };
+// 「未採点」＝スタッフ/Copilotがまだ点数を入れていない（マスター内蔵のAI初期値は未採点扱い）
+const staffUnscored = e => { const s = scores[e.code]; return !s || s.every(v => v==='' || v==null); };
+const cpTargets = () => (document.getElementById('cpUnscored').checked ? ENTRIES.filter(staffUnscored) : ENTRIES.slice());
+document.getElementById('cpCopyBatch').onclick = ev => {
+  if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
+  const n = Math.max(1, parseInt(document.getElementById('cpBatch').value)||5);
+  const list = cpTargets().slice(0, n);
+  if(!list.length){ toast('対象がありません（「未採点だけ」のチェックを外すか件数を確認）'); return; }
+  copyText(buildDebutPrompt(list), ev.currentTarget);
+  toast(`${list.length}件分の採点プロンプトをコピーしました`);
+};
+document.getElementById('cpCopyAll').onclick = ev => {
+  if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
+  const list = cpTargets();
+  if(!list.length){ toast('対象がありません'); return; }
+  copyText(buildDebutPrompt(list), ev.currentTarget);
+  toast(`${list.length}件分の採点プロンプトをコピーしました`);
+};
 document.getElementById('cpImport').onclick = () => {
   const txt = document.getElementById('cpPaste').value;
   const box = document.getElementById('cpResult');
