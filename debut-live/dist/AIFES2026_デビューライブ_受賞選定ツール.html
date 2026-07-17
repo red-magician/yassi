@@ -164,6 +164,7 @@ tr.unscored .score-inp{background:#fff}
   <button class="btn" id="btnLoadPast">過去の受賞者Excelを追加</button>
   <input type="file" id="filePast" accept=".xlsx,.xlsm" multiple hidden>
   <span class="sep"></span>
+  <button class="btn" id="btnCopilot">Copilot採点を取り込む</button>
   <button class="btn" id="btnCheck">入力チェック</button>
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
@@ -195,6 +196,23 @@ tr.unscored .score-inp{background:#fff}
     <div class="sub">書き出し前に確認してください。</div>
     <div id="checkBody"></div>
     <button class="close" id="checkClose">閉じる</button>
+  </div>
+</div>
+
+<div class="modal" id="cpModal">
+  <div class="mbox" style="max-width:720px">
+    <h3>Copilotで採点 → 取り込み</h3>
+    <div class="sub">① プロンプトをコピー → Copilot Chatに貼る → ② 返ってきた <code>===SCORE===</code> ブロックを下に貼り付け → ③ 取り込む。<b>EntryCodeで自動照合</b>して観点①〜④（0〜10）が入ります。1件でも複数件でもまとめてOK。</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center">
+      <button class="btn" id="cpCopyAll">① 全件の採点プロンプトをコピー</button>
+      <span style="font-size:12px;color:#7a869a">件数が多いと1回で採点しきれない場合があります。その時は数件ずつでOK（取り込みは何回でも追記できます）。</span>
+    </div>
+    <textarea id="cpPaste" placeholder="② ここに Copilot の出力（===SCORE=== … ===END===）を貼り付け" style="width:100%;height:220px;font-family:monospace;font-size:12px;padding:10px;border:1.5px solid #cbd5e1;border-radius:8px;box-sizing:border-box"></textarea>
+    <div id="cpResult" class="sub" style="margin-top:8px;min-height:18px;font-weight:700"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-gold" id="cpImport">③ 取り込む</button>
+      <button class="close" id="cpClose">閉じる</button>
+    </div>
   </div>
 </div>
 
@@ -434,6 +452,70 @@ function buildEntry(d){
     likesRaw: d.likesRaw, likesGivenRaw, recvBonus, giveBonus, likeBonus, aiComment: d.aiComment, month: d.month,
     gap,
   };
+}
+/* ---------- Copilot採点の取り込み（===SCORE===ブロック） ---------- */
+function rubMax(i){ return Math.max(...RUBRIC[i].levels.map(l=>l[0])); }   // デビューは各観点0〜10
+async function copyText(text, btn){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); }
+    else{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+    if(btn){ const o=btn.textContent; btn.textContent='コピーしました'; setTimeout(()=>{ btn.textContent=o; },1400); }
+  }catch(_){ toast('コピーに失敗しました'); }
+}
+// 全件分の採点プロンプト（デビュー競技ルーブリック＋対象エントリー＋取り込み用テンプレ）
+function buildDebutPrompt(){
+  const rubric = RUBRIC.map((c,i)=>`${'①②③④'[i]} ${c.name}（${c.weight}%・0〜${rubMax(i)}点）\n` + c.levels.map(l=>`　${l[0]}点：${l[1]}`).join('\n')).join('\n\n');
+  const entries = ENTRIES.map((e,i)=>`【${i+1}】EntryCode: ${e.code}\n　応募者: ${e.who}\n　作品リンク: ${e.workLink||'（なし）'}\n　手順書: ${e.procLink||'（なし）'}`).join('\n\n');
+  const tpl = RUBRIC.map((c,i)=>`観点${'①②③④'[i]}: <0〜${rubMax(i)}の整数>`).join('\n');
+  return `あなたは AI Fes 2026「デビューライブ」の採点AIです。核心思想は「ハードルを乗り越えた初体験を語れる人」。
+下記ルーブリックに厳密に従い、各観点を 0〜10 点で採点してください（各25%・合計100点満点）。印象で加点せず、投稿本文の根拠にもとづき、迷ったら低い方に寄せてください。作品リンク・手順書を開いて内容を読み込んでから採点してください。
+
+## ルーブリック（デビューライブ）
+${rubric}
+
+## 評価対象エントリー（全${ENTRIES.length}件）
+${entries}
+
+──────────
+【取り込み用ブロック（必須）】各エントリーについて、次のブロックを続けて出力してください（1エントリー1ブロック・ラベルとEntryCodeは変えない・点数は整数）。
+===SCORE===
+EntryCode: <そのエントリーのEntryCode>
+${tpl}
+講評: <200字前後のコメント>
+===END===`;
+}
+// Copilot出力を解析して {code, scores[4]} の配列を返す
+function parseCopilotScores(text){
+  const out = [];
+  const idxMap = {'①':0,'②':1,'③':2,'④':3,'1':0,'2':1,'3':2,'4':3,'１':0,'２':1,'３':2,'４':3};
+  const blocks = String(text||'').split(/===\s*SCORE\s*===/i).slice(1);
+  blocks.forEach(b=>{
+    const raw = b.split(/===\s*END\s*===/i)[0];
+    const cm = raw.match(/EntryCode\s*[:：]\s*([A-Za-z0-9][A-Za-z0-9\-_]*)/);
+    if(!cm) return;
+    const sc4 = ['','','',''];
+    const re = /観点\s*([①②③④1-4１-４])[^:：\n]*[:：]\s*(\d+)/g;
+    let m; while((m = re.exec(raw))){ const i = idxMap[m[1]]; if(i!=null) sc4[i] = m[2]; }
+    out.push({code: cm[1].trim(), scores: sc4});
+  });
+  return out;
+}
+// 解析結果を scores へ反映（EntryCode一致のみ・0〜満点にクランプ）。matched件数と未一致コードを返す
+function applyCopilot(text){
+  const parsed = parseCopilotScores(text);
+  let matched = 0; const unmatched = [];
+  parsed.forEach(p=>{
+    const e = ENTRIES.find(x=>x.code===p.code);
+    if(!e){ if(p.code) unmatched.push(p.code); return; }
+    if(!scores[e.code]) scores[e.code] = ['','','',''];
+    let any = false;
+    p.scores.forEach((v,i)=>{
+      if(i<RUBRIC.length && v!=='' && v!=null){ scores[e.code][i] = String(Math.max(0, Math.min(rubMax(i), Math.round(Number(v)||0)))); any = true; }
+    });
+    if(any) matched++;
+  });
+  if(matched){ recomputeScores(); autoRank(); }
+  return {parsed: parsed.length, matched, unmatched};
 }
 // スタッフ入力（scores）とAI採点（aiAxis）から各エントリーの実効スコアを再計算する
 function recomputeScores(){
@@ -978,6 +1060,25 @@ document.getElementById('filePast').onchange = e => { [...e.target.files].forEac
 
 document.getElementById('btnCheck').onclick = runCheck;
 document.getElementById('checkClose').onclick = () => document.getElementById('checkModal').classList.remove('on');
+document.getElementById('btnCopilot').onclick = () => {
+  if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
+  document.getElementById('cpResult').textContent = '';
+  document.getElementById('cpModal').classList.add('on');
+};
+document.getElementById('cpCopyAll').onclick = ev => { if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; } copyText(buildDebutPrompt(), ev.currentTarget); };
+document.getElementById('cpImport').onclick = () => {
+  const txt = document.getElementById('cpPaste').value;
+  const box = document.getElementById('cpResult');
+  if(!ENTRIES.length){ box.textContent = '先に採点マスターExcelを読み込んでください。'; return; }
+  if(!txt.trim()){ box.textContent = '② の欄に Copilot の出力を貼り付けてください。'; return; }
+  const r = applyCopilot(txt); saveState(); render();
+  const msg = r.parsed===0
+    ? '※ ===SCORE=== ブロックが見つかりませんでした。出力形式をご確認ください。'
+    : `取り込み ${r.matched} 件` + (r.unmatched.length ? ` ／ 未一致 ${r.unmatched.length} 件（${r.unmatched.slice(0,5).join(', ')}${r.unmatched.length>5?'…':''}）` : '');
+  box.textContent = msg; toast(msg);
+};
+document.getElementById('cpClose').onclick = () => document.getElementById('cpModal').classList.remove('on');
+document.getElementById('cpModal').onclick = ev => { if(ev.target.id==='cpModal') ev.currentTarget.classList.remove('on'); };
 document.getElementById('btnXLS').onclick = exportXLSX;
 document.getElementById('btnPrint').onclick = () => window.print();
 document.getElementById('btnClear').onclick = () => {
