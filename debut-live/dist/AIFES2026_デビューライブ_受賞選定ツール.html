@@ -185,7 +185,7 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック100点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
+  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック60点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -261,6 +261,7 @@ const LIKE_CAP = 25;        // いいね（もらう）加点の上限
 const GIVE_CAP = 15;        // いいね（押す）加点の上限
 const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう25＋押す15＝40）
 const HTML_BONUS_EACH = 5;  // 作品/手順書 それぞれのHTML加点
+const RUBRIC_MAX = 60;      // ルーブリック合計の満点（各観点は0〜10のまま、換算をこの満点に合わせる）
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
 const STORE_PREFIX = 'debutLiveTool_v1::';
 
@@ -388,7 +389,7 @@ function tryCombinedSheet(wb){
     const hasScore = ['ax1','ax2','ax3','ax4'].some(k=>col[k]>=0 && g(row,k)!=='');
     const rubricTotal = col.rubricTotal>=0 && g(row,'rubricTotal') !== ''
       ? num(g(row,'rubricTotal'))
-      : (hasScore ? Math.round(axis.reduce((s,v)=>s+v/10*25,0)*10)/10 : null);
+      : (hasScore ? Math.round(axis.reduce((s,v)=>s+v/10*25,0)*RUBRIC_MAX/100*10)/10 : null);
     const workLink = g(row,'workLink'), procLink = g(row,'procLink');
     const fmtWork = fmtLabel(workLink, g(row,'fmtWork'));
     const fmtProc = fmtLabel(procLink, g(row,'fmtProc'));
@@ -451,7 +452,7 @@ function tryJoinedSheets(wb){
     const s = scores[code];
     const hasScore = !!s;
     const axis = s ? s.axis : [0,0,0,0];
-    const rubricTotal = s ? (s.rubricTotal ?? Math.round(axis.reduce((sum,v)=>sum+v/10*25,0)*10)/10) : null;
+    const rubricTotal = s ? (s.rubricTotal ?? Math.round(axis.reduce((sum,v)=>sum+v/10*25,0)*RUBRIC_MAX/100*10)/10) : null;
     const workLink = eg(row,'workLink'), procLink = eg(row,'procLink');
     const fmtWork = fmtLabel(workLink, eg(row,'fmtWork'));
     const fmtProc = fmtLabel(procLink, eg(row,'fmtProc'));
@@ -500,7 +501,7 @@ function buildDebutPrompt(list){
   const tpl = RUBRIC.map((c,i)=>`観点${'①②③④'[i]}: <0〜${rubMax(i)}の整数>`).join('\n');
   const one = es.length === 1;
   return `あなたは AI Fes 2026「デビューライブ」の採点AIです。核心思想は「ハードルを乗り越えた初体験を語れる人」。
-下記ルーブリックに厳密に従い、各観点を 0〜10 点で採点してください（各25%・合計100点満点）。
+下記ルーブリックに厳密に従い、各観点を 0〜10 点で採点してください（各25%・合計${RUBRIC_MAX}点満点に換算）。
 
 【精度のための厳守事項】
 - 各エントリーの**作品リンク・手順書を必ず開いて本文を読み込んでから**採点する。開けない場合はその旨を明記し、推測で点数をつけない。
@@ -612,7 +613,7 @@ function recomputeScores(){
     e.hasScore = eff.every(v => v != null);
     e.scoreSource = e.hasScore ? (touched ? '手動' : (e.aiHasScore ? 'AI' : '手動')) : '';
     e.rubricRaw = e.hasScore ? eff.reduce((a,b)=>a+b,0) : null;
-    e.rubricTotal = e.hasScore ? Math.round(eff.reduce((sum,v)=>sum+v/10*25,0)*10)/10 : null;
+    e.rubricTotal = e.hasScore ? Math.round(eff.reduce((sum,v)=>sum+v/10*25,0)*RUBRIC_MAX/100*10)/10 : null;
     e.finalScore = e.hasScore ? Math.round((e.rubricTotal + e.likeBonus + e.htmlBonus) * 10) / 10 : null;
   });
 }
@@ -957,7 +958,7 @@ function renderTable(excl){
       <th class="n sci" title="② 工夫・きっかけ（25%）">②</th>
       <th class="n sci" title="③ 業務での変化（25%）">③</th>
       <th class="n sci" title="④ 共感・再現性（25%）">④</th>
-      <th class="n" title="観点①〜④を100点満点に換算した合計">ルーブリック<br><span class="sub">/100</span></th>
+      <th class="n" title="観点①〜④を${RUBRIC_MAX}点満点に換算した合計">ルーブリック<br><span class="sub">/${RUBRIC_MAX}</span></th>
       <th class="n">いいね<br><span class="sub">もらう／押す</span></th>
       <th class="n">いいね加点<br><span class="sub">上限+${LIKE_TOTAL_CAP}</span></th>
       <th class="n">HTML加点<br><span class="sub">上限+10</span></th>
@@ -1005,7 +1006,7 @@ function renderRubricRef(){
   ).join('');
   return `<div class="panel"><h2>ルーブリック採点の目安（デビューライブ）<span>核心思想：ハードルを乗り越えた初体験を語れる人</span></h2>
     <div class="rubric-ref">
-      各指標 25% ・ 満点10点。観点①〜④に <b>0〜10点</b>を入力すると、<code>Σ(点÷10×25)</code> で100点満点に換算されます（各指標の目安は下記／入力欄にカーソルを合わせても表示されます）。
+      各指標 満点10点（配点25%）。観点①〜④に <b>0〜10点</b>を入力すると、<code>Σ(点÷10×${RUBRIC_MAX/RUBRIC.length})</code> で${RUBRIC_MAX}点満点に換算されます（各指標の目安は下記／入力欄にカーソルを合わせても表示されます）。
       <table><thead><tr><th>#</th><th>指標名</th><th class="n">配点</th><th>2点</th><th>5点</th><th>8点</th><th>10点</th></tr></thead><tbody>
         ${rows}
       </tbody></table>

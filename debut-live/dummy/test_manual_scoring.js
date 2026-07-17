@@ -30,7 +30,7 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   const rowOf = () => page.locator('tbody tr', { hasText: code }).first();
   const scoreInp = (i) => rowOf().locator('.score-inp').nth(i);
 
-  // 観点①〜④に 10/10/10/10 を入力（満点 → ルーブリック100）
+  // 観点①〜④に 10/10/10/10 を入力（満点 → ルーブリック60＝RUBRIC_MAX）
   for (let i = 0; i < 4; i++) {
     await scoreInp(i).fill('10');
     await scoreInp(i).dispatchEvent('change');
@@ -38,9 +38,10 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   }
   await page.waitForTimeout(300);
 
-  // その行のルーブリックが100になっている
+  // その行のルーブリックが満点（60）になっている
+  const rubMax = await page.evaluate(() => RUBRIC_MAX);
   const rub = await page.locator(`#rub-${code} .sc`).innerText();
-  ok(rub === '100', `入力後のルーブリックが100になる（実際: ${rub}）`);
+  ok(rub === String(rubMax), `入力後のルーブリックが満点(${rubMax})になる（実際: ${rub}）`);
   const unscoredAfter = Number((await page.textContent('#hUnscored')).trim().match(/\d+/)[0]);
   ok(unscoredAfter === unscoredBefore - 1, `未採点件数が1件減る（${unscoredBefore}→${unscoredAfter}）`);
 
@@ -67,9 +68,10 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
     await page.waitForTimeout(80);
   }
   await page.waitForTimeout(300);
-  // 8/5/8/2 → (8+5+8+2)/10*25 = 23/... 実際は各 v/10*25 の和 = (8+5+8+2)/10*25 = 57.5
+  // 8/5/8/2 → Σ(v/10×25)=57.5 を RUBRIC_MAX(60) 換算 = 57.5×0.6 = 34.5
+  const exp2 = String(Math.round(vals.reduce((s,v)=>s+Number(v)/10*25,0)*rubMax/100*10)/10);
   const rub2 = await page.locator(`#rub-${code} .sc`).innerText();
-  ok(rub2 === '57.5', `8/5/8/2 のルーブリックが57.5になる（実際: ${rub2}）`);
+  ok(rub2 === exp2, `8/5/8/2 のルーブリックが${exp2}になる（実際: ${rub2}）`);
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
