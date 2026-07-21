@@ -1112,11 +1112,15 @@ function awardRows(){
 }
 function allRows(){
   const excl = excludedMap();
-  const head = ['対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','自動/手動順位','未採点','資料欠損','受賞済み(他月)','講評コメント'];
+  const head = ['全体順位','受賞フラグ','受賞順位','対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','未採点','資料欠損','受賞済み(他月)','講評コメント'];
   const rows = [head];
-  ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1)).forEach(e=>{
-    rows.push([targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
-      e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', rankOf(e.code) || '', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'', (notes[e.code]||{}).comment||'']);
+  const sorted = ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1));
+  let overall = 0;
+  sorted.forEach(e=>{
+    const orank = e.hasScore ? (++overall) : '';        // 全体順位：採点済みを最終スコア降順で通し番号
+    const wrank = rankOf(e.code) || '';                 // 受賞順位：1〜6（手動固定含む）。受賞していなければ空
+    rows.push([orank, wrank ? '受賞' : '', wrank, targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
+      e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'', (notes[e.code]||{}).comment||'']);
   });
   return rows;
 }
@@ -1129,8 +1133,11 @@ function exportXLSX(){
   ws1['!cols'] = [{wch:10},{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:7},{wch:7},{wch:7},{wch:7},{wch:11},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:9},{wch:9},{wch:8},{wch:44},{wch:44}];
   ws1['!freeze'] = {xSplit:'0', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, ws1, '受賞一覧');
-  const ws2 = XLSX.utils.aoa_to_sheet(allRows());
-  ws2['!freeze'] = {xSplit:'0', ySplit:'1'};
+  const allData = allRows();
+  const ws2 = XLSX.utils.aoa_to_sheet(allData);
+  ws2['!cols'] = [{wch:7},{wch:8},{wch:8},{wch:10},{wch:20},{wch:26}].concat(Array.from({length:Math.max(0, allData[0].length-6)}, ()=>({wch:10})));
+  ws2['!freeze'] = {xSplit:'3', ySplit:'1'};
+  ws2['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:allData.length-1, c:allData[0].length-1}})};
   XLSX.utils.book_append_sheet(wb, ws2, '全エントリー');
   XLSX.writeFile(wb, `デビューライブ_受賞一覧_${targetMonth.replace(/[^0-9a-zA-Z年月]/g,'')}_${staffName.replace(/[^0-9a-zA-Z一-龠ぁ-んァ-ヶー]/g,'')}_${stamp()}.xlsx`);
   toast('受賞一覧Excelを書き出しました。もう1人の作業者のファイルと突合ツールで照合してください');
