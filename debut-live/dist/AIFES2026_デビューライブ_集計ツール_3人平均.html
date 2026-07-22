@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI FES 2026 デビューライブ 受賞突合ツール（事務局用）</title>
+<title>AI FES 2026 デビューライブ 集計ツール（3人平均・事務局用）</title>
 <style>
 :root{
   --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
-  --gold:#FFCD00; --gold-dim:#c9a300;
+  --gold:#FFCD00; --gold-dim:#c9a300; --silver:#8aa0bd;
   --paper:#f4f6f9; --card:#fff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
   --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
 }
@@ -30,8 +30,8 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700}
 .btn-gold:hover{background:#ffd93a}
 .sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
-.hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:360px}
-main{padding:22px 26px;max-width:1300px;margin:0 auto}
+.hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:420px}
+main{padding:22px 26px;max-width:1400px;margin:0 auto}
 .drop{border:2px dashed #c3cfdd;border-radius:10px;background:#fff;padding:34px;text-align:center;color:var(--mute);margin-bottom:20px;transition:.15s;cursor:pointer}
 .drop.on{border-color:var(--gold);background:#fffdf3}
 .drop b{display:block;font-size:15px;color:var(--navy);margin-bottom:5px}
@@ -47,44 +47,29 @@ main{padding:22px 26px;max-width:1300px;margin:0 auto}
 .panel h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .panel h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
 .empty{padding:40px;text-align:center;color:var(--mute);font-size:13px}
-.slot-card{border-bottom:1px solid var(--line)}
-.slot-card:last-child{border-bottom:none}
-.slot-top{display:flex;align-items:center;gap:10px;padding:12px 18px;background:#fbfcfe}
-.slot-rk{background:var(--gold);color:var(--navy-deep);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
-.slot-status{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid}
-.slot-status.ok{background:#eefaf4;color:var(--ok);border-color:#bfe6d5}
-.slot-status.bad{background:#fdf0f2;color:var(--warn);border-color:#f0c2c9}
-.slot-status.empty2{background:#f4f6f9;color:#9aa5b4;border-color:#dfe4ec}
-.slot-body{padding:12px 18px 16px;display:flex;flex-direction:column;gap:10px}
-.cand{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:#fbfcfe}
-.cand.chosen{border-color:var(--gold);background:#fffdf3}
-.cand input[type=radio]{margin-top:3px}
-.cand .ci{flex:1;min-width:0}
-.cand .ci b{color:var(--navy-deep);font-size:12.5px}
-.cand .ci .who{font-size:11px;color:var(--mute)}
-.cand .ci .sc{font-size:11px;color:var(--mute);margin-top:2px}
-.cand .ci .sc b{color:var(--navy)}
-.cand .who-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.wtag{font-size:10px;background:#eef3fa;border:1px solid #d8e3f0;color:var(--navy);padding:1px 8px;border-radius:99px}
-.manual-row{display:flex;gap:8px;align-items:center;padding:10px 12px;border:1px dashed var(--line);border-radius:7px}
-.manual-row select{flex:1;padding:6px 8px;font:inherit;border:1px solid var(--line);border-radius:5px}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fl label{font-size:10.5px;color:var(--mute);font-weight:600;display:block;margin-bottom:3px}
-.fl textarea{width:100%;font:inherit;font-size:12px;padding:8px;border:1px solid var(--line);border-radius:5px;resize:vertical;min-height:44px}
-.fl textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
-.quickfill{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-.qf-btn{font-size:10.5px;background:#eef3fa;border:1px solid #d8e3f0;color:var(--navy);padding:2px 9px;border-radius:99px;cursor:pointer}
-.qf-btn:hover{background:#dce8f7}
+.table-scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:12.5px}
-thead th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;padding:9px 8px;text-align:left;white-space:nowrap}
+thead th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;padding:9px 8px;text-align:left;white-space:nowrap;position:sticky;top:0}
 thead th.n{text-align:center}
-tbody td{padding:8px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+tbody td{padding:7px 8px;border-bottom:1px solid #eef1f6;vertical-align:middle;white-space:nowrap}
 td.n{text-align:center}
-.diffsc{font-weight:700;color:var(--warn)}
+tr.award{background:#fffdf3}
+tr.nominee{background:#f7fafd}
+.rk{display:inline-block;min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+.badge{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.badge.win{background:var(--gold);color:var(--navy-deep)}
+.badge.nom{background:#e7eef7;color:var(--navy);border:1px solid #cfe0f0}
+.avg{font-weight:700;color:var(--navy);font-size:13.5px}
+.msc{color:var(--ink)}
+.msc.na{color:#c3cad4}
+.pin{width:56px;padding:5px 4px;font:inherit;text-align:center;border:1px solid var(--line);border-radius:5px}
+.pin.on{border-color:var(--gold);background:#fffdf3;font-weight:700}
+.who{color:var(--mute);font-size:11px}
+.cnt-pill{font-size:10.5px;color:var(--mute);background:#eef2f7;border-radius:99px;padding:1px 8px}
 .legend{display:flex;gap:16px;padding:11px 18px;background:#f8fafc;border-top:1px solid var(--line);font-size:11px;color:var(--mute);flex-wrap:wrap}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-deep);color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(13,33,64,.3);z-index:200;opacity:0;transition:.25s;border-left:3px solid var(--gold)}
 .toast.on{transform:translateX(-50%) translateY(0);opacity:1}
-@media print{ .toolbar,.drop,.files header .btn{display:none !important} main{padding:0} }
+@media print{ .toolbar,.drop,.files,header .btn{display:none !important} main{padding:0} }
 </style>
 </head>
 <body>
@@ -92,31 +77,30 @@ td.n{text-align:center}
 <header>
   <div class="brand">
     <span class="en">AI FES 2026 / DEBUT LIVE</span>
-    <span class="jp">デビューライブ 受賞突合ツール（事務局用）</span>
+    <span class="jp">デビューライブ 集計ツール（3人平均・事務局用）</span>
   </div>
   <div class="hstat">
-    <div class="item"><span class="k">読み込み人数</span><span class="v" id="hFiles">0<small> 名</small></span></div>
-    <div class="item"><span class="k">一致</span><span class="v" id="hOk">0<small> / 6</small></span></div>
-    <div class="item"><span class="k">要確認</span><span class="v" id="hBad">0<small> 件</small></span></div>
-    <div class="item"><span class="k">スコア不一致</span><span class="v" id="hScoreMismatch">0<small> 件</small></span></div>
+    <div class="item"><span class="k">採点メンバー</span><span class="v" id="hFiles">0<small> 名</small></span></div>
+    <div class="item"><span class="k">対象作品</span><span class="v" id="hEntries">0<small> 件</small></span></div>
+    <div class="item"><span class="k">ノミネート</span><span class="v" id="hNom">0<small> / 10</small></span></div>
+    <div class="item"><span class="k">受賞</span><span class="v" id="hWin">0<small> / 6</small></span></div>
   </div>
 </header>
 
 <div class="toolbar">
-  <button class="btn" id="btnAdd">作業者のExcelを追加</button>
+  <button class="btn" id="btnAdd">採点メンバーのExcelを追加</button>
   <input type="file" id="fileIn" accept=".xlsx,.xlsm" multiple hidden>
   <span class="sep"></span>
-  <button class="btn" id="btnCheck">確定チェック</button>
-  <button class="btn-gold" id="btnXLS">最終版Excelを書き出す</button>
+  <button class="btn-gold" id="btnXLS">集計結果Excelを書き出す</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">全部消す</button>
-  <span class="hint">受賞選定ツールで各作業者が書き出したExcelを2本以上まとめてドロップしてください。同じ順位で違う作品が選ばれている箇所を確認し、最終版を1本にまとめます。</span>
+  <span class="hint">各メンバーが受賞選定ツールで書き出したExcel（全エントリーシート入り）を3本まとめてドロップ。EntryCodeで突合し、最終スコアを平均して順位付け → 上位10＝ノミネート／上位6＝受賞。</span>
 </div>
 
 <main>
   <div class="drop" id="drop">
-    <b>ここに作業者のExcel（受賞一覧）をドロップ</b>
-    <span>クリックして選択も可。2人分（複数可）まとめて読み込めます。</span>
+    <b>ここに採点メンバーのExcel（受賞選定ツールの書き出し）をドロップ</b>
+    <span>クリックして選択も可。3人分（複数可）まとめて読み込めます。各Excelの「全エントリー」シートの最終スコアを使います。</span>
   </div>
   <div class="files" id="files"></div>
   <div id="out"></div>
@@ -135,25 +119,36 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 }});if(w&&w.length)es(p,w,true,o.people||[])}catch(y){if(o.WTF)throw y}}function _o(e){return e.charAt(0)=="/"?e.slice(1):e}function Ao(e,r){Ue();r=r||{};yo(r);if(Ar(e,"META-INF/manifest.xml"))return po(e,r);if(Ar(e,"objectdata.xml"))return po(e,r);if(Ar(e,"Index/Document.iwa")){if(typeof Uint8Array=="undefined")throw new Error("NUMBERS file parsing requires Uint8Array support");if(typeof parse_numbers_iwa!="undefined"){if(e.FileIndex)return parse_numbers_iwa(e);var t=Ye.utils.cfb_new();Or(e).forEach(function(r){Mr(t,r,Dr(e,r))});return parse_numbers_iwa(t)}throw new Error("Unsupported NUMBERS file")}if(!Ar(e,"[Content_Types].xml")){if(Ar(e,"index.xml.gz"))throw new Error("Unsupported NUMBERS 08 file");if(Ar(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Error("Unsupported ZIP file")}var a=Or(e);var n=hn(Fr(e,"[Content_Types].xml"));var i=false;var s,l;if(n.workbooks.length===0){l="xl/workbook.xml";if(Er(e,l,true))n.workbooks.push(l)}if(n.workbooks.length===0){l="xl/workbook.bin";if(!Er(e,l,true))throw new Error("Could not find workbook");n.workbooks.push(l);i=true}if(n.workbooks[0].slice(-3)=="bin")i=true;var o={};var c={};if(!r.bookSheets&&!r.bookProps){As=[];if(n.sst)try{As=zl(Er(e,_o(n.sst)),n.sst,r)}catch(f){if(r.WTF)throw f}if(r.cellStyles&&n.themes.length)o=$l(Fr(e,n.themes[0].replace(/^\//,""),true)||"",n.themes[0],r);if(n.style)c=Bl(Er(e,_o(n.style)),n.style,o,r)}n.links.map(function(t){try{var a=vn(Fr(e,mn(_o(t))),t);return jl(Er(e,_o(t)),a,t,r)}catch(n){}});var u=Nl(Er(e,_o(n.workbooks[0])),n.workbooks[0],r);var h={},p="";if(n.coreprops.length){p=Er(e,_o(n.coreprops[0]),true);if(p)h=En(p);if(n.extprops.length!==0){p=Er(e,_o(n.extprops[0]),true);if(p)Pn(p,h,r)}}var d={};if(!r.bookSheets||r.bookProps){if(n.custprops.length!==0){p=Fr(e,_o(n.custprops[0]),true);if(p)d=Ln(p,r)}}var m={};if(r.bookSheets||r.bookProps){if(u.Sheets)s=u.Sheets.map(function O(e){return e.name});else if(h.Worksheets&&h.SheetNames.length>0)s=h.SheetNames;if(r.bookProps){m.Props=h;m.Custprops=d}if(r.bookSheets&&typeof s!=="undefined")m.SheetNames=s;if(r.bookSheets?m.SheetNames:r.bookProps)return m}s={};var v={};if(r.bookDeps&&n.calcchain)v=Wl(Er(e,_o(n.calcchain)),n.calcchain,r);var g=0;var b={};var w,y;{var k=u.Sheets;h.Worksheets=k.length;h.SheetNames=[];for(var x=0;x!=k.length;++x){h.SheetNames[x]=k[x].name}}var S=i?"bin":"xml";var C=n.workbooks[0].lastIndexOf("/");var _=(n.workbooks[0].slice(0,C+1)+"_rels/"+n.workbooks[0].slice(C+1)+".rels").replace(/^\//,"");if(!Ar(e,_))_="xl/_rels/workbook."+S+".rels";var A=vn(Fr(e,_,true),_.replace(/_rels.*/,"s5s"));if((n.metadata||[]).length>=1){r.xlmeta=Hl(Er(e,_o(n.metadata[0])),n.metadata[0],r)}if((n.people||[]).length>=1){r.people=is(Er(e,_o(n.people[0])),r)}if(A)A=So(A,u.Sheets);var T=Er(e,"xl/worksheets/sheet.xml",true)?1:0;e:for(g=0;g!=h.Worksheets;++g){var E="sheet";if(A&&A[g]){w="xl/"+A[g][1].replace(/[\/]?xl\//,"");if(!Ar(e,w))w=A[g][1];if(!Ar(e,w))w=_.replace(/_rels\/.*$/,"")+A[g][1];E=A[g][2]}else{w="xl/worksheets/sheet"+(g+1-T)+"."+S;w=w.replace(/sheet0\./,"sheet.")}y=w.replace(/^(.*)(\/)([^\/]*)$/,"$1/_rels/$3.rels");if(r&&r.sheets!=null)switch(typeof r.sheets){case"number":if(g!=r.sheets)continue e;break;case"string":if(h.SheetNames[g].toLowerCase()!=r.sheets.toLowerCase())continue e;break;default:if(Array.isArray&&Array.isArray(r.sheets)){var F=false;for(var D=0;D!=r.sheets.length;++D){if(typeof r.sheets[D]=="number"&&r.sheets[D]==g)F=1;if(typeof r.sheets[D]=="string"&&r.sheets[D].toLowerCase()==h.SheetNames[g].toLowerCase())F=1}if(!F)continue e};}Co(e,w,y,h.SheetNames[g],g,b,s,E,r,u,o,c)}m={Directory:n,Workbook:u,Props:h,Custprops:d,Deps:v,Sheets:s,SheetNames:h.SheetNames,Strings:As,Styles:c,Themes:o,SSF:gr(X)};if(r&&r.bookFiles){if(e.files){m.keys=a;m.files=e.files}else{m.keys=[];m.files={};e.FullPaths.forEach(function(r,t){r=r.replace(/^Root Entry[\/]/,"");m.keys.push(r);m.files[r]=e.FileIndex[t]})}}if(r&&r.bookVBA){if(n.vba.length>0)m.vbaraw=Er(e,_o(n.vba[0]),true);else if(n.defaults&&n.defaults.bin===ls)m.vbaraw=Er(e,"xl/vbaProject.bin",true)}return m}function To(e,r){var t=r||{};var a="Workbook",n=Ye.find(e,a);try{a="/!DataSpaces/Version";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);parse_DataSpaceVersionInfo(n.content);a="/!DataSpaces/DataSpaceMap";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var i=parse_DataSpaceMap(n.content);if(i.length!==1||i[0].comps.length!==1||i[0].comps[0].t!==0||i[0].name!=="StrongEncryptionDataSpace"||i[0].comps[0].v!=="EncryptedPackage")throw new Error("ECMA-376 Encrypted file bad "+a);a="/!DataSpaces/DataSpaceInfo/StrongEncryptionDataSpace";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var s=parse_DataSpaceDefinition(n.content);if(s.length!=1||s[0]!="StrongEncryptionTransform")throw new Error("ECMA-376 Encrypted file bad "+a);a="/!DataSpaces/TransformInfo/StrongEncryptionTransform/!Primary";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);parse_Primary(n.content)}catch(l){}a="/EncryptionInfo";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);var o=parse_EncryptionInfo(n.content);a="/EncryptedPackage";n=Ye.find(e,a);if(!n||!n.content)throw new Error("ECMA-376 Encrypted file missing "+a);if(o[0]==4&&typeof decrypt_agile!=="undefined")return decrypt_agile(o[1],n.content,t.password||"",t);if(o[0]==2&&typeof decrypt_std76!=="undefined")return decrypt_std76(o[1],n.content,t.password||"",t);throw new Error("File is password-protected")}function Eo(e,r){if(r.bookType=="ods")return bo(e,r);if(r.bookType=="numbers")return write_numbers_iwa(e,r);if(r.bookType=="xlsb")return Fo(e,r);return Do(e,r)}function Fo(e,r){Zi=1024;if(e&&!e.SSF){e.SSF=gr(X)}if(e&&e.SSF){Ue();ze(e.SSF);r.revssf=ar(e.SSF);r.revssf[e.SSF[65535]]=0;r.ssf=e.SSF}r.rels={};r.wbrels={};r.Strings=[];r.Strings.Count=0;r.Strings.Unique=0;if(Es)r.revStrings=new Map;else{r.revStrings={};r.revStrings.foo=[];delete r.revStrings.foo}var t=r.bookType=="xlsb"?"bin":"xml";var a=fs.indexOf(r.bookType)>-1;var n=un();ko(r=r||{});var i=Nr();var s="",l=0;r.cellXfs=[];Ms(r.cellXfs,{},{revssf:{General:0}});if(!e.Props)e.Props={};s="docProps/core.xml";Mr(i,s,Dn(e.Props,r));n.coreprops.push(s);bn(r.rels,2,s,dn.CORE_PROPS);s="docProps/app.xml";if(e.Props&&e.Props.SheetNames){}else if(!e.Workbook||!e.Workbook.Sheets)e.Props.SheetNames=e.SheetNames;else{var o=[];for(var c=0;c<e.SheetNames.length;++c)if((e.Workbook.Sheets[c]||{}).Hidden!=2)o.push(e.SheetNames[c]);e.Props.SheetNames=o}e.Props.Worksheets=e.Props.SheetNames.length;Mr(i,s,In(e.Props,r));n.extprops.push(s);bn(r.rels,3,s,dn.EXT_PROPS);if(e.Custprops!==e.Props&&er(e.Custprops||{}).length>0){s="docProps/custom.xml";Mr(i,s,Bn(e.Custprops,r));n.custprops.push(s);bn(r.rels,4,s,dn.CUST_PROPS)}for(l=1;l<=e.SheetNames.length;++l){var f={"!id":{}};var u=e.Sheets[e.SheetNames[l-1]];var h=(u||{})["!type"]||"sheet";switch(h){case"chart":;default:s="xl/worksheets/sheet"+l+"."+t;Mr(i,s,Xl(l-1,s,r,e,f));n.sheets.push(s);bn(r.wbrels,-1,"worksheets/sheet"+l+"."+t,dn.WS[0]);}if(u){var p=u["!comments"];var d=false;var m="";if(p&&p.length>0){m="xl/comments"+l+"."+t;Mr(i,m,Kl(p,m,r));n.comments.push(m);bn(f,-1,"../comments"+l+"."+t,dn.CMNT);d=true}if(u["!legacy"]){if(d)Mr(i,"xl/drawings/vmlDrawing"+l+".vml",Qi(l,u["!comments"]))}delete u["!comments"];delete u["!legacy"]}if(f["!id"].rId1)Mr(i,mn(s),gn(f))}if(r.Strings!=null&&r.Strings.length>0){s="xl/sharedStrings."+t;Mr(i,s,Jl(r.Strings,s,r));n.strs.push(s);bn(r.wbrels,-1,"sharedStrings."+t,dn.SST)}s="xl/workbook."+t;Mr(i,s,Vl(e,s,r));n.workbooks.push(s);bn(r.rels,1,s,dn.WB);s="xl/theme/theme1.xml";Mr(i,s,Xi(e.Themes,r));n.themes.push(s);bn(r.wbrels,-1,"theme/theme1.xml",dn.THEME);s="xl/styles."+t;Mr(i,s,Yl(e,s,r));n.styles.push(s);bn(r.wbrels,-1,"styles."+t,dn.STY);if(e.vbaraw&&a){s="xl/vbaProject.bin";Mr(i,s,e.vbaraw);n.vba.push(s);bn(r.wbrels,-1,"vbaProject.bin",dn.VBA)}s="xl/metadata."+t;Mr(i,s,ql(s));n.metadata.push(s);bn(r.wbrels,-1,"metadata."+t,dn.XLMETA);Mr(i,"[Content_Types].xml",pn(n,r));Mr(i,"_rels/.rels",gn(r.rels));Mr(i,"xl/_rels/workbook."+t+".rels",gn(r.wbrels));delete r.revssf;delete r.ssf;return i}function Do(e,r){Zi=1024;if(e&&!e.SSF){e.SSF=gr(X)}if(e&&e.SSF){Ue();ze(e.SSF);r.revssf=ar(e.SSF);r.revssf[e.SSF[65535]]=0;r.ssf=e.SSF}r.rels={};r.wbrels={};r.Strings=[];r.Strings.Count=0;r.Strings.Unique=0;if(Es)r.revStrings=new Map;else{r.revStrings={};r.revStrings.foo=[];delete r.revStrings.foo}var t="xml";var a=fs.indexOf(r.bookType)>-1;var n=un();ko(r=r||{});var i=Nr();var s="",l=0;r.cellXfs=[];Ms(r.cellXfs,{},{revssf:{General:0}});if(!e.Props)e.Props={};s="docProps/core.xml";Mr(i,s,Dn(e.Props,r));n.coreprops.push(s);bn(r.rels,2,s,dn.CORE_PROPS);s="docProps/app.xml";if(e.Props&&e.Props.SheetNames){}else if(!e.Workbook||!e.Workbook.Sheets)e.Props.SheetNames=e.SheetNames;else{var o=[];for(var c=0;c<e.SheetNames.length;++c)if((e.Workbook.Sheets[c]||{}).Hidden!=2)o.push(e.SheetNames[c]);e.Props.SheetNames=o}e.Props.Worksheets=e.Props.SheetNames.length;Mr(i,s,In(e.Props,r));n.extprops.push(s);bn(r.rels,3,s,dn.EXT_PROPS);if(e.Custprops!==e.Props&&er(e.Custprops||{}).length>0){s="docProps/custom.xml";Mr(i,s,Bn(e.Custprops,r));n.custprops.push(s);bn(r.rels,4,s,dn.CUST_PROPS)}var f=["SheetJ5"];r.tcid=0;for(l=1;l<=e.SheetNames.length;++l){var u={"!id":{}};var h=e.Sheets[e.SheetNames[l-1]];var p=(h||{})["!type"]||"sheet";switch(p){case"chart":;default:s="xl/worksheets/sheet"+l+"."+t;Mr(i,s,pl(l-1,r,e,u));n.sheets.push(s);bn(r.wbrels,-1,"worksheets/sheet"+l+"."+t,dn.WS[0]);}if(h){var d=h["!comments"];var m=false;var v="";if(d&&d.length>0){var g=false;d.forEach(function(e){e[1].forEach(function(e){if(e.T==true)g=true})});if(g){v="xl/threadedComments/threadedComment"+l+"."+t;Mr(i,v,ns(d,f,r));n.threadedcomments.push(v);bn(u,-1,"../threadedComments/threadedComment"+l+"."+t,dn.TCMNT)}v="xl/comments"+l+"."+t;Mr(i,v,ts(d,r));n.comments.push(v);bn(u,-1,"../comments"+l+"."+t,dn.CMNT);m=true}if(h["!legacy"]){if(m)Mr(i,"xl/drawings/vmlDrawing"+l+".vml",Qi(l,h["!comments"]))}delete h["!comments"];delete h["!legacy"]}if(u["!id"].rId1)Mr(i,mn(s),gn(u))}if(r.Strings!=null&&r.Strings.length>0){s="xl/sharedStrings."+t;Mr(i,s,ni(r.Strings,r));n.strs.push(s);bn(r.wbrels,-1,"sharedStrings."+t,dn.SST)}s="xl/workbook."+t;Mr(i,s,Ml(e,r));n.workbooks.push(s);bn(r.rels,1,s,dn.WB);s="xl/theme/theme1.xml";Mr(i,s,Xi(e.Themes,r));n.themes.push(s);bn(r.wbrels,-1,"theme/theme1.xml",dn.THEME);s="xl/styles."+t;Mr(i,s,Ii(e,r));n.styles.push(s);bn(r.wbrels,-1,"styles."+t,dn.STY);if(e.vbaraw&&a){s="xl/vbaProject.bin";Mr(i,s,e.vbaraw);n.vba.push(s);bn(r.wbrels,-1,"vbaProject.bin",dn.VBA)}s="xl/metadata."+t;Mr(i,s,Yi());n.metadata.push(s);bn(r.wbrels,-1,"metadata."+t,dn.XLMETA);if(f.length>1){s="xl/persons/person.xml";Mr(i,s,ss(f,r));n.people.push(s);bn(r.wbrels,-1,"persons/person.xml",dn.PEOPLE)}Mr(i,"[Content_Types].xml",pn(n,r));Mr(i,"_rels/.rels",gn(r.rels));Mr(i,"xl/_rels/workbook."+t+".rels",gn(r.wbrels));delete r.revssf;delete r.ssf;return i}function Oo(e,r){var t="";switch((r||{}).type||"base64"){case"buffer":return[e[0],e[1],e[2],e[3],e[4],e[5],e[6],e[7]];case"base64":t=w(e.slice(0,12));break;case"binary":t=e;break;case"array":return[e[0],e[1],e[2],e[3],e[4],e[5],e[6],e[7]];default:throw new Error("Unrecognized type "+(r&&r.type||"undefined"));}return[t.charCodeAt(0),t.charCodeAt(1),t.charCodeAt(2),t.charCodeAt(3),t.charCodeAt(4),t.charCodeAt(5),t.charCodeAt(6),t.charCodeAt(7)]}function Mo(e,r){if(Ye.find(e,"EncryptedPackage"))return To(e,r);return parse_xlscfb(e,r)}function No(e,r){var t,a=e;var n=r||{};if(!n.type)n.type=y&&Buffer.isBuffer(e)?"buffer":"base64";t=Pr(a,n);return Ao(t,n)}function Po(e,r){var t=0;e:while(t<e.length)switch(e.charCodeAt(t)){case 10:;case 13:;case 32:++t;break;case 60:return parse_xlml(e.slice(t),r);default:break e;}return Hn.to_workbook(e,r)}function Io(e,r){var t="",a=Oo(e,r);switch(r.type){case"base64":t=w(e);break;case"binary":t=e;break;case"buffer":t=e.toString("binary");break;case"array":t=vr(e);break;default:throw new Error("Unrecognized type "+r.type);}if(a[0]==239&&a[1]==187&&a[2]==191)t=ot(t);r.type="binary";return Po(t,r)}function Ro(e,r){var t=e;if(r.type=="base64")t=w(t);t=$cptable.utils.decode(1200,t.slice(2),"str");r.type="binary";return Po(t,r)}function Lo(e){return!e.match(/[^\x00-\x7F]/)?e:ct(e)}function Bo(e,r,t,a){if(a){t.type="string";return Hn.to_workbook(e,t)}return Hn.to_workbook(r,t)}function $o(e,r){o();var t=r||{};if(typeof ArrayBuffer!=="undefined"&&e instanceof ArrayBuffer)return $o(new Uint8Array(e),(t=gr(t),t.type="array",t));if(typeof Uint8Array!=="undefined"&&e instanceof Uint8Array&&!t.type)t.type=typeof Deno!=="undefined"?"buffer":"array";var a=e,n=[0,0,0,0],i=false;if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}Ts={};if(t.dateNF)Ts.dateNF=t.dateNF;if(!t.type)t.type=y&&Buffer.isBuffer(e)?"buffer":"base64";if(t.type=="file"){t.type=y?"buffer":"binary";a=Qe(e);if(typeof Uint8Array!=="undefined"&&!y)t.type="array"}if(t.type=="string"){i=true;t.type="binary";t.codepage=65001;a=Lo(e)}if(t.type=="array"&&typeof Uint8Array!=="undefined"&&e instanceof Uint8Array&&typeof ArrayBuffer!=="undefined"){var s=new ArrayBuffer(3),l=new Uint8Array(s);l.foo="bar";if(!l.foo){t=gr(t);t.type="array";return $o(E(a),t)}}switch((n=Oo(a,t))[0]){case 208:if(n[1]===207&&n[2]===17&&n[3]===224&&n[4]===161&&n[5]===177&&n[6]===26&&n[7]===225)return Mo(Ye.read(a,t),t);break;case 9:if(n[1]<=8)return parse_xlscfb(a,t);break;case 60:return parse_xlml(a,t);case 73:if(n[1]===73&&n[2]===42&&n[3]===0)throw new Error("TIFF Image File is not a spreadsheet");if(n[1]===68)return Vn(a,t);break;case 84:if(n[1]===65&&n[2]===66&&n[3]===76)return Wn.to_workbook(a,t);break;case 80:return n[1]===75&&n[2]<9&&n[3]<9?No(a,t):Bo(e,a,t,i);case 239:return n[3]===60?parse_xlml(a,t):Bo(e,a,t,i);case 255:if(n[1]===254){return Ro(a,t)}else if(n[1]===0&&n[2]===2&&n[3]===0)return WK_.to_workbook(a,t);break;case 0:if(n[1]===0){if(n[2]>=2&&n[3]===0)return WK_.to_workbook(a,t);if(n[2]===0&&(n[3]===8||n[3]===9))return WK_.to_workbook(a,t)}break;case 3:;case 131:;case 139:;case 140:return zn.to_workbook(a,t);case 123:if(n[1]===92&&n[2]===114&&n[3]===116)return RTF.to_workbook(a,t);break;case 10:;case 13:;case 32:return Io(a,t);case 137:if(n[1]===80&&n[2]===78&&n[3]===71)throw new Error("PNG Image File is not a spreadsheet");break;}if($n.indexOf(n[0])>-1&&n[2]<=12&&n[3]<=31)return zn.to_workbook(a,t);return Bo(e,a,t,i)}function zo(e,r){var t=r||{};t.type="file";return $o(e,t)}function Uo(e,r){switch(r.type){case"base64":;case"binary":break;case"buffer":;case"array":r.type="";break;case"file":return Ze(r.file,Ye.write(e,{type:y?"buffer":""}));case"string":throw new Error("'string' output type invalid for '"+r.bookType+"' files");default:throw new Error("Unrecognized type "+r.type);}return Ye.write(e,r)}function Wo(e,r){var t=gr(r||{});var a=Eo(e,t);return Ho(a,t)}function jo(e,r){var t=gr(r||{});var a=Do(e,t);return Ho(a,t)}function Ho(e,r){var t={};var a=y?"nodebuffer":typeof Uint8Array!=="undefined"?"array":"string";if(r.compression)t.compression="DEFLATE";if(r.password)t.type=a;else switch(r.type){case"base64":t.type="base64";break;case"binary":t.type="string";break;case"string":throw new Error("'string' output type invalid for '"+r.bookType+"' files");case"buffer":;case"file":t.type=a;break;default:throw new Error("Unrecognized type "+r.type);}var n=e.FullPaths?Ye.write(e,{fileType:"zip",type:{nodebuffer:"buffer",string:"binary"}[t.type]||t.type,compression:!!r.compression}):e.generate(t);if(typeof Deno!=="undefined"){if(typeof n=="string"){if(r.type=="binary"||r.type=="base64")return n;n=new Uint8Array(_(n))}}if(r.password&&typeof encrypt_agile!=="undefined")return Uo(encrypt_agile(n,r.password),r);if(r.type==="file")return Ze(r.file,n);return r.type=="string"?ot(n):n}function Vo(e,r){var t=r||{};var a=write_xlscfb(e,t);return Uo(a,t)}function Xo(e,r,t){if(!t)t="";var a=t+e;switch(r.type){case"base64":return b(ct(a));case"binary":return ct(a);case"string":return e;case"file":return Ze(r.file,a,"utf8");case"buffer":{if(y)return k(a,"utf8");else if(typeof TextEncoder!=="undefined")return(new TextEncoder).encode(a);else return Xo(a,{type:"binary"}).split("").map(function(e){return e.charCodeAt(0)})};}throw new Error("Unrecognized type "+r.type)}function Go(e,r){switch(r.type){case"base64":return b(e);case"binary":return e;case"string":return e;case"file":return Ze(r.file,e,"binary");case"buffer":{if(y)return k(e,"binary");else return e.split("").map(function(e){return e.charCodeAt(0)})};}throw new Error("Unrecognized type "+r.type)}function Yo(e,r){switch(r.type){case"string":;case"base64":;case"binary":var t="";for(var a=0;a<e.length;++a)t+=String.fromCharCode(e[a]);return r.type=="base64"?b(t):r.type=="string"?ot(t):t;case"file":return Ze(r.file,e);case"buffer":return e;default:throw new Error("Unrecognized type "+r.type);}}function Jo(e,r){o();Fl(e);var t=gr(r||{});if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=Jo(e,t);t.type="array";return _(a)}return jo(e,t)}function Ko(e,r){o();Fl(e);var t=gr(r||{});if(t.cellStyles){t.cellNF=true;t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=Ko(e,t);t.type="array";return _(a)}var n=0;if(t.sheet){if(typeof t.sheet=="number")n=t.sheet;else n=e.SheetNames.indexOf(t.sheet);if(!e.SheetNames[n])throw new Error("Sheet not found: "+t.sheet+" : "+typeof t.sheet)}switch(t.bookType||"xlsb"){case"xml":;case"xlml":return Xo(write_xlml(e,t),t);case"slk":;case"sylk":return Xo(Un.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"htm":;case"html":return Xo(no(e.Sheets[e.SheetNames[n]],t),t);case"txt":return Go(sc(e.Sheets[e.SheetNames[n]],t),t);case"csv":return Xo(ic(e.Sheets[e.SheetNames[n]],t),t,"\ufeff");case"dif":return Xo(Wn.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"dbf":return Yo(zn.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"prn":return Xo(Hn.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"rtf":return Xo(RTF.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"eth":return Xo(jn.from_sheet(e.Sheets[e.SheetNames[n]],t),t);case"fods":return Xo(bo(e,t),t);case"wk1":return Yo(WK_.sheet_to_wk1(e.Sheets[e.SheetNames[n]],t),t);case"wk3":return Yo(WK_.book_to_wk3(e,t),t);case"biff2":if(!t.biff)t.biff=2;case"biff3":if(!t.biff)t.biff=3;case"biff4":if(!t.biff)t.biff=4;return Yo(write_biff_buf(e,t),t);case"biff5":if(!t.biff)t.biff=5;case"biff8":;case"xla":;case"xls":if(!t.biff)t.biff=8;return Vo(e,t);case"xlsx":;case"xlsm":;case"xlam":;case"xlsb":;case"numbers":;case"ods":return Wo(e,t);default:throw new Error("Unrecognized bookType |"+t.bookType+"|");}}function qo(e){if(e.bookType)return;var r={xls:"biff8",htm:"html",slk:"sylk",socialcalc:"eth",Sh33tJS:"WTF"};var t=e.file.slice(e.file.lastIndexOf(".")).toLowerCase();if(t.match(/^\.[a-z]+$/))e.bookType=t.slice(1);e.bookType=r[e.bookType]||e.bookType}function Zo(e,r,t){var a=t||{};a.type="file";a.file=r;qo(a);return Ko(e,a)}function Qo(e,r,t){var a=t||{};a.type="file";a.file=r;qo(a);return Jo(e,a)}function ec(e,r,t,a){var n=t||{};n.type="file";n.file=e;qo(n);n.type="buffer";var i=a;if(!(i instanceof Function))i=t;return Je.writeFile(e,Ko(r,n),i)}function rc(e,r,t,a,n,i,s,l){var o=ya(t);var c=l.defval,f=l.raw||!Object.prototype.hasOwnProperty.call(l,"raw");var u=true;var h=n===1?[]:{};if(n!==1){if(Object.defineProperty)try{Object.defineProperty(h,"__rowNum__",{value:t,enumerable:false})}catch(p){h.__rowNum__=t}else h.__rowNum__=t}if(!s||e[t])for(var d=r.s.c;d<=r.e.c;++d){var m=s?e[t][d]:e[a[d]+o];if(m===undefined||m.t===undefined){if(c===undefined)continue;if(i[d]!=null){h[i[d]]=c}continue}var v=m.v;switch(m.t){case"z":if(v==null)break;continue;case"e":v=v==0?null:void 0;break;case"s":;case"d":;case"b":;case"n":break;default:throw new Error("unrecognized type "+m.t);}if(i[d]!=null){if(v==null){if(m.t=="e"&&v===null)h[i[d]]=null;else if(c!==undefined)h[i[d]]=c;else if(f&&v===null)h[i[d]]=null;else continue}else{h[i[d]]=f&&(m.t!=="n"||m.t==="n"&&l.rawNumbers!==false)?v:Pa(m,v,l)}if(v!=null)u=false}}return{row:h,isempty:u}}function tc(e,r){if(e==null||e["!ref"]==null)return[];var t={t:"n",v:0},a=0,n=1,i=[],s=0,l="";var o={s:{r:0,c:0},e:{r:0,c:0}};var c=r||{};var f=c.range!=null?c.range:e["!ref"];if(c.header===1)a=1;else if(c.header==="A")a=2;else if(Array.isArray(c.header))a=3;else if(c.header==null)a=0;switch(typeof f){case"string":o=Ma(f);break;case"number":o=Ma(e["!ref"]);o.s.r=f;break;default:o=f;}if(a>0)n=0;var u=ya(o.s.r);var h=[];var p=[];var d=0,m=0;var v=Array.isArray(e);var g=o.s.r,b=0;var w={};if(v&&!e[g])e[g]=[];var y=c.skipHidden&&e["!cols"]||[];var k=c.skipHidden&&e["!rows"]||[];for(b=o.s.c;b<=o.e.c;++b){if((y[b]||{}).hidden)continue;h[b]=Ca(b);t=v?e[g][b]:e[h[b]+u];switch(a){case 1:i[b]=b-o.s.c;break;case 2:i[b]=h[b];break;case 3:i[b]=c.header[b-o.s.c];break;default:if(t==null)t={w:"__EMPTY",t:"s"};l=s=Pa(t,null,c);m=w[s]||0;if(!m)w[s]=1;else{do{l=s+"_"+m++}while(w[l]);w[s]=m;w[l]=1}i[b]=l;}}for(g=o.s.r+n;g<=o.e.r;++g){if((k[g]||{}).hidden)continue;var x=rc(e,o,g,h,a,i,v,c);if(x.isempty===false||(a===1?c.blankrows!==false:!!c.blankrows))p[d++]=x.row}p.length=d;return p}var ac=/"/g;function nc(e,r,t,a,n,i,s,l){var o=true;var c=[],f="",u=ya(t);for(var h=r.s.c;h<=r.e.c;++h){if(!a[h])continue;var p=l.dense?(e[t]||[])[h]:e[a[h]+u];if(p==null)f="";else if(p.v!=null){o=false;f=""+(l.rawNumbers&&p.t=="n"?p.v:Pa(p,null,l));for(var d=0,m=0;d!==f.length;++d)if((m=f.charCodeAt(d))===n||m===i||m===34||l.forceQuotes){f='"'+f.replace(ac,'""')+'"';break}if(f=="ID")f='"ID"'}else if(p.f!=null&&!p.F){o=false;f="="+p.f;if(f.indexOf(",")>=0)f='"'+f.replace(ac,'""')+'"'}else f="";c.push(f)}if(l.blankrows===false&&o)return null;return c.join(s)}function ic(e,r){var t=[];var a=r==null?{}:r;if(e==null||e["!ref"]==null)return"";var n=Ma(e["!ref"]);var i=a.FS!==undefined?a.FS:",",s=i.charCodeAt(0);var l=a.RS!==undefined?a.RS:"\n",o=l.charCodeAt(0);var c=new RegExp((i=="|"?"\\|":i)+"+$");var f="",u=[];a.dense=Array.isArray(e);var h=a.skipHidden&&e["!cols"]||[];var p=a.skipHidden&&e["!rows"]||[];for(var d=n.s.c;d<=n.e.c;++d)if(!(h[d]||{}).hidden)u[d]=Ca(d);var m=0;for(var v=n.s.r;v<=n.e.r;++v){if((p[v]||{}).hidden)continue;f=nc(e,n,v,u,s,o,i,a);if(f==null){continue}if(a.strip)f=f.replace(c,"");if(f||a.blankrows!==false)t.push((m++?l:"")+f)}delete a.dense;return t.join("")}function sc(e,r){if(!r)r={};r.FS="\t";r.RS="\n";var t=ic(e,r);if(typeof $cptable=="undefined"||r.type=="string")return t;var a=$cptable.utils.encode(1200,t,"str");return String.fromCharCode(255)+String.fromCharCode(254)+a}function lc(e){var r="",t,a="";if(e==null||e["!ref"]==null)return[];var n=Ma(e["!ref"]),i="",s=[],l;var o=[];var c=Array.isArray(e);for(l=n.s.c;l<=n.e.c;++l)s[l]=Ca(l);for(var f=n.s.r;f<=n.e.r;++f){i=ya(f);for(l=n.s.c;l<=n.e.c;++l){r=s[l]+i;t=c?(e[f]||[])[l]:e[r];a="";if(t===undefined)continue;else if(t.F!=null){r=t.F;if(!t.f)continue;a=t.f;if(r.indexOf(":")==-1)r=r+":"+r}if(t.f!=null)a=t.f;else if(t.t=="z")continue;else if(t.t=="n"&&t.v!=null)a=""+t.v;else if(t.t=="b")a=t.v?"TRUE":"FALSE";else if(t.w!==undefined)a="'"+t.w;else if(t.v===undefined)continue;else if(t.t=="s")a="'"+t.v;else a=""+t.v;o[o.length]=r+"="+a}}return o}function oc(e,r,t){var a=t||{};var n=+!a.skipHeader;var i=e||{};var s=0,l=0;if(i&&a.origin!=null){if(typeof a.origin=="number")s=a.origin;else{var o=typeof a.origin=="string"?Ea(a.origin):a.origin;s=o.r;l=o.c}}var c;var f={s:{c:0,r:0},e:{c:l,r:s+r.length-1+n}};if(i["!ref"]){var u=Ma(i["!ref"]);f.e.c=Math.max(f.e.c,u.e.c);f.e.r=Math.max(f.e.r,u.e.r);if(s==-1){s=u.e.r+1;f.e.r=s+r.length-1+n}}else{if(s==-1){s=0;f.e.r=r.length-1+n}}var h=a.header||[],p=0;r.forEach(function(e,r){er(e).forEach(function(t){if((p=h.indexOf(t))==-1)h[p=h.length]=t;var o=e[t];var f="z";var u="";var d=Fa({c:l+p,r:s+r+n});c=fc(i,d);if(o&&typeof o==="object"&&!(o instanceof Date)){i[d]=o}else{if(typeof o=="number")f="n";else if(typeof o=="boolean")f="b";else if(typeof o=="string")f="s";else if(o instanceof Date){f="d";if(!a.cellDates){f="n";o=sr(o)}u=a.dateNF||X[14]}else if(o===null&&a.nullError){f="e";o=0}if(!c)i[d]=c={t:f,v:o};else{c.t=f;c.v=o;delete c.w;delete c.R;if(u)c.z=u}if(u)c.z=u}})});f.e.c=Math.max(f.e.c,l+h.length-1);var d=ya(s);if(n)for(p=0;p<h.length;++p)i[Ca(p+l)+d]={t:"s",v:h[p]};i["!ref"]=Oa(f);return i}function cc(e,r){return oc(null,e,r)}function fc(e,r,t){if(typeof r=="string"){if(Array.isArray(e)){var a=Ea(r);if(!e[a.r])e[a.r]=[];return e[a.r][a.c]||(e[a.r][a.c]={t:"z"})}return e[r]||(e[r]={t:"z"})}if(typeof r!="number")return fc(e,Fa(r));return fc(e,Fa({r:r,c:t||0}))}function uc(e,r){if(typeof r=="number"){if(r>=0&&e.SheetNames.length>r)return r;throw new Error("Cannot find sheet # "+r)}else if(typeof r=="string"){var t=e.SheetNames.indexOf(r);if(t>-1)return t;throw new Error("Cannot find sheet name |"+r+"|")}else throw new Error("Cannot find sheet |"+r+"|")}function hc(){return{SheetNames:[],Sheets:{}}}function pc(e,r,t,a){var n=1;if(!t)for(;n<=65535;++n,t=undefined)if(e.SheetNames.indexOf(t="Sheet"+n)==-1)break;if(!t||e.SheetNames.length>=65535)throw new Error("Too many worksheets");if(a&&e.SheetNames.indexOf(t)>=0){var i=t.match(/(^.*?)(\d+)$/);n=i&&+i[2]||0;var s=i&&i[1]||t;for(++n;n<=65535;++n)if(e.SheetNames.indexOf(t=s+n)==-1)break}Tl(t);if(e.SheetNames.indexOf(t)>=0)throw new Error("Worksheet with name |"+t+"| already exists!");e.SheetNames.push(t);e.Sheets[t]=r;return t}function dc(e,r,t){if(!e.Workbook)e.Workbook={};if(!e.Workbook.Sheets)e.Workbook.Sheets=[];var a=uc(e,r);if(!e.Workbook.Sheets[a])e.Workbook.Sheets[a]={};switch(t){case 0:;case 1:;case 2:break;default:throw new Error("Bad sheet visibility setting "+t);}e.Workbook.Sheets[a].Hidden=t}function mc(e,r){e.z=r;return e}function vc(e,r,t){if(!r){delete e.l}else{e.l={Target:r};if(t)e.l.Tooltip=t}return e}function gc(e,r,t){return vc(e,"#"+r,t)}function bc(e,r,t){if(!e.c)e.c=[];e.c.push({t:r,a:t||"SheetJS"})}function wc(e,r,t,a){var n=typeof r!="string"?r:Ma(r);var i=typeof r=="string"?r:Oa(r);for(var s=n.s.r;s<=n.e.r;++s)for(var l=n.s.c;l<=n.e.c;++l){var o=fc(e,s,l);o.t="n";o.F=i;delete o.v;if(s==n.s.r&&l==n.s.c){o.f=t;if(a)o.D=true}}return e}var yc={encode_col:Ca,encode_row:ya,encode_cell:Fa,encode_range:Oa,decode_col:Sa,decode_row:wa,split_cell:Ta,decode_cell:Ea,decode_range:Da,format_cell:Pa,sheet_add_aoa:Ra,sheet_add_json:oc,sheet_add_dom:io,aoa_to_sheet:La,json_to_sheet:cc,table_to_sheet:so,table_to_book:lo,sheet_to_csv:ic,sheet_to_txt:sc,sheet_to_json:tc,sheet_to_html:no,sheet_to_formulae:lc,sheet_to_row_object_array:tc,sheet_get_cell:fc,book_new:hc,book_append_sheet:pc,book_set_sheet_visibility:dc,cell_set_number_format:mc,cell_set_hyperlink:vc,cell_set_internal_link:gc,cell_add_comment:bc,sheet_set_array_formula:wc,consts:{SHEET_VISIBLE:0,SHEET_HIDDEN:1,SHEET_VERY_HIDDEN:2}};if(typeof parse_xlscfb!=="undefined")e.parse_xlscfb=parse_xlscfb;e.parse_zip=Ao;e.read=$o;e.readFile=zo;e.readFileSync=zo;e.write=Ko;e.writeFile=Zo;e.writeFileSync=Zo;e.writeFileAsync=ec;e.utils=yc;e.writeXLSX=Jo;e.writeFileXLSX=Qo;e.SSF=We;if(typeof __stream!=="undefined")e.stream=__stream;if(typeof Ye!=="undefined")e.CFB=Ye;if(typeof require!=="undefined"){var kc=undefined;if((kc||{}).Readable)set_readable(kc.Readable)}}if(typeof exports!=="undefined")make_xlsx_lib(exports);else if(typeof module!=="undefined"&&module.exports)make_xlsx_lib(module.exports);else if(typeof define==="function"&&define.amd)define("xlsx",function(){if(!XLSX.version)make_xlsx_lib(XLSX);return XLSX});else make_xlsx_lib(XLSX);if(typeof window!=="undefined"&&!window.XLSX)try{window.XLSX=XLSX}catch(e){}
 </script>
 <script>
-const AWARD_SLOTS = 6;
-let FILES = [];          // {name, staffName, month, awards:{slot:{code,who,workLink,rubricTotal,likesRaw,likeBonus,htmlBonus,finalScore,reason,comment}}, allScores:{code:finalScore}}
-let decisions = {};      // slot -> {code, who, workLink, rubricTotal, likesRaw, likeBonus, htmlBonus, finalScore, reason, comment}
+const AWARD_N   = 6;    // 受賞（上位）
+const NOMINEE_N = 10;   // ノミネート（上位）
+let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
+let pinned = {};  // code -> 総合順位（手動固定 1..N）
 
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
 function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
 let tt;
-function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3200); }
+function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3600); }
 
 /* ---------- 取り込み ---------- */
-function findSheet(wb, requiredHeads, excludeHeads){
+// 必須ヘッダを持つシートのうち、データ行が最も多いものを返す（＝全エントリーシート。受賞一覧は6行なので選ばれない）
+function findEntriesSheet(wb, requiredHeads){
+  let best = null;
+  for(const name of wb.SheetNames){
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
+    if(rows.length < 2) continue;
+    const head = rows[0].map(x=>String(x).trim());
+    if(!requiredHeads.every(h=>head.includes(h))) continue;
+    if(!best || rows.length > best.rows.length) best = {name, rows, head};
+  }
+  return best;
+}
+function findSheet(wb, requiredHeads){
   for(const name of wb.SheetNames){
     const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
     if(!rows.length) continue;
     const head = rows[0].map(x=>String(x).trim());
-    if(!requiredHeads.every(h=>head.includes(h))) continue;
-    if(excludeHeads && excludeHeads.some(h=>head.includes(h))) continue;
-    return {name, rows, head};
+    if(requiredHeads.every(h=>head.includes(h))) return {name, rows, head};
   }
   return null;
 }
@@ -162,255 +157,221 @@ function readFile(file){
   rd.onload = () => {
     try{
       const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
-      const awardSheet = findSheet(wb, ['EntryCode','受賞順位']);
-      if(!awardSheet){ toast(`${file.name}：受賞一覧シートが見つかりません`); return; }
-      const h = awardSheet.head;
-      const col = n => h.indexOf(n);
-      const g = (row,n) => { const i = col(n); return i>=0 ? String(row[i]??'').trim() : ''; };
-      const awards = {};
-      let staffName = '', month = '';
-      awardSheet.rows.slice(1).forEach(row=>{
+      // 全エントリー：EntryCode＋最終スコア を持つ最大行数のシート
+      const sheet = findEntriesSheet(wb, ['EntryCode','最終スコア']);
+      if(!sheet){ toast(`${file.name}：全エントリーシート（EntryCode・最終スコアの列）が見つかりません`); return; }
+      const h = sheet.head, col = n => h.indexOf(n), g = (row,n) => { const i = col(n); return i>=0 ? String(row[i]??'').trim() : ''; };
+      // 作業者名・対象月：受賞一覧シート（作業者列）があればそこから
+      let memberName = '', month = '';
+      const award = findSheet(wb, ['EntryCode','受賞順位','作業者']);
+      if(award){
+        const ah = award.head, ac = n => ah.indexOf(n);
+        for(const row of award.rows.slice(1)){
+          if(!memberName && ac('作業者')>=0) memberName = String(row[ac('作業者')]??'').trim();
+          if(!month && ac('対象月')>=0) month = String(row[ac('対象月')]??'').trim();
+          if(memberName && month) break;
+        }
+      }
+      const entries = {};
+      sheet.rows.slice(1).forEach(row=>{
         const code = g(row,'EntryCode'); if(!code) return;
-        const slot = +g(row,'受賞順位'); if(!slot) return;
-        if(!staffName) staffName = g(row,'作業者');
         if(!month) month = g(row,'対象月');
-        awards[slot] = {
-          code, who: g(row,'応募者・部署'), workLink: g(row,'作品リンク'),
-          rubricTotal: num(g(row,'ルーブリック合計')), likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
+        entries[code] = {
+          who: g(row,'応募者・部署'),
+          finalScore: num(g(row,'最終スコア')),
+          rubricTotal: num(g(row,'ルーブリック合計')),
           likeBonus: num(g(row,'いいね加点')), htmlBonus: num(g(row,'HTML加点')),
-          finalScore: num(g(row,'最終スコア')), reason: g(row,'受賞理由'), comment: g(row,'講評コメント'),
+          likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
+          comment: g(row,'講評コメント'),
         };
       });
-      if(!Object.keys(awards).length){ toast(`${file.name}：受賞データが見つかりません`); return; }
-      if(!staffName) staffName = file.name.replace(/\.(xlsx|xlsm)$/i,'');
-      // 全エントリー（スコア突合用・任意）
-      const allSheet = findSheet(wb, ['EntryCode','最終スコア'], ['受賞順位']);
-      const allScores = {};
-      if(allSheet){
-        const h2 = allSheet.head; const c2 = n=>h2.indexOf(n);
-        allSheet.rows.slice(1).forEach(row=>{
-          const code = String(row[c2('EntryCode')]??'').trim(); if(!code) return;
-          const sc = num(row[c2('最終スコア')]);
-          if(sc !== null) allScores[code] = sc;
-        });
-      }
-      FILES = FILES.filter(f=>f.name !== file.name);
-      FILES.push({name:file.name, staffName, month, awards, allScores});
+      if(!Object.keys(entries).length){ toast(`${file.name}：エントリーデータが見つかりません`); return; }
+      if(!memberName) memberName = file.name.replace(/\.(xlsx|xlsm)$/i,'');
+      FILES = FILES.filter(f => f.name !== file.name);
+      FILES.push({ name:file.name, memberName, month, entries });
       render();
-      toast(`${file.name}：${staffName}さんの受賞${Object.keys(awards).length}件を読み込みました`);
+      const scored = Object.values(entries).filter(e=>e.finalScore!=null).length;
+      toast(`${file.name}：${memberName} の採点 ${scored}件（全${Object.keys(entries).length}件）を読み込みました`);
     }catch(err){ toast(`${file.name} を開けませんでした`); }
   };
   rd.readAsArrayBuffer(file);
 }
 
-/* ---------- 突合ロジック ---------- */
-function slotGroups(slot){
-  const cands = FILES.map(f=>({file:f, a:f.awards[slot]})).filter(x=>x.a);
-  const groups = {};
-  cands.forEach(({file,a})=>{
-    if(!groups[a.code]) groups[a.code] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
-      likesRaw:a.likesRaw, likesGivenRaw:a.likesGivenRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore, reasons:[], staff:[]};
-    groups[a.code].staff.push(file.staffName);
-    groups[a.code].reasons.push({staff:file.staffName, reason:a.reason, comment:a.comment});
+/* ---------- 集計 ---------- */
+// 全メンバーのEntryCodeを統合し、最終スコアを「採点した人だけ」で平均する
+function aggregate(){
+  const codes = [...new Set(FILES.flatMap(f=>Object.keys(f.entries)))];
+  return codes.map(code=>{
+    const per = FILES.map(f=>({member:f.memberName, e:f.entries[code]})).filter(x=>x.e);
+    const scores = per.filter(x=>x.e.finalScore!=null).map(x=>({member:x.member, score:x.e.finalScore}));
+    const avg = scores.length ? Math.round(scores.reduce((s,x)=>s+x.score,0)/scores.length*10)/10 : null;
+    const base = per.map(x=>x.e).find(e=>e.who) || (per[0] && per[0].e) || {};
+    return {
+      code, who: base.who||'', avg, scoredCount: scores.length, memberScores: scores,
+      likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus, htmlBonus: base.htmlBonus,
+      comments: per.map(x=>({member:x.member, comment:x.e.comment})).filter(x=>x.comment),
+    };
   });
-  return Object.values(groups);
 }
-function scoreMismatches(){
-  const byCode = {};
-  FILES.forEach(f=>{
-    Object.entries(f.allScores||{}).forEach(([code,sc])=>{
-      (byCode[code] = byCode[code]||[]).push({staff:f.staffName, score:sc});
-    });
+// 平均降順に総合順位を付ける。pinned（手動固定）を優先し、残りを平均順で詰める
+function computeRanks(agg){
+  const scored = agg.filter(a=>a.avg!=null).slice()
+    .sort((a,b)=> b.avg - a.avg || (a.code < b.code ? -1 : 1));
+  const N = scored.length;
+  const ranks = {}; const used = new Set();
+  // 手動固定を先に確定（範囲内・重複しない分だけ）
+  scored.forEach(a=>{
+    const r = pinned[a.code];
+    if(r && r>=1 && r<=N && !used.has(r)){ ranks[a.code] = r; used.add(r); }
   });
-  const out = [];
-  Object.entries(byCode).forEach(([code,list])=>{
-    const uniq = [...new Set(list.map(x=>x.score))];
-    if(uniq.length > 1) out.push({code, list});
+  // 残りを平均順に、空いている順位へ
+  let rank = 1;
+  scored.forEach(a=>{
+    if(ranks[a.code]) return;
+    while(used.has(rank)) rank++;
+    ranks[a.code] = rank; used.add(rank); rank++;
   });
-  return out;
+  return {ranks, N};
 }
-function ensureDecision(slot){
-  const groups = slotGroups(slot);
-  if(!groups.length) return;
-  if(!decisions[slot] && groups.length === 1){
-    const g0 = groups[0];
-    decisions[slot] = {code:g0.code, who:g0.who, workLink:g0.workLink, rubricTotal:g0.rubricTotal,
-      likesRaw:g0.likesRaw, likesGivenRaw:g0.likesGivenRaw, likeBonus:g0.likeBonus, htmlBonus:g0.htmlBonus, finalScore:g0.finalScore,
-      reason:g0.reasons[0].reason, comment:g0.reasons[0].comment};
-  }
-}
-function autoResolveAll(){ for(let s=1;s<=AWARD_SLOTS;s++) ensureDecision(s); }
 
 /* ---------- 描画 ---------- */
 function render(){
-  autoResolveAll();
-  document.getElementById('files').innerHTML = FILES.map((f,i)=>
-    `<div class="fchip"><b>${esc(f.staffName)}</b><span class="cnt">${esc(f.month||'対象月不明')} ・ 受賞${Object.keys(f.awards).length}件</span><button data-x="${i}">×</button></div>`
-  ).join('');
+  document.getElementById('files').innerHTML = FILES.map((f,i)=>{
+    const scored = Object.values(f.entries).filter(e=>e.finalScore!=null).length;
+    return `<div class="fchip"><b>${esc(f.memberName)}</b><span class="cnt">${esc(f.month||'対象月不明')} ・ 採点${scored}件</span><button data-x="${i}">×</button></div>`;
+  }).join('');
   document.getElementById('files').querySelectorAll('[data-x]').forEach(b=>{
     b.onclick = () => { FILES.splice(+b.dataset.x,1); render(); };
   });
 
   const out = document.getElementById('out');
-  if(!FILES.length){ out.innerHTML=''; updateHeader(); return; }
+  if(!FILES.length){ out.innerHTML=''; updateHeader(0,0,0); return; }
+
+  const agg = aggregate();
+  const {ranks, N} = computeRanks(agg);
+  const rankOf = c => ranks[c] || null;
+  // 表示順：総合順位（採点済み）→ 未採点は末尾
+  const sorted = agg.slice().sort((a,b)=>{
+    const ra = rankOf(a.code), rb = rankOf(b.code);
+    if(ra && rb) return ra - rb;
+    if(ra) return -1; if(rb) return 1;
+    return (a.code < b.code ? -1 : 1);
+  });
 
   const months = [...new Set(FILES.map(f=>f.month).filter(Boolean))];
   let html = '';
   if(months.length > 1){
-    html += `<div class="warnbar">読み込んだファイルの対象月が一致していません（${months.map(esc).join(' / ')}）。同じ月のファイルどうしか突合しないでください。</div>`;
+    html += `<div class="warnbar">読み込んだファイルの対象月が一致していません（${months.map(esc).join(' / ')}）。同じ月のメンバー結果どうしで集計してください。</div>`;
   }
 
-  html += `<div class="panel"><h2>受賞候補 ${AWARD_SLOTS}件の突合 <span>順位ごとに全員の選出結果を比較します</span></h2>`;
-  for(let slot=1; slot<=AWARD_SLOTS; slot++){
-    const groups = slotGroups(slot);
-    const status = !groups.length ? 'empty2' : (groups.length===1 ? 'ok' : 'bad');
-    const statusLabel = !groups.length ? '未入力' : (groups.length===1 ? '一致' : `不一致（${groups.length}件の候補）`);
-    html += `<div class="slot-card"><div class="slot-top">
-      <span class="slot-rk">${slot}位</span>
-      <span class="slot-status ${status}">${statusLabel}</span>
-    </div><div class="slot-body">`;
-    if(!groups.length){
-      html += `<div class="empty" style="padding:10px 0">どの作業者もこの順位を選んでいません</div>`;
-    }else{
-      const dec = decisions[slot];
-      groups.forEach(g=>{
-        const chosen = dec && dec.code === g.code;
-        html += `<div class="cand ${chosen?'chosen':''}">
-          <input type="radio" name="slot${slot}" value="${esc(g.code)}" ${chosen?'checked':''} data-slot="${slot}" data-pick>
-          <div class="ci">
-            <b>${esc(g.code)}</b> <span class="who">${esc(g.who)}</span>
-            <div class="sc">ルーブリック <b>${g.rubricTotal ?? '—'}</b> ／ いいね加点 <b>+${g.likeBonus ?? 0}</b>（もらう${g.likesRaw ?? 0}／押す${g.likesGivenRaw ?? 0}） ／ HTML加点 <b>+${g.htmlBonus ?? 0}</b> ／ 最終 <b>${g.finalScore ?? '—'}</b></div>
-            <div class="who-tags">${g.staff.map(s=>`<span class="wtag">${esc(s)}</span>`).join('')}</div>
-          </div>
-        </div>`;
-      });
-      html += `<div class="manual-row">
-        <span style="font-size:11.5px;color:var(--mute);white-space:nowrap">候補にない作品を手動指定</span>
-        <select data-manual="${slot}"><option value="">（選択しない）</option>${
-          [...new Set(FILES.flatMap(f=>Object.values(f.awards)))].filter((v,i,a)=>a.findIndex(x=>x.code===v.code)===i)
-            .map(a=>`<option value="${esc(a.code)}" ${dec&&dec.code===a.code&&!groups.some(g=>g.code===a.code)?'selected':''}>${esc(a.code)} ${esc(a.who)}</option>`).join('')
-        }</select>
-      </div>`;
-      if(dec){
-        const allReasons = groups.find(g=>g.code===dec.code)?.reasons || [];
-        html += `<div class="fields">
-          <div class="fl"><label>受賞理由（最終版）</label><textarea data-field="reason" data-slot="${slot}">${esc(dec.reason)}</textarea>
-            <div class="quickfill">${allReasons.filter(r=>r.reason).map(r=>`<span class="qf-btn" data-slot="${slot}" data-field="reason" data-text="${esc(r.reason)}">${esc(r.staff)}の文言</span>`).join('')}</div>
-          </div>
-          <div class="fl"><label>講評コメント（最終版）</label><textarea data-field="comment" data-slot="${slot}">${esc(dec.comment)}</textarea>
-            <div class="quickfill">${allReasons.filter(r=>r.comment).map(r=>`<span class="qf-btn" data-slot="${slot}" data-field="comment" data-text="${esc(r.comment)}">${esc(r.staff)}の文言</span>`).join('')}</div>
-          </div>
-        </div>`;
-      }
-    }
-    html += `</div></div>`;
-  }
-  html += `<div class="legend"><span><b>不一致</b>＝同じ順位で作業者ごとに違う作品が選ばれています。ラジオボタンでどちらを採用するか選んでください</span></div></div>`;
+  const memberHeads = FILES.map(f=>`<th class="n">${esc(f.memberName)}</th>`).join('');
+  html += `<div class="panel"><h2>集計結果（最終スコアの平均で順位付け） <span>上位${NOMINEE_N}＝ノミネート／上位${AWARD_N}＝受賞。手動で順位を固定できます</span></h2>
+    <div class="table-scroll"><table><thead><tr>
+      <th class="n">総合順位</th><th class="n">判定</th><th>EntryCode / 応募者</th>
+      <th class="n">平均<br>最終スコア</th>${memberHeads}<th class="n">採点<br>人数</th>
+      <th class="n">いいね加点</th><th class="n">HTML加点</th><th class="n">順位固定<br>（手動）</th>
+    </tr></thead><tbody>`;
 
-  const mism = scoreMismatches();
-  html += `<div class="panel"><h2>スコア不一致チェック <span>「全エントリー」シートを比較し、同じ作品でスコアが違う場合に検出します（マスターExcelの版違いの可能性）</span></h2>`;
-  if(!mism.length){
-    html += `<div class="empty">不一致はありません（比較対象データがない場合も含む）</div>`;
-  }else{
-    html += `<table><thead><tr><th>EntryCode</th><th>作業者ごとの最終スコア</th></tr></thead><tbody>` +
-      mism.map(m=>`<tr><td><b>${esc(m.code)}</b></td><td>${m.list.map(x=>`<span class="diffsc">${esc(x.staff)}: ${x.score}</span>`).join(' ／ ')}</td></tr>`).join('') +
-      `</tbody></table>`;
-  }
-  html += `</div>`;
+  sorted.forEach(a=>{
+    const r = rankOf(a.code);
+    const isWin = r && r <= AWARD_N, isNom = r && r <= NOMINEE_N;
+    const cls = isWin ? 'award' : (isNom ? 'nominee' : '');
+    const badge = isWin ? '<span class="badge win">受賞</span>' : (isNom ? '<span class="badge nom">ノミネート</span>' : '<span style="color:#c3cad4">—</span>');
+    const mcells = FILES.map(f=>{
+      const e = f.entries[a.code];
+      const v = e && e.finalScore!=null ? e.finalScore : null;
+      return `<td class="n"><span class="msc ${v==null?'na':''}">${v==null?'—':v}</span></td>`;
+    }).join('');
+    const pinVal = pinned[a.code] || '';
+    html += `<tr class="${cls}">
+      <td class="n"><span class="rk">${r || '—'}</span></td>
+      <td class="n">${badge}</td>
+      <td><b>${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
+      <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
+      ${mcells}
+      <td class="n"><span class="cnt-pill">${a.scoredCount} / ${FILES.length}</span></td>
+      <td class="n">${a.likeBonus==null?'—':'+'+a.likeBonus}</td>
+      <td class="n">${a.htmlBonus==null?'—':'+'+a.htmlBonus}</td>
+      <td class="n"><input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${N}" value="${pinVal}" placeholder="auto" ${a.avg==null?'disabled':''}></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+    <div class="legend">
+      <span><b>受賞</b>＝平均順で上位${AWARD_N}位（金）</span>
+      <span><b>ノミネート</b>＝上位${NOMINEE_N}位（薄青）</span>
+      <span><b>平均最終スコア</b>＝各メンバーの最終スコアを、採点した人だけで平均</span>
+      <span><b>順位固定</b>＝誤検知・同点対応で総合順位を手動指定（空欄＝自動）。固定した作品はその順位に入り、残りが平均順で詰まります</span>
+    </div>
+  </div>`;
 
   out.innerHTML = html;
   wire();
-  updateHeader();
+  const nom = sorted.filter(a=>{ const r=rankOf(a.code); return r && r<=NOMINEE_N; }).length;
+  const win = sorted.filter(a=>{ const r=rankOf(a.code); return r && r<=AWARD_N; }).length;
+  updateHeader(agg.length, nom, win);
 }
-function updateHeader(){
+function updateHeader(entries, nom, win){
   document.getElementById('hFiles').innerHTML = FILES.length + '<small> 名</small>';
-  let okCount = 0, badCount = 0;
-  for(let s=1; s<=AWARD_SLOTS; s++){
-    const groups = slotGroups(s);
-    if(groups.length === 1) okCount++;
-    else if(groups.length > 1) badCount++;
-  }
-  document.getElementById('hOk').innerHTML = okCount + '<small> / ' + AWARD_SLOTS + '</small>';
-  const hBad = document.getElementById('hBad');
-  hBad.innerHTML = badCount + '<small> 件</small>';
-  hBad.className = 'v' + (badCount ? ' warn' : '');
-  const mismCount = scoreMismatches().length;
-  const hSm = document.getElementById('hScoreMismatch');
-  hSm.innerHTML = mismCount + '<small> 件</small>';
-  hSm.className = 'v' + (mismCount ? ' warn' : '');
+  document.getElementById('hEntries').innerHTML = entries + '<small> 件</small>';
+  document.getElementById('hNom').innerHTML = nom + '<small> / ' + NOMINEE_N + '</small>';
+  document.getElementById('hWin').innerHTML = win + '<small> / ' + AWARD_N + '</small>';
 }
 function wire(){
-  document.querySelectorAll('[data-pick]').forEach(r=>{
-    r.onchange = () => {
-      const slot = +r.dataset.slot;
-      const g = slotGroups(slot).find(x=>x.code===r.value);
-      if(!g) return;
-      decisions[slot] = {code:g.code, who:g.who, workLink:g.workLink, rubricTotal:g.rubricTotal,
-        likesRaw:g.likesRaw, likesGivenRaw:g.likesGivenRaw, likeBonus:g.likeBonus, htmlBonus:g.htmlBonus, finalScore:g.finalScore,
-        reason:g.reasons[0].reason, comment:g.reasons[0].comment};
-      render();
+  document.querySelectorAll('.pin').forEach(inp=>{
+    inp.onchange = () => {
+      const code = inp.dataset.code;
+      let v = inp.value.trim();
+      if(v === ''){ delete pinned[code]; }
+      else {
+        let n = Math.round(Number(v));
+        const max = Number(inp.max) || 999;
+        if(isNaN(n) || n < 1){ delete pinned[code]; }
+        else { pinned[code] = Math.min(max, n); }
+      }
+      // blur中にテーブルをinnerHTMLで作り直すとDOMエラーになるため次のタイミングに遅延
+      setTimeout(render, 0);
     };
   });
-  document.querySelectorAll('[data-manual]').forEach(sel=>{
-    sel.onchange = () => {
-      const slot = +sel.dataset.manual;
-      if(!sel.value){ return; }
-      const a = FILES.flatMap(f=>Object.values(f.awards)).find(x=>x.code===sel.value);
-      if(!a) return;
-      decisions[slot] = {code:a.code, who:a.who, workLink:a.workLink, rubricTotal:a.rubricTotal,
-        likesRaw:a.likesRaw, likesGivenRaw:a.likesGivenRaw, likeBonus:a.likeBonus, htmlBonus:a.htmlBonus, finalScore:a.finalScore,
-        reason:a.reason, comment:a.comment};
-      render();
-    };
-  });
-  document.querySelectorAll('textarea[data-field]').forEach(ta=>{
-    ta.oninput = () => {
-      const slot = +ta.dataset.slot;
-      if(!decisions[slot]) return;
-      decisions[slot][ta.dataset.field] = ta.value;
-    };
-  });
-  document.querySelectorAll('.qf-btn').forEach(b=>{
-    b.onclick = () => {
-      const slot = +b.dataset.slot;
-      if(!decisions[slot]) return;
-      decisions[slot][b.dataset.field] = b.dataset.text;
-      render();
-    };
-  });
-}
-
-/* ---------- 確定チェック ---------- */
-function runCheck(){
-  const issues = [];
-  if(!FILES.length) issues.push('ファイルが読み込まれていません');
-  for(let s=1; s<=AWARD_SLOTS; s++){
-    const groups = slotGroups(s);
-    if(!groups.length){ issues.push(`${s}位：誰も選んでいません`); continue; }
-    if(!decisions[s]) issues.push(`${s}位：不一致のため採用する候補を選んでください`);
-  }
-  const mism = scoreMismatches();
-  if(mism.length) issues.push(`スコアが一致しない作品が${mism.length}件あります（マスターExcelの版を確認してください）`);
-  toast(issues.length ? issues[0] + (issues.length>1?` 他${issues.length-1}件`:'') : 'すべて確定しています');
-  return issues;
 }
 
 /* ---------- 書き出し ---------- */
 function exportXLSX(){
-  if(!FILES.length){ toast('ファイルを読み込んでください'); return; }
+  if(!FILES.length){ toast('採点メンバーのExcelを読み込んでください'); return; }
   const month = [...new Set(FILES.map(f=>f.month).filter(Boolean))][0] || '';
-  const rows = [['対象月','受賞順位','EntryCode','応募者・部署','作品リンク','ルーブリック合計','いいね（もらう）','いいね（押す）','いいね加点','HTML加点','最終スコア','受賞理由','講評コメント']];
-  for(let s=1; s<=AWARD_SLOTS; s++){
-    const d = decisions[s]; if(!d) continue;
-    rows.push([month, s, d.code, d.who, d.workLink, d.rubricTotal ?? '', d.likesRaw ?? '', d.likesGivenRaw ?? '', d.likeBonus ?? '', d.htmlBonus ?? '', d.finalScore ?? '', d.reason||'', d.comment||'']);
-  }
+  const agg = aggregate();
+  const {ranks} = computeRanks(agg);
+  const rankOf = c => ranks[c] || '';
+  const sorted = agg.slice().sort((a,b)=>{
+    const ra = ranks[a.code]||9999, rb = ranks[b.code]||9999;
+    return ra - rb || (a.code < b.code ? -1 : 1);
+  });
+  const memberCols = FILES.map(f=>`${f.memberName} 最終スコア`);
+  const head = ['総合順位','判定','受賞フラグ','ノミネートフラグ','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数']
+    .concat(memberCols)
+    .concat(['いいね（もらう）','いいね（押す）','いいね加点','HTML加点','講評コメント（各メンバー）']);
+  const rows = [head];
+  sorted.forEach(a=>{
+    const r = rankOf(a.code);
+    const isWin = r && r <= AWARD_N, isNom = r && r <= NOMINEE_N;
+    const memberScores = FILES.map(f=>{ const e = f.entries[a.code]; return (e && e.finalScore!=null) ? e.finalScore : ''; });
+    const comments = a.comments.map(c=>`【${c.member}】${c.comment}`).join(' / ');
+    rows.push([
+      r || '', isWin ? '受賞' : (isNom ? 'ノミネート' : ''), isWin ? '受賞' : '', isNom ? 'ノミネート' : '',
+      month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`,
+    ].concat(memberScores).concat([
+      a.likesRaw==null?'':a.likesRaw, a.likesGivenRaw==null?'':a.likesGivenRaw,
+      a.likeBonus==null?'':a.likeBonus, a.htmlBonus==null?'':a.htmlBonus, comments,
+    ]));
+  });
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:10},{wch:8},{wch:20},{wch:26},{wch:34},{wch:11},{wch:12},{wch:12},{wch:9},{wch:9},{wch:9},{wch:44},{wch:44}];
-  ws['!freeze'] = {xSplit:'0', ySplit:'1'};
-  XLSX.utils.book_append_sheet(wb, ws, '受賞一覧');
-  XLSX.writeFile(wb, `デビューライブ_受賞一覧_確定版_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
-  toast('確定版Excelを書き出しました');
+  ws['!cols'] = [{wch:8},{wch:10},{wch:8},{wch:12},{wch:10},{wch:20},{wch:26},{wch:11},{wch:8}]
+    .concat(FILES.map(()=>({wch:12}))).concat([{wch:11},{wch:11},{wch:9},{wch:9},{wch:50}]);
+  ws['!freeze'] = {xSplit:'2', ySplit:'1'};
+  ws['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:rows.length-1, c:head.length-1}})};
+  XLSX.utils.book_append_sheet(wb, ws, '集計結果');
+  XLSX.writeFile(wb, `デビューライブ_集計結果_${FILES.length}人平均_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
+  toast('集計結果Excelを書き出しました');
 }
 
 /* ---------- wiring ---------- */
@@ -421,10 +382,9 @@ drop.ondragleave = () => drop.classList.remove('on');
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); [...e.dataTransfer.files].forEach(readFile); };
 document.getElementById('btnAdd').onclick = () => document.getElementById('fileIn').click();
 document.getElementById('fileIn').onchange = e => { [...e.target.files].forEach(readFile); e.target.value=''; };
-document.getElementById('btnCheck').onclick = runCheck;
 document.getElementById('btnXLS').onclick = exportXLSX;
 document.getElementById('btnPrint').onclick = () => window.print();
-document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと突合結果を全て消します。よろしいですか？')){ FILES=[]; decisions={}; render(); } };
+document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと集計結果を全て消します。よろしいですか？')){ FILES=[]; pinned={}; render(); } };
 render();
 </script>
 </body>
