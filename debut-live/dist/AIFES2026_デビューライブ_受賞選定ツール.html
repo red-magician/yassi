@@ -260,7 +260,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 const LIKE_CAP = 25;        // いいね（もらう）加点の上限
 const GIVE_CAP = 15;        // いいね（押す）加点の上限
 const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう25＋押す15＝40）
-const HTML_BONUS_EACH = 5;  // 作品/手順書 それぞれのHTML加点
+const HTML_BONUS = 10;      // 作品ファイルがHTML形式なら一律+10（手順書の形式は問わない）
 const RUBRIC_MAX = 60;      // ルーブリック合計の満点（各観点は0〜10のまま、換算をこの満点に合わせる）
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
 const STORE_PREFIX = 'debutLiveTool_v1::';
@@ -463,8 +463,8 @@ function tryJoinedSheets(wb){
   return {entries: out, scoreSheetFound: !!scoreSheet};
 }
 function buildEntry(d){
-  const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS_EACH : 0;
-  const bonusProc = d.fmtProc === 'HTML' ? HTML_BONUS_EACH : 0;
+  const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS : 0;   // 作品ファイルがHTMLなら一律+10
+  const bonusProc = 0;                                       // 手順書の形式は加点に影響しない
   const likesGivenRaw = d.likesGivenRaw || 0;
   const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点（上限25）
   const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点（上限15）
@@ -988,7 +988,7 @@ function renderTable(excl){
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
       <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
       <td class="n" title="${esc(`もらう +${e.recvBonus}／押す +${e.giveBonus}`)}">${fmtBonus(e.likeBonus, LIKE_TOTAL_CAP)}</td>
-      <td class="n" title="${esc(`作品 ${e.fmtWork||'—'} → +${e.bonusWork}\n手順書 ${e.fmtProc||'—'} → +${e.bonusProc}`)}">${fmtBonus(e.htmlBonus, 10)}</td>
+      <td class="n" title="${esc(`作品ファイル形式：${e.fmtWork||'—'}（HTMLなら一律+10／手順書の形式は不問）`)}">${fmtBonus(e.htmlBonus, 10)}</td>
       <td class="n" id="fin-${esc(e.code)}"><span class="sc final ${e.hasScore?'':'na'}">${e.hasScore ? e.finalScore : '—'}</span></td>
       <td>${badges}</td>
       <td class="cmt"><textarea class="row-comment" data-code="${esc(e.code)}" placeholder="講評コメント（全件・任意）">${esc((notes[e.code]||{}).comment||'')}</textarea></td>
