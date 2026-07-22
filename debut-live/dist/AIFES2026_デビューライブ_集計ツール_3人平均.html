@@ -94,6 +94,10 @@ tr.nominee{background:#f7fafd}
   <button class="btn-gold" id="btnXLS">集計結果Excelを書き出す</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">全部消す</button>
+  <span class="sep"></span>
+  <label style="font-size:12px;color:var(--mute,#667)">講評コメントの採用元
+    <select id="commentMemberSel" style="margin-left:4px"><option value="">各メンバー全員（連結表示）</option></select>
+  </label>
   <span class="hint">各メンバーが受賞選定ツールで書き出したExcel（全エントリーシート入り）を3本まとめてドロップ。EntryCodeで突合し、最終スコアを平均して順位付け → 上位10＝ノミネート／上位6＝受賞。</span>
 </div>
 
@@ -123,6 +127,7 @@ const AWARD_N   = 6;    // 受賞（上位）
 const NOMINEE_N = 10;   // ノミネート（上位）
 let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
+let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
 
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
@@ -210,8 +215,27 @@ function aggregate(){
       code, who: base.who||'', avg, scoredCount: scores.length, memberScores: scores,
       likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus, htmlBonus: base.htmlBonus,
       comments: per.map(x=>({member:x.member, comment:x.e.comment})).filter(x=>x.comment),
+      primaryComment: (per.find(x=>x.member===commentMember) || {}).e?.comment || '',
     };
   });
+}
+// 講評コメント列に出す文字列。採用元メンバーが指定されていればその人のコメントのみ、無指定なら全員連結
+function commentTextOf(a){
+  return commentMember ? (a.primaryComment || '') : a.comments.map(c=>`【${c.member}】${c.comment}`).join(' / ');
+}
+function commentHeadLabel(){
+  return commentMember ? `講評コメント（${commentMember}）` : '講評コメント（各メンバー）';
+}
+function syncCommentMemberOptions(){
+  const sel = document.getElementById('commentMemberSel');
+  const names = FILES.map(f=>f.memberName);
+  const wanted = [''].concat(names);
+  const cur = [...sel.options].map(o=>o.value);
+  if(cur.length === wanted.length && cur.every((v,i)=>v===wanted[i])){ sel.value = commentMember; return; }
+  sel.innerHTML = '<option value="">各メンバー全員（連結表示）</option>' +
+    names.map(n=>`<option value="${esc(n)}">${esc(n)}のみ</option>`).join('');
+  if(!names.includes(commentMember)) commentMember = '';
+  sel.value = commentMember;
 }
 // 平均降順に総合順位を付ける。pinned（手動固定）を優先し、残りを平均順で詰める
 function computeRanks(agg){
@@ -236,6 +260,7 @@ function computeRanks(agg){
 
 /* ---------- 描画 ---------- */
 function render(){
+  syncCommentMemberOptions();
   document.getElementById('files').innerHTML = FILES.map((f,i)=>{
     const scored = Object.values(f.entries).filter(e=>e.finalScore!=null).length;
     return `<div class="fchip"><b>${esc(f.memberName)}</b><span class="cnt">${esc(f.month||'対象月不明')} ・ 採点${scored}件</span><button data-x="${i}">×</button></div>`;
@@ -348,13 +373,13 @@ function exportXLSX(){
   const memberCols = FILES.map(f=>`${f.memberName} 最終スコア`);
   const head = ['総合順位','判定','受賞フラグ','ノミネートフラグ','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数']
     .concat(memberCols)
-    .concat(['いいね（もらう）','いいね（押す）','いいね加点','HTML加点','講評コメント（各メンバー）']);
+    .concat(['いいね（もらう）','いいね（押す）','いいね加点','HTML加点',commentHeadLabel()]);
   const rows = [head];
   sorted.forEach(a=>{
     const r = rankOf(a.code);
     const isWin = r && r <= AWARD_N, isNom = r && r <= NOMINEE_N;
     const memberScores = FILES.map(f=>{ const e = f.entries[a.code]; return (e && e.finalScore!=null) ? e.finalScore : ''; });
-    const comments = a.comments.map(c=>`【${c.member}】${c.comment}`).join(' / ');
+    const comments = commentTextOf(a);
     rows.push([
       r || '', isWin ? '受賞' : (isNom ? 'ノミネート' : ''), isWin ? '受賞' : '', isNom ? 'ノミネート' : '',
       month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`,
@@ -366,12 +391,12 @@ function exportXLSX(){
   const wb = XLSX.utils.book_new();
 
   // シート1：受賞・ノミネート一覧（最終結果・上位のみ。受賞6件＋ノミネート10件を綺麗に）
-  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数'].concat(memberCols).concat(['講評コメント（各メンバー）']);
+  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数'].concat(memberCols).concat([commentHeadLabel()]);
   const finRows = [finHead];
   sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; }).forEach(a=>{
     const r = rankOf(a.code);
     const memberScores = FILES.map(f=>{ const e = f.entries[a.code]; return (e && e.finalScore!=null) ? e.finalScore : ''; });
-    const comments = a.comments.map(c=>`【${c.member}】${c.comment}`).join(' / ');
+    const comments = commentTextOf(a);
     finRows.push([r, r <= AWARD_N ? '受賞' : 'ノミネート', month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`]
       .concat(memberScores).concat([comments]));
   });
@@ -401,6 +426,7 @@ drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); [...e.data
 document.getElementById('btnAdd').onclick = () => document.getElementById('fileIn').click();
 document.getElementById('fileIn').onchange = e => { [...e.target.files].forEach(readFile); e.target.value=''; };
 document.getElementById('btnXLS').onclick = exportXLSX;
+document.getElementById('commentMemberSel').onchange = e => { commentMember = e.target.value; };
 document.getElementById('btnPrint').onclick = () => window.print();
 document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと集計結果を全て消します。よろしいですか？')){ FILES=[]; pinned={}; render(); } };
 render();
