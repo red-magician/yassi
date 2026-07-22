@@ -116,6 +116,7 @@ tr.nominee{background:#f7fafd}
 <script>
 const AWARD_N   = 6;    // 受賞（上位）
 const NOMINEE_N = 10;   // ノミネート（上位）
+const HTML_BONUS = 10;  // 作品ファイルがHTML形式なら一律+10（手順書の形式は問わない）
 let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
@@ -172,11 +173,20 @@ function readFile(file){
       sheet.rows.slice(1).forEach(row=>{
         const code = g(row,'EntryCode'); if(!code) return;
         if(!month) month = g(row,'対象月');
+        const rubricTotal = num(g(row,'ルーブリック合計'));
+        const likeBonus = num(g(row,'いいね加点'));
+        // HTML加点は取り込み側では信用せず、作品ファイル形式から常に再計算する
+        // （作品ファイルがHTMLなら一律+10、手順書の形式は不問。旧仕様＝作品+5/手順書+5で書き出された
+        //   古いExcelを読み込んでも、現行ルールで正しく再計算される）
+        const fmtWork = g(row,'作品ファイル形式');
+        const hasFmtWork = h.includes('作品ファイル形式');
+        const htmlBonus = hasFmtWork ? (fmtWork === 'HTML' ? HTML_BONUS : 0) : num(g(row,'HTML加点'));
+        const finalScore = (rubricTotal!=null && likeBonus!=null && htmlBonus!=null)
+          ? Math.round((rubricTotal + likeBonus + htmlBonus) * 10) / 10
+          : num(g(row,'最終スコア'));
         entries[code] = {
           who: g(row,'応募者・部署'),
-          finalScore: num(g(row,'最終スコア')),
-          rubricTotal: num(g(row,'ルーブリック合計')),
-          likeBonus: num(g(row,'いいね加点')), htmlBonus: num(g(row,'HTML加点')),
+          finalScore, rubricTotal, likeBonus, htmlBonus, fmtWork,
           likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
           comment: g(row,'講評コメント'),
         };
