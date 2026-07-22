@@ -25,11 +25,11 @@ for i, name in enumerate(names, start=1):
     fmt_proc = random.choice(fmts)
     likes = random.choice([2,5,10,18,25,30,40])         # もらう。25超えは上限テスト用
     likes_given = random.choice([0,3,8,13,15,20,34])    # 押す。15超えは上限テスト用
-    has_work_link = i != 12   # 1件だけ資料欠損にする
+    has_work_link = i != 12   # 1件だけ資料欠損にする（未提出のためURL・形式ともに空）
     row = [code, f'GID-{i:05d}', '2026年7月', who,
            (f'https://example.com/works/{code}' if has_work_link else ''),
            f'https://example.com/proc/{code}',
-           *axis, fmt_work, fmt_proc, likes, likes_given, f'{name}さんの体験談（AI生成ダミー講評）']
+           *axis, (fmt_work if has_work_link else ''), fmt_proc, likes, likes_given, f'{name}さんの体験談（AI生成ダミー講評）']
     ws.append(row)
 
 master_jp = os.path.join(HERE, 'ダミー_採点マスター_デビューライブ_7月.xlsx')

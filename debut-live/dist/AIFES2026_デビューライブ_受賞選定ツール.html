@@ -321,15 +321,17 @@ function findSheetByHeaders(wb, requiredHeads, excludeHeads){
   return null;
 }
 // requiredGroups: [['A'], ['B1','B2'], ...] のように「グループ内はOR・グループ間はAND」で判定する版
+// 条件を満たすシートが複数あれば、データ行が最も多いものを選ぶ（例：「受賞一覧」6件より「全エントリー」30件を優先）
 function findSheetByHeaderGroups(wb, requiredGroups){
+  let best = null;
   for(const name of wb.SheetNames){
     const rows = sheetRowsOf(wb, name);
     if(!rows.length) continue;
     const head = rows[0].map(x=>String(x).trim());
     if(!requiredGroups.every(group=>group.some(h=>head.includes(h)))) continue;
-    return {name, rows, head};
+    if(!best || rows.length > best.rows.length) best = {name, rows, head};
   }
-  return null;
+  return best;
 }
 function extOf(url){
   if(!url) return '';
@@ -477,7 +479,8 @@ function buildEntry(d){
   const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点（上限25）
   const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点（上限15）
   const likeBonus = recvBonus + giveBonus;                // いいね加点合計（上限40）
-  const gap = !d.workLink;                                    // 作品リンクが無い＝提出物欠損
+  // 作品リンクが無くても、作品ファイル形式（スタッフ書き出し済みExcート等）が分かっていれば提出済みとみなす
+  const gap = !d.workLink && !d.fmtWork;                       // どちらも無い＝提出物欠損
   // ルーブリック点数はスタッフが画面で編集できる。マスターにAI採点があれば初期値として使う（aiAxis）
   const aiAxis = d.hasScore ? d.axis.slice() : [null,null,null,null];
   return {
