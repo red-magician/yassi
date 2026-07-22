@@ -179,6 +179,9 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
   <button class="btn" id="btnLoadPast">過去の受賞者Excelを追加</button>
   <input type="file" id="filePast" accept=".xlsx,.xlsm" multiple hidden>
   <span class="sep"></span>
+  <button class="btn" id="btnLoadAgg">集計結果Excelを読み込む</button>
+  <input type="file" id="fileAgg" accept=".xlsx,.xlsm" hidden>
+  <span class="sep"></span>
   <button class="btn" id="btnCopyPrompt">① 採点プロンプトをコピー</button>
   <button class="btn" id="btnCopilot">② Copilot結果を取り込む</button>
   <button class="btn" id="btnCheck">入力チェック</button>
@@ -200,6 +203,11 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
   </div>
   <div class="files" id="pastFiles"></div>
   <div id="masterExclNote"></div>
+
+  <div class="pastdrop" id="aggDrop">
+    <b>集計ツールの結果Excel</b>
+    <span>「集計ツール（3人平均）」が書き出した「受賞・ノミネート一覧」シート入りのExcelをここにドロップすると、その総合順位（上位6件）を受賞候補として反映し、講評コメントも読み込みます（採点マスターを先に読み込んでおく必要があります）。</span>
+  </div>
 
   <div id="out"></div>
 </main>
@@ -696,6 +704,48 @@ function loadPastFile(file){
   };
   rd.readAsArrayBuffer(file);
 }
+/* ---------- Excel 読み込み（集計ツールの結果＝総合順位・講評コメント） ---------- */
+function loadAggregateFile(file){
+  if(!ENTRIES.length){ toast('先に採点マスターExcelを読み込んでください'); return; }
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
+      let sheetRows = null, sheetName = '';
+      for(const name of wb.SheetNames){
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
+        if(!rows.length) continue;
+        const head = (rows[0]||[]).map(x=>String(x).trim());
+        if(head.includes('EntryCode') && head.includes('総合順位')){ sheetRows = rows; sheetName = name; break; }
+      }
+      if(!sheetRows){ toast(`${file.name}：「総合順位」「EntryCode」列を含む集計結果シートが見つかりません`); return; }
+      const head = sheetRows[0].map(x=>String(x).trim());
+      const col = n => head.indexOf(n);
+      const iCode = col('EntryCode'), iRank = col('総合順位');
+      const iComment = head.findIndex(h=>h.startsWith('講評コメント'));
+      let applied = 0, rankApplied = 0, missing = 0;
+      sheetRows.slice(1).forEach(row=>{
+        const code = String(row[iCode]??'').trim(); if(!code) return;
+        const e = ENTRIES.find(x=>x.code===code);
+        if(!e){ missing++; return; }
+        const rank = Number(row[iRank]);
+        if(Number.isInteger(rank) && rank>=1 && rank<=AWARD_SLOTS){
+          Object.keys(pinned).forEach(c=>{ if(pinned[c]===rank && c!==code) delete pinned[c]; });
+          pinned[code] = rank; delete pinnedOut[code];
+          rankApplied++;
+        }
+        if(iComment>=0){
+          const comment = String(row[iComment]??'').trim();
+          if(comment){ notes[code] = notes[code] || {reason:'', comment:''}; notes[code].comment = comment; }
+        }
+        applied++;
+      });
+      autoRank(); render(); saveState();
+      toast(`${sheetName}：${applied}件反映（総合順位 ${rankApplied}件を受賞候補に設定${missing?` ／ 該当エントリー無しのため${missing}件はスキップ`:''}）`);
+    }catch(err){ toast(`${file.name} を開けませんでした`); }
+  };
+  rd.readAsArrayBuffer(file);
+}
 function excludedMap(){
   // submitter名 -> 除外理由（初出の月）。ドロップした過去Excel＋マスター内蔵の04_受賞者マスタの両方を反映
   const m = new Map();
@@ -1152,6 +1202,14 @@ pastDrop.ondragleave = () => pastDrop.classList.remove('on');
 pastDrop.ondrop = e => { e.preventDefault(); pastDrop.classList.remove('on'); [...e.dataTransfer.files].forEach(loadPastFile); };
 document.getElementById('btnLoadPast').onclick = () => document.getElementById('filePast').click();
 document.getElementById('filePast').onchange = e => { [...e.target.files].forEach(loadPastFile); e.target.value=''; };
+
+const aggDrop = document.getElementById('aggDrop');
+aggDrop.onclick = () => document.getElementById('fileAgg').click();
+aggDrop.ondragover = e => { e.preventDefault(); aggDrop.classList.add('on'); };
+aggDrop.ondragleave = () => aggDrop.classList.remove('on');
+aggDrop.ondrop = e => { e.preventDefault(); aggDrop.classList.remove('on'); if(e.dataTransfer.files[0]) loadAggregateFile(e.dataTransfer.files[0]); };
+document.getElementById('btnLoadAgg').onclick = () => document.getElementById('fileAgg').click();
+document.getElementById('fileAgg').onchange = e => { if(e.target.files[0]) loadAggregateFile(e.target.files[0]); e.target.value=''; };
 
 document.getElementById('btnCheck').onclick = runCheck;
 document.getElementById('checkClose').onclick = () => document.getElementById('checkModal').classList.remove('on');
