@@ -364,14 +364,32 @@ function exportXLSX(){
     ]));
   });
   const wb = XLSX.utils.book_new();
+
+  // シート1：受賞・ノミネート一覧（最終結果・上位のみ。受賞6件＋ノミネート10件を綺麗に）
+  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数'].concat(memberCols).concat(['講評コメント（各メンバー）']);
+  const finRows = [finHead];
+  sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; }).forEach(a=>{
+    const r = rankOf(a.code);
+    const memberScores = FILES.map(f=>{ const e = f.entries[a.code]; return (e && e.finalScore!=null) ? e.finalScore : ''; });
+    const comments = a.comments.map(c=>`【${c.member}】${c.comment}`).join(' / ');
+    finRows.push([r, r <= AWARD_N ? '受賞' : 'ノミネート', month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`]
+      .concat(memberScores).concat([comments]));
+  });
+  const wsFin = XLSX.utils.aoa_to_sheet(finRows);
+  wsFin['!cols'] = [{wch:8},{wch:10},{wch:10},{wch:20},{wch:26},{wch:11},{wch:8}].concat(FILES.map(()=>({wch:12}))).concat([{wch:50}]);
+  wsFin['!freeze'] = {xSplit:'2', ySplit:'1'};
+  XLSX.utils.book_append_sheet(wb, wsFin, '受賞・ノミネート一覧');
+
+  // シート2：全エントリー集計（全作品・監査用）
   const ws = XLSX.utils.aoa_to_sheet(rows);
   ws['!cols'] = [{wch:8},{wch:10},{wch:8},{wch:12},{wch:10},{wch:20},{wch:26},{wch:11},{wch:8}]
     .concat(FILES.map(()=>({wch:12}))).concat([{wch:11},{wch:11},{wch:9},{wch:9},{wch:50}]);
   ws['!freeze'] = {xSplit:'2', ySplit:'1'};
   ws['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:rows.length-1, c:head.length-1}})};
-  XLSX.utils.book_append_sheet(wb, ws, '集計結果');
+  XLSX.utils.book_append_sheet(wb, ws, '全エントリー集計');
+
   XLSX.writeFile(wb, `デビューライブ_集計結果_${FILES.length}人平均_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
-  toast('集計結果Excelを書き出しました');
+  toast('集計結果Excelを書き出しました（受賞・ノミネート一覧＋全エントリー集計）');
 }
 
 /* ---------- wiring ---------- */
