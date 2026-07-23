@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIFES2026 沖縄横展開 ヒアリング設計書</title>
+<style>
+  :root{
+    --navy:#1f3a5f; --navy-deep:#152a45; --gold:#c8a24b; --gold-soft:#f3ead2;
+    --ink:#20272e; --sub:#5b6b7a; --line:#d8dee6; --bg:#f4f6f9; --card:#fff;
+    --a:#2a6f5f; --a-soft:#e4f0ec; --b:#8a5a2b; --b-soft:#f3e9dd; --c:#5a4b8a; --c-soft:#ece8f5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 22px 60px}
+  header.doc{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-deep) 100%);color:#fff;
+    border-radius:12px;padding:26px 28px;box-shadow:0 4px 18px rgba(21,42,69,.18)}
+  header.doc .eyebrow{color:var(--gold);font-size:12px;letter-spacing:.14em;font-weight:700}
+  header.doc h1{margin:.35em 0 .2em;font-size:24px;line-height:1.35}
+  header.doc p{margin:.2em 0 0;color:#c9d5e4;font-size:13px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.18);font-size:12.5px;color:#dbe4ef}
+  .meta b{color:#fff}
+  h2.sec{display:flex;align-items:center;gap:10px;margin:34px 0 14px;font-size:18px;color:var(--navy);
+    padding-bottom:8px;border-bottom:2px solid var(--gold)}
+  h2.sec .tag{font-size:11px;font-weight:700;color:#fff;background:var(--navy);border-radius:20px;padding:3px 12px;letter-spacing:.02em}
+  .lead{background:var(--gold-soft);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:0 0 18px;font-size:13px;color:#5b4e2c}
+  .callout{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+  .callout h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
+  .tips{background:var(--a-soft);border:1px solid #bfe0d6;border-radius:10px;padding:14px 18px;margin:16px 0}
+  .tips h3{margin:0 0 6px;font-size:13.5px;color:var(--a)}
+  .tips ul{margin:6px 0 0;padding-left:18px}
+  .tips li{margin:3px 0;font-size:12.7px}
+  /* interview blocks */
+  .who{border-radius:12px;overflow:hidden;border:1px solid var(--line);margin:0 0 8px;background:var(--card)}
+  .who .head{padding:14px 18px;color:#fff}
+  .who.a .head{background:var(--a)} .who.b .head{background:var(--b)} .who.c .head{background:var(--c)}
+  .who .head .k{font-size:11px;letter-spacing:.12em;font-weight:700;opacity:.9}
+  .who .head .t{font-size:16px;font-weight:700;margin-top:2px}
+  .who .head .s{font-size:12px;opacity:.92;margin-top:3px}
+  .who .body{padding:6px 18px 16px}
+  .q{border-bottom:1px dashed var(--line);padding:14px 0}
+  .q:last-child{border-bottom:none}
+  .q .qn{display:inline-block;min-width:26px;font-weight:800;color:var(--navy)}
+  .q .qt{font-weight:600}
+  .q .aim{font-size:12px;color:var(--sub);margin:5px 0 0 26px;padding-left:10px;border-left:3px solid var(--line)}
+  .q .aim b{color:var(--ink)}
+  .q .probe{font-size:12px;color:var(--sub);margin:6px 0 0 26px}
+  .q .probe span{display:inline-block;background:#eef2f7;border-radius:6px;padding:1px 8px;margin:2px 4px 0 0;color:#40506010}
+  .q .probe .p{display:inline-block;background:#eef2f7;border-radius:6px;padding:1px 8px;margin:2px 4px 0 0;color:#42566d;font-size:11.5px}
+  .lines{margin:8px 0 0 26px}
+  .lines .l{border-bottom:1px solid #e2e7ee;height:20px}
+  .feed{font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;margin-left:8px;vertical-align:middle}
+  .feed.d1{background:var(--b-soft);color:var(--b)} .feed.d2{background:var(--a-soft);color:var(--a)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  table.map{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+  table.map th,table.map td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  table.map th{background:var(--navy);color:#fff;font-weight:600}
+  table.map tr:nth-child(even) td{background:#fafbfc}
+  .foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--sub)}
+  @media (max-width:640px){ .grid2{grid-template-columns:1fr} }
+  @media print{
+    body{background:#fff;font-size:11.5px}
+    .wrap{max-width:none;padding:0}
+    header.doc{box-shadow:none;border-radius:0}
+    .who,.callout,.tips{break-inside:avoid}
+    h2.sec{break-after:avoid}
+    .q{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc">
+    <div class="eyebrow">AI FES 2026 ／ 測定班タスク</div>
+    <h1>沖縄の高参加率を「他拠点で再現する」ためのヒアリング設計書</h1>
+    <p>沖縄で効いている成功要因を引き出し、① 他拠点アンバサダー向けの<b style="color:#fff">依頼事項リスト</b>と、② 未参加メンバーを口説く<b style="color:#fff">勧誘チラシ</b>の素材にする。</p>
+    <div class="meta">
+      <span><b>目的</b>：横展開（再現できる打ち手の抽出）</span>
+      <span><b>ヒアリング担当</b>：城間さん</span>
+      <span><b>対象拠点</b>：沖縄</span>
+      <span><b>作成</b>：AI FES 2026 事務局・測定班</span>
+    </div>
+  </header>
+
+  <p class="lead">
+    この設計書は「聞いて終わり」ではなく、<b>2つの成果物の素材を採るため</b>の質問票です。各質問に
+    <span class="feed d1">依頼事項へ</span> か <span class="feed d2">チラシへ</span> のタグを付けています。
+    タグを意識して、<b>そのまま素材に使える"具体エピソード・数字・本人の言葉"</b>を持ち帰ってください。
+  </p>
+
+  <div class="tips">
+    <h3>■ 記録のコツ（3ヒアリング共通）</h3>
+    <ul>
+      <li><b>要約せず"そのままの言葉"を採る</b>。チラシの声・依頼事項の具体例は、本人の口調のまま載せると刺さる。</li>
+      <li><b>「具体的には？」「例えば？」「何回くらい？」で必ず一段掘る</b>。「頑張った／盛り上げた」で止めない（それでは他拠点が真似できない）。</li>
+      <li><b>数字を拾う</b>：頻度（週◯回）・人数・時間・ビフォーアフター。因果（施策前後で変わったか）の裏付けになる。</li>
+      <li><b>引用の可否を一言ことわる</b>：「チラシや報告書で、お名前あり/なしで声を使わせてもらう可能性があります」。</li>
+    </ul>
+  </div>
+
+  <!-- ============ A: 大坪さん ============ -->
+  <h2 class="sec"><span class="tag">ヒアリング A</span> 大坪さん（沖縄アンバサダー）＝「手法」を引き出す</h2>
+  <p class="lead" style="background:var(--a-soft);border-color:var(--a);color:#274b41">
+    目的は<b>「大坪さん個人の属人技」と「他拠点でも真似できる行動」を仕分ける</b>こと。
+    各手法を<b>何を・どのくらいの頻度で・具体的にどうやったか</b>まで下ろして聞く（＝依頼事項Bの粒度）。所要目安 45〜60分。
+  </p>
+
+  <div class="who a">
+    <div class="head"><div class="k">INTERVIEW A</div><div class="t">大坪さん ヒアリング</div>
+      <div class="s">聞く相手＝アンバサダー本人／狙い＝再現できる「行動」の抽出</div></div>
+    <div class="body">
+
+      <div class="q">
+        <span class="qn">A1</span><span class="qt">参加を増やすために、日々の中で具体的にやっていることを、頻度とセットで全部教えてください。</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：手法の棚卸し。ここが依頼事項リストの本体になる。</div>
+        <div class="probe"><span class="p">朝礼／会議で？</span><span class="p">個別の声かけ？</span><span class="p">チャット・掲示？</span><span class="p">勉強会・もくもく会？</span><span class="p">週何回・誰に？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A2</span><span class="qt">一番最初の参加者（1人目・2人目）は、どうやって巻き込みましたか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：<b>"最初の火種"の作り方</b>。他拠点が0→1で最も詰まる所。転用価値が高い。</div>
+        <div class="probe"><span class="p">誰に最初に声をかけた？</span><span class="p">なぜその人？</span><span class="p">断られた時どうした？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A3</span><span class="qt">「やってみたら？」に渋る人に対して、どんな言葉・仕掛けでハードルを下げましたか？</span>
+        <span class="feed d1">依頼事項へ</span><span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：ハードルを下げる手法（依頼事項）＋、未参加者に効く殺し文句（チラシの見出し候補）。</div>
+        <div class="probe"><span class="p">よく出る断り文句は？</span><span class="p">それに何と返す？</span><span class="p">最初の一歩を軽くする工夫は？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A4</span><span class="qt">参加した人の成果や頑張りを、どう「見える化」「共有」していますか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：見える化・称賛の仕掛け（例：朝礼で"今週のバズ"紹介）。継続を生む王道施策。</div>
+        <div class="probe"><span class="p">誰に・どこで見せる？</span><span class="p">ランキング・表彰は？</span><span class="p">本人にどう伝える？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A5</span><span class="qt">一度参加した人が"続ける"ために、意識してやっていることはありますか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：継続（アクティブ率）の仕掛け。入口だけでなく継続の再現材料。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A6</span><span class="qt">今の手法のうち、「沖縄だからできた／沖縄特有」だと思うものと、「拠点に関係なく効くはず」と思うものを、分けるとどうなりますか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：<b>属人・地域固有 vs 汎用</b>の当事者仕分け。横展開の核心。ここで"汎用"に寄った手法を依頼事項の柱にする。</div>
+        <div class="probe"><span class="p">沖縄の距離感・人数・文化は効いた？</span><span class="p">他拠点でも同じことは起きる？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A7</span><span class="qt">施策を始める前と後で、参加の様子は変わりましたか？　きっかけになった出来事はありますか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：因果の裏取り（施策→参加増）。報告書で"効いた証拠"に使う。転機のエピソードは物語素材にも。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">A8</span><span class="qt">もし他拠点のアンバサダーに「これだけはやって」と1つだけ引き継ぐなら、何ですか？</span>
+        <span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：優先順位の当事者判断。依頼事項リストの<b>トップ項目</b>を決める材料。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q" style="background:#f6faf8;border-radius:8px;padding:12px 12px 12px 6px">
+        <span class="qn">A9</span><span class="qt">【お願い】ベネフィットのヒアリングをしたいので、<b>「最初は乗り気じゃなかったけど参加して良かった人」</b>と、<b>できれば今も参加していない人</b>を、数名ご紹介いただけますか？</span>
+        <div class="aim"><b>狙い</b>：ヒアリングB・Cの対象者を確保する導線（この場で依頼して手戻りを防ぐ）。</div>
+        <div class="lines"><div class="l"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ B: メンバー ============ -->
+  <h2 class="sec"><span class="tag">ヒアリング B</span> 参加メンバー（渋って→参加した人）＝「ベネフィット」を引き出す</h2>
+  <p class="lead" style="background:var(--b-soft);border-color:var(--b);color:#5a3c1e">
+    チラシは<b>勧誘の営業ツール</b>。効くのは「もともと前向きな人の良い話」ではなく、<b>渋っていた人の背中を押した瞬間</b>。
+    「反論 → それを崩した要因 → 得たメリット」を本人の言葉で採る。<b>各2〜3名</b>／1人 20〜30分。
+  </p>
+
+  <div class="who b">
+    <div class="head"><div class="k">INTERVIEW B</div><div class="t">参加メンバー ヒアリング</div>
+      <div class="s">聞く相手＝渋って→参加した人／狙い＝反論を崩す"声"の収集</div></div>
+    <div class="body">
+
+      <div class="q">
+        <span class="qn">B1</span><span class="qt">参加する前、正直に言って一番の「ためらい」や「面倒だな」と思ったことは何でしたか？</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：未参加者の<b>断り文句（反論）</b>そのもの。チラシの「あるある反論」欄になる。</div>
+        <div class="probe"><span class="p">時間がない？</span><span class="p">自分には無理そう？</span><span class="p">何をするか分からない？</span><span class="p">恥ずかしい？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">B2</span><span class="qt">それでも参加を決めたのは、何が・誰の一言が決め手でしたか？</span>
+        <span class="feed d2">チラシへ</span><span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：ハードルを崩した要因。チラシでは反論への"返し"に、依頼事項では「アンバサダーの効いた一手」に。</div>
+        <div class="probe"><span class="p">アンバサダーの声かけ？</span><span class="p">同僚がやってた？</span><span class="p">きっかけの敷居が低かった？</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">B3</span><span class="qt">実際に参加して得られた"良かったこと"を、具体的に1つ挙げるとしたら？</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：ベネフィットの本体。下の型で<b>どの種類の得か</b>を意識して拾う。</div>
+        <div class="probe"><span class="p">業務が楽/速くなった（実利）</span><span class="p">スキル・自信がついた</span><span class="p">単純に楽しい</span><span class="p">仲間・つながり</span><span class="p">評価・見られた</span></div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">B4</span><span class="qt">「やる前に思っていたこと」と「やった後」で、一番ギャップが大きかったのはどこですか？</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：Before→Afterの物語。「思ったより○○だった」はチラシで最も効くフレーズ。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">B5</span><span class="qt">今も続けている（またはまた参加したい）のは、なぜですか？</span>
+        <span class="feed d2">チラシへ</span><span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：継続の動機＝アクティブ率の源。依頼事項の「続けさせる仕掛け」の裏付けにも。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">B6</span><span class="qt">昔の自分と同じように迷っている人に一言かけるなら、何と言いますか？</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：<b>チラシのキャッチコピー</b>候補。当事者→未参加者への直球メッセージがそのまま使える。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ C: 未参加者 ============ -->
+  <h2 class="sec"><span class="tag">ヒアリング C</span> 未参加メンバー（軽く）＝「反論の生データ」を採る</h2>
+  <p class="lead" style="background:var(--c-soft);border-color:var(--c);color:#413672">
+    チラシが崩すべき"本物の壁"を、参加していない人の口から直接採る。<b>雑談ベースで3問・5〜10分</b>で十分。
+    （※説得はしない。あくまで「何が引っかかるか」を聞く。責める空気を出さない）
+  </p>
+
+  <div class="who c">
+    <div class="head"><div class="k">INTERVIEW C</div><div class="t">未参加メンバー ミニヒアリング</div>
+      <div class="s">聞く相手＝まだ参加していない人／狙い＝チラシで潰す反論の実像</div></div>
+    <div class="body">
+
+      <div class="q">
+        <span class="qn">C1</span><span class="qt">AI FESに参加していないのは、正直どんな理由が大きいですか？（責めているわけではないので率直に）</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：反論の実データ。B1（参加者の記憶）と突き合わせて、チラシの「あるある反論」を確定。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">C2</span><span class="qt">どんな条件・きっかけがあれば「ちょっとやってみようかな」と思えそうですか？</span>
+        <span class="feed d2">チラシへ</span><span class="feed d1">依頼事項へ</span>
+        <div class="aim"><b>狙い</b>：背中を押す条件。チラシのオファー設計と、依頼事項の「入口の敷居下げ」に効く。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+      <div class="q">
+        <span class="qn">C3</span><span class="qt">参加している人を見て、うらやましい・いいなと思うことはありますか？</span>
+        <span class="feed d2">チラシへ</span>
+        <div class="aim"><b>狙い</b>：未参加者が実は感じている潜在ベネフィット。チラシで最初に刺す一点になり得る。</div>
+        <div class="lines"><div class="l"></div><div class="l"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MAP ============ -->
+  <h2 class="sec"><span class="tag">ヒアリング後</span> 回答 → 成果物への流し込み</h2>
+  <div class="callout">
+    <h3>どの回答が、どの成果物のどこに入るか</h3>
+    <table class="map">
+      <tr><th>ヒアリング</th><th>採れるもの</th><th>流し込む先</th></tr>
+      <tr><td>A1〜A8（大坪さん）</td><td>手法・頻度・具体例・沖縄特有/汎用の仕分け</td><td><b>依頼事項リスト</b>（行動の依頼＋沖縄の具体例を併記／A8＝トップ項目／A6の"汎用"を柱に）</td></tr>
+      <tr><td>A7（大坪さん）</td><td>施策前後の変化・転機</td><td><b>報告書</b>の「効いた証拠」＋チラシの物語導入</td></tr>
+      <tr><td>B1・C1（反論）</td><td>ためらい・断り文句</td><td><b>チラシ</b>の「あるある反論」欄</td></tr>
+      <tr><td>B2（決め手）</td><td>ハードルを崩した要因</td><td><b>チラシ</b>の反論への"返し"／依頼事項の効いた一手</td></tr>
+      <tr><td>B3・B4・B5</td><td>得たメリット・Before→After・継続動機</td><td><b>チラシ</b>のベネフィット本体（実利/スキル/楽しさ/つながり/評価）</td></tr>
+      <tr><td>B6・C3</td><td>当事者の一言・潜在ベネフィット</td><td><b>チラシ</b>のキャッチコピー・見出し</td></tr>
+    </table>
+  </div>
+
+  <div class="tips" style="background:#eef2f7;border-color:var(--line)">
+    <h3 style="color:var(--navy)">■ 進め方の順番（推奨）</h3>
+    <ul>
+      <li><b>①大坪さん（A）を最初に</b>。手法が採れる＋B/Cの対象者を紹介してもらえる（A9）。</li>
+      <li><b>②紹介された参加メンバー（B）</b>→ <b>③未参加メンバー（C）</b>。B1とC1の反論が揃った時点で、チラシの骨子が固まる。</li>
+      <li>並行して測定班で<b>拠点別の参加率（エントリー率・アクティブ率）</b>を集計 → 報告書の"つかみ"に。<span style="color:var(--sub)">※実マスターExcelが要ります。</span></li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    AI FES 2026 測定班 ／ 沖縄横展開プロジェクト ・ ヒアリング設計書（v1）<br>
+    この設計書の狙い：聞いた内容を「依頼事項リスト（他拠点アンバサダー向け）」と「勧誘チラシ（未参加メンバー向け）」に、迷わず流し込めるようにすること。
+  </div>
+
+</div>
+</body>
+</html>
