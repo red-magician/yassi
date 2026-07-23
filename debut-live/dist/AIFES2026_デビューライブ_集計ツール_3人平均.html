@@ -335,10 +335,12 @@ function aggregate(){
     const per = FILES.map(f=>({member:f.memberName, e:f.entries[code]})).filter(x=>x.e);
     const scores = per.filter(x=>x.e.finalScore!=null).map(x=>({member:x.member, score:x.e.finalScore}));
     const avg = scores.length ? Math.round(scores.reduce((s,x)=>s+x.score,0)/scores.length*10)/10 : null;
+    const rubrics = per.filter(x=>x.e.rubricTotal!=null).map(x=>x.e.rubricTotal);
+    const avgRubric = rubrics.length ? Math.round(rubrics.reduce((s,x)=>s+x,0)/rubrics.length*10)/10 : null;
     const base = per.map(x=>x.e).find(e=>e.who) || (per[0] && per[0].e) || {};
     const withWork = per.map(x=>x.e).find(e=>e.workLink) || {};
     return {
-      code, who: base.who||'', avg, scoredCount: scores.length, memberScores: scores,
+      code, who: base.who||'', avg, avgRubric, scoredCount: scores.length, memberScores: scores,
       workLink: withWork.workLink||'', procLink: withWork.procLink||'',
       likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus, htmlBonus: base.htmlBonus,
       comments: per.map(x=>({member:x.member, comment:x.e.comment})).filter(x=>x.comment),
@@ -436,11 +438,13 @@ function render(){
 // 「採点比較」タブ：各メンバーの点数と平均が横並びで見える一覧（従来の集計表）
 function renderCompareTable(sorted, rankOf, N){
   const memberHeads = FILES.map(f=>`<th class="n">${esc(f.memberName)}</th>`).join('');
-  let html = `<div class="panel"><h2>採点比較（最終スコアの平均で順位付け） <span>上位${NOMINEE_N}＝ノミネート／上位${AWARD_N}＝受賞。手動で順位を固定できます</span></h2>
+  let html = `<div class="panel"><h2>採点比較（最終スコアの平均で順位付け） <span>上位${NOMINEE_N}＝ノミネート／上位${AWARD_N}＝受賞。手動で順位を固定できます。平均最終スコア＝平均ルーブリック＋いいね加点＋HTML加点</span></h2>
     <div class="table-scroll"><table><thead><tr>
       <th class="n">総合順位</th><th class="n">判定</th><th>EntryCode / 応募者</th>
-      <th class="n">平均<br>最終スコア</th>${memberHeads}<th class="n">採点<br>人数</th>
-      <th class="n">いいね加点</th><th class="n">HTML加点</th><th class="n">順位固定<br>（手動）</th>
+      <th class="n">平均<br>最終スコア</th>
+      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">HTML加点</th>
+      ${memberHeads}<th class="n">採点<br>人数</th>
+      <th class="n">順位固定<br>（手動）</th>
     </tr></thead><tbody>`;
 
   sorted.forEach(a=>{
@@ -459,10 +463,11 @@ function renderCompareTable(sorted, rankOf, N){
       <td class="n">${badge}</td>
       <td><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
       <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
-      ${mcells}
-      <td class="n"><span class="cnt-pill">${a.scoredCount} / ${FILES.length}</span></td>
+      <td class="n">${a.avgRubric==null?'—':a.avgRubric}</td>
       <td class="n">${a.likeBonus==null?'—':'+'+a.likeBonus}</td>
       <td class="n">${a.htmlBonus==null?'—':'+'+a.htmlBonus}</td>
+      ${mcells}
+      <td class="n"><span class="cnt-pill">${a.scoredCount} / ${FILES.length}</span></td>
       <td class="n"><input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${N}" value="${pinVal}" placeholder="auto" ${a.avg==null?'disabled':''}></td>
     </tr>`;
   });
@@ -486,7 +491,9 @@ function renderFinalTable(sorted, rankOf){
   }
   html += `<div class="table-scroll"><table><thead><tr>
       <th class="n">順位</th><th class="n">判定</th><th>EntryCode / 応募者</th>
-      <th class="n">平均<br>最終スコア</th><th class="n">順位固定<br>（手動）</th>
+      <th class="n">平均<br>最終スコア</th>
+      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">HTML加点</th>
+      <th class="n">順位固定<br>（手動）</th>
       <th>${esc(reasonHeadLabel())}</th><th>${esc(commentHeadLabel())}</th>
     </tr></thead><tbody>`;
   finalRows.forEach(a=>{
@@ -501,6 +508,9 @@ function renderFinalTable(sorted, rankOf){
       <td class="n">${badge}</td>
       <td><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
       <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
+      <td class="n">${a.avgRubric==null?'—':a.avgRubric}</td>
+      <td class="n">${a.likeBonus==null?'—':'+'+a.likeBonus}</td>
+      <td class="n">${a.htmlBonus==null?'—':'+'+a.htmlBonus}</td>
       <td class="n"><input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${NOMINEE_N}" value="${pinVal}" placeholder="auto"></td>
       <td><textarea class="reason-inp" data-code="${esc(a.code)}" placeholder="この作品を選んだ理由（3人で相談して記入）">${esc(reasons[a.code]||'')}</textarea></td>
       <td><div class="comment-cell ${comment?'':'na'}">${comment ? esc(comment) : '（未入力）'}</div></td>
@@ -508,6 +518,7 @@ function renderFinalTable(sorted, rankOf){
   });
   html += `</tbody></table></div>
     <div class="legend">
+      <span><b>平均最終スコア</b>＝平均ルーブリック＋いいね加点＋HTML加点</span>
       <span><b>受賞理由</b>＝講評コメントとは別に、この画面でその場で入力できます（自動入力ではありません）</span>
       <span>「Excelを書き出す」で、この画面の内容がそのまま出力されます</span>
     </div>
@@ -539,6 +550,7 @@ function renderAwardCards(sorted, rankOf){
         <div class="ainfo"><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><span>${esc(a.who)}</span></div>
         <div class="ascore">
           <span>平均最終スコア <b>${a.avg==null?'—':a.avg}</b></span>
+          <span>平均ルーブリック <b>${a.avgRubric==null?'—':a.avgRubric}</b></span>
           <span>採点人数 <b>${a.scoredCount}</b> / ${FILES.length}</span>
           <span>いいね加点 <b>+${a.likeBonus==null?0:a.likeBonus}</b></span>
           <span>HTML加点 <b>+${a.htmlBonus==null?0:a.htmlBonus}</b></span>
@@ -591,7 +603,7 @@ function exportXLSX(){
     return ra - rb || (a.code < b.code ? -1 : 1);
   });
   const memberCols = FILES.map(f=>`${f.memberName} 最終スコア`);
-  const head = ['総合順位','判定','受賞フラグ','ノミネートフラグ','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数']
+  const head = ['総合順位','判定','受賞フラグ','ノミネートフラグ','対象月','EntryCode','応募者・部署','平均最終スコア','平均ルーブリック','採点人数']
     .concat(memberCols)
     .concat(['いいね（もらう）','いいね（押す）','いいね加点','HTML加点',reasonHeadLabel(),commentHeadLabel()]);
   const rows = [head];
@@ -602,7 +614,7 @@ function exportXLSX(){
     const reason = reasonTextOf(a), comments = commentTextOf(a);
     rows.push([
       r || '', isWin ? '受賞' : (isNom ? 'ノミネート' : ''), isWin ? '受賞' : '', isNom ? 'ノミネート' : '',
-      month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`,
+      month, a.code, a.who, a.avg==null?'':a.avg, a.avgRubric==null?'':a.avgRubric, `${a.scoredCount}/${FILES.length}`,
     ].concat(memberScores).concat([
       a.likesRaw==null?'':a.likesRaw, a.likesGivenRaw==null?'':a.likesGivenRaw,
       a.likeBonus==null?'':a.likeBonus, a.htmlBonus==null?'':a.htmlBonus, reason, comments,
@@ -611,23 +623,23 @@ function exportXLSX(){
   const wb = XLSX.utils.book_new();
 
   // シート1：受賞・ノミネート一覧（最終結果・上位のみ。受賞6件＋ノミネート10件を綺麗に）
-  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','採点人数'].concat(memberCols).concat([reasonHeadLabel(),commentHeadLabel()]);
+  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','平均ルーブリック','いいね加点','HTML加点','採点人数'].concat(memberCols).concat([reasonHeadLabel(),commentHeadLabel()]);
   const finRows = [finHead];
   sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; }).forEach(a=>{
     const r = rankOf(a.code);
     const memberScores = FILES.map(f=>{ const e = f.entries[a.code]; return (e && e.finalScore!=null) ? e.finalScore : ''; });
     const reason = reasonTextOf(a), comments = commentTextOf(a);
-    finRows.push([r, r <= AWARD_N ? '受賞' : 'ノミネート', month, a.code, a.who, a.avg==null?'':a.avg, `${a.scoredCount}/${FILES.length}`]
+    finRows.push([r, r <= AWARD_N ? '受賞' : 'ノミネート', month, a.code, a.who, a.avg==null?'':a.avg, a.avgRubric==null?'':a.avgRubric, a.likeBonus==null?'':a.likeBonus, a.htmlBonus==null?'':a.htmlBonus, `${a.scoredCount}/${FILES.length}`]
       .concat(memberScores).concat([reason, comments]));
   });
   const wsFin = XLSX.utils.aoa_to_sheet(finRows);
-  wsFin['!cols'] = [{wch:8},{wch:10},{wch:10},{wch:20},{wch:26},{wch:11},{wch:8}].concat(FILES.map(()=>({wch:12}))).concat([{wch:50},{wch:50}]);
+  wsFin['!cols'] = [{wch:8},{wch:10},{wch:10},{wch:20},{wch:26},{wch:11},{wch:11},{wch:9},{wch:9},{wch:8}].concat(FILES.map(()=>({wch:12}))).concat([{wch:50},{wch:50}]);
   wsFin['!freeze'] = {xSplit:'2', ySplit:'1'};
   XLSX.utils.book_append_sheet(wb, wsFin, '受賞・ノミネート一覧');
 
   // シート2：全エントリー集計（全作品・監査用）
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:8},{wch:10},{wch:8},{wch:12},{wch:10},{wch:20},{wch:26},{wch:11},{wch:8}]
+  ws['!cols'] = [{wch:8},{wch:10},{wch:8},{wch:12},{wch:10},{wch:20},{wch:26},{wch:11},{wch:11},{wch:8}]
     .concat(FILES.map(()=>({wch:12}))).concat([{wch:11},{wch:11},{wch:9},{wch:9},{wch:50},{wch:50}]);
   ws['!freeze'] = {xSplit:'2', ySplit:'1'};
   ws['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:rows.length-1, c:head.length-1}})};
