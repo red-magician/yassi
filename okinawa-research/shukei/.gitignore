@@ -1,0 +1,8 @@
+# スクリプトが生成する派生ファイル（都度作り直す）
+dummy_master_sanka.xlsx
+dummy_no_roster.xlsx
+拠点別参加率.xlsx
+*.xlsx
+
+# 実データ（社外秘・置く場合もコミットしない）
+real/

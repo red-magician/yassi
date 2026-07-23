@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIFES2026 沖縄横展開 依頼事項リスト（テンプレ）</title>
+<style>
+  :root{
+    --navy:#1f3a5f; --navy-deep:#152a45; --gold:#c8a24b; --gold-soft:#f5ecd4;
+    --ink:#20272e; --sub:#5b6b7a; --line:#d8dee6; --bg:#f4f6f9; --card:#fff;
+    --fill:#fffdf5; --fill-line:#d9c78c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 22px 60px}
+  header.doc{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-deep) 100%);color:#fff;
+    border-radius:12px;padding:26px 28px;box-shadow:0 4px 18px rgba(21,42,69,.18)}
+  header.doc .eyebrow{color:var(--gold);font-size:12px;letter-spacing:.14em;font-weight:700}
+  header.doc h1{margin:.35em 0 .2em;font-size:23px;line-height:1.35}
+  header.doc p{margin:.2em 0 0;color:#c9d5e4;font-size:13px}
+  .howto{background:var(--gold-soft);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:18px 0;font-size:13px;color:#5b4e2c}
+  .howto b{color:#3f3616}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 4px;font-size:12px;color:var(--sub)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .chip{display:inline-block;width:22px;height:14px;border-radius:3px;vertical-align:middle}
+  .chip.ask{background:#eaf0f7;border:1px solid #b8c9de}
+  .chip.ex{background:var(--fill);border:1px dashed var(--fill-line)}
+  h2.cat{display:flex;align-items:center;gap:10px;margin:30px 0 6px;font-size:17px;color:var(--navy);
+    padding-bottom:8px;border-bottom:2px solid var(--gold)}
+  h2.cat .no{background:var(--navy);color:#fff;font-size:13px;font-weight:800;border-radius:8px;
+    width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  h2.cat .src{margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:#8a5a2b;border-radius:20px;padding:3px 10px}
+  .catlead{font-size:12.5px;color:var(--sub);margin:2px 0 14px}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0;margin:0 0 16px;overflow:hidden}
+  .item .ask{padding:14px 18px;background:#f7f9fc;border-bottom:1px solid var(--line)}
+  .item .ask .lbl{font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.06em}
+  .item .ask .txt{font-size:15px;font-weight:700;margin-top:3px;color:#1a2b40}
+  .item .ask .freq{display:inline-block;margin-top:8px;font-size:12px;color:#40566d;background:#eaf0f7;border-radius:6px;padding:2px 10px}
+  .item .ex{padding:14px 18px;background:var(--fill)}
+  .item .ex .lbl{font-size:11px;font-weight:800;color:#8a5a2b;letter-spacing:.04em}
+  .item .ex .lbl small{font-weight:600;color:#a98a55}
+  .fillbox{border:1px dashed var(--fill-line);border-radius:8px;background:#fffef9;margin-top:8px;padding:10px 12px;min-height:56px}
+  .fillbox .ph{color:#b39a5f;font-size:12.5px;font-style:italic}
+  .fillbox .l{border-bottom:1px solid #e7dcbb;height:22px}
+  .chk{display:flex;align-items:center;gap:8px;padding:10px 18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub)}
+  .chk .box{width:16px;height:16px;border:2px solid var(--navy);border-radius:4px;flex:none}
+  .top{background:#fff8e6;border:1px solid var(--gold);border-radius:12px;padding:14px 18px;margin:18px 0}
+  .top .lbl{font-size:11px;font-weight:800;color:#8a6d1f;letter-spacing:.06em}
+  .top .txt{font-size:15px;font-weight:700;color:#5b4a12;margin-top:4px}
+  .foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--sub)}
+  @media print{
+    body{background:#fff;font-size:11.5px}
+    .wrap{max-width:none;padding:0}
+    header.doc{box-shadow:none;border-radius:0}
+    .item,.top,h2.cat{break-inside:avoid}
+    h2.cat{break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc">
+    <div class="eyebrow">AI FES 2026 ／ 横展開キット</div>
+    <h1>他拠点アンバサダーへの「依頼事項リスト」<span style="font-size:14px;color:var(--gold);font-weight:600">（テンプレ v0）</span></h1>
+    <p>沖縄で参加率を伸ばした手法を、どの拠点でも真似できる「行動の依頼」に翻訳したもの。各項目は〈汎用の依頼〉＋〈沖縄の実例〉の2段構え。</p>
+  </header>
+
+  <div class="howto">
+    <b>このテンプレの使い方</b>：〈依頼〉欄はそのまま他拠点に渡せる汎用文です（拠点事情に合わせて微修正可）。
+    <b>点線の記入欄には、大坪さんヒアリング（A1〜A8）で聞いた"沖縄では具体的にこうしていた"を書き込んで確定版にします。</b>
+    実例が入って初めて「真似できる依頼」になります。空欄のまま渡さないこと。
+  </div>
+
+  <div class="legend">
+    <span><span class="chip ask"></span> 〈依頼〉＝他拠点がやる行動（汎用・確定文）</span>
+    <span><span class="chip ex"></span> 〈沖縄の実例〉＝ヒアリングで記入（真似の手がかり）</span>
+  </div>
+
+  <!-- TOP -->
+  <div class="top">
+    <div class="lbl">★ これだけはやってほしい（最優先の1つ）　— ヒアリング A8 の回答を記入</div>
+    <div class="txt">
+      <div class="fillbox" style="background:#fffdf3;border-color:var(--gold)">
+        <span class="ph">例：「毎週1回、"今週の一番"を全体に共有する場を必ず作る」——大坪さんが1つだけ挙げた最優先施策をここに。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1 -->
+  <h2 class="cat"><span class="no">1</span> 最初の火種をつくる<span class="src">ヒアリング A2</span></h2>
+  <p class="catlead">0→1が最大の関門。「まず1人目を出す」ための依頼。</p>
+
+  <div class="item">
+    <div class="ask">
+      <div class="lbl">〈依頼〉</div>
+      <div class="txt">まず"巻き込みやすい1人目"を自分で決めて、個別に声をかけて参加してもらう。全体告知より先に、確実な1人を作る。</div>
+      <div class="freq">目安：立ち上げ最初の1〜2週間</div>
+    </div>
+    <div class="ex">
+      <div class="lbl">沖縄ではこうしていた <small>（A2：最初の1人目・2人目をどう巻き込んだか）</small></div>
+      <div class="fillbox"><span class="ph">誰に・なぜその人に・どう声をかけたか。断られた時どうしたか。</span><div class="l"></div><div class="l"></div></div>
+    </div>
+    <div class="chk"><span class="box"></span> この依頼を自拠点で実施した</div>
+  </div>
+
+  <!-- 2 -->
+  <h2 class="cat"><span class="no">2</span> ハードルを下げて声をかける<span class="src">ヒアリング A3</span></h2>
+  <p class="catlead">「やってみたら？」で渋る人を、軽い一歩に変える依頼。</p>
+
+  <div class="item">
+    <div class="ask">
+      <div class="lbl">〈依頼〉</div>
+      <div class="txt">渋る人には「いきなり本番」ではなく、最初の一歩を極端に軽くして誘う（例：まず見学だけ／既存の投稿に"いいね"だけ／短い下書きを一緒に作る）。</div>
+      <div class="freq">目安：声かけのたびに</div>
+    </div>
+    <div class="ex">
+      <div class="lbl">沖縄ではこうしていた <small>（A3：どんな言葉・仕掛けでハードルを下げたか）</small></div>
+      <div class="fillbox"><span class="ph">よく出る断り文句と、それへの"返し"。最初の一歩を軽くする具体的な工夫。</span><div class="l"></div><div class="l"></div></div>
+    </div>
+    <div class="chk"><span class="box"></span> この依頼を自拠点で実施した</div>
+  </div>
+
+  <!-- 3 -->
+  <h2 class="cat"><span class="no">3</span> 成果を「見える化」して称える<span class="src">ヒアリング A4</span></h2>
+  <p class="catlead">やった人が報われる場を作る。継続と次の参加を生む王道。</p>
+
+  <div class="item">
+    <div class="ask">
+      <div class="lbl">〈依頼〉</div>
+      <div class="txt">週1回、メンバーの成果・頑張りを全体の場で紹介し、本人に直接ポジティブに伝える。埋もれさせない。</div>
+      <div class="freq">目安：週1回（定例の場で）</div>
+    </div>
+    <div class="ex">
+      <div class="lbl">沖縄ではこうしていた <small>（A4：どこで・どう見える化し、本人にどう伝えたか）</small></div>
+      <div class="fillbox"><span class="ph">例：朝礼で"今週のバズ"を紹介 など。ランキング・表彰の有無、本人への伝え方。</span><div class="l"></div><div class="l"></div></div>
+    </div>
+    <div class="chk"><span class="box"></span> この依頼を自拠点で実施した</div>
+  </div>
+
+  <!-- 4 -->
+  <h2 class="cat"><span class="no">4</span> 続けられる仕掛けをつくる<span class="src">ヒアリング A5</span></h2>
+  <p class="catlead">入口だけでなく"継続（アクティブ率）"を支える依頼。</p>
+
+  <div class="item">
+    <div class="ask">
+      <div class="lbl">〈依頼〉</div>
+      <div class="txt">一度参加した人が次も動けるよう、次のきっかけを渡し続ける（例：次テーマの声かけ／仲間同士で見せ合う流れ／少人数の定期の場）。</div>
+      <div class="freq">目安：継続的に</div>
+    </div>
+    <div class="ex">
+      <div class="lbl">沖縄ではこうしていた <small>（A5：続けてもらうために意識してやっていたこと）</small></div>
+      <div class="fillbox"><span class="ph">続ける人を生んでいた具体的な仕掛け。</span><div class="l"></div><div class="l"></div></div>
+    </div>
+    <div class="chk"><span class="box"></span> この依頼を自拠点で実施した</div>
+  </div>
+
+  <!-- 5 -->
+  <h2 class="cat"><span class="no">5</span> 場と頻度を固定する<span class="src">ヒアリング A1</span></h2>
+  <p class="catlead">単発でなく"仕組み"にするための、頻度・場の依頼。</p>
+
+  <div class="item">
+    <div class="ask">
+      <div class="lbl">〈依頼〉</div>
+      <div class="txt">上記1〜4を「気が向いたら」でなく、既存の定例（朝礼・チーム会など）に固定枠として組み込む。担当と頻度を決める。</div>
+      <div class="freq">目安：既存の定例に相乗り</div>
+    </div>
+    <div class="ex">
+      <div class="lbl">沖縄ではこうしていた <small>（A1：何を・どのくらいの頻度で・どの場でやっていたか）</small></div>
+      <div class="fillbox"><span class="ph">使っていた場（朝礼／会議／チャット等）と頻度。</span><div class="l"></div><div class="l"></div></div>
+    </div>
+    <div class="chk"><span class="box"></span> この依頼を自拠点で実施した</div>
+  </div>
+
+  <div class="howto" style="background:#eef2f7;border-color:var(--navy)">
+    <b>確定版にするとき</b>：ヒアリングA6（沖縄特有 vs 汎用の仕分け）で「拠点関係なく効く」とされた手法を優先的に残し、
+    「沖縄特有」とされたものは<b>依頼から外すか、汎用化して書き直す</b>。A7（施策前後の変化）は報告書側の"効いた証拠"に回す。
+  </div>
+
+  <div class="foot">
+    AI FES 2026 測定班 ／ 沖縄横展開プロジェクト ・ 依頼事項リスト（テンプレ v0）<br>
+    元素材：ヒアリング設計書 A1〜A8。この段階は「型」。ヒアリング後に実例を記入して確定版（v1）にする。
+  </div>
+
+</div>
+</body>
+</html>
