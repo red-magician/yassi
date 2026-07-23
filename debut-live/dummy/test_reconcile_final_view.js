@@ -52,6 +52,22 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok((await p.locator('.view-tab.on').textContent()) === '採点比較', 'デフォルトは採点比較タブ');
   ok((await p.locator('h2:has-text("採点比較")').count()) === 1, '採点比較の表が表示される');
 
+  // 「受賞候補カード」タブへ切替
+  await p.click('.view-tab[data-view="cards"]');
+  await p.waitForTimeout(200);
+  ok((await p.locator('h2:has-text("受賞候補")').count()) === 1, '受賞候補カードの表に切り替わる');
+  ok((await p.locator('.acard').count()) === 6, 'カードが6枠（受賞6件）表示される');
+  ok((await p.locator('.acard.empty2').count()) === 0, '全枠に受賞者が入っているので空枠は無い');
+  const firstCard = await p.locator('.acard').first().innerText();
+  ok(/1位/.test(firstCard), '1枚目のカードが1位（実際: ' + firstCard.replace(/\n/g,' | ').slice(0,80) + '）');
+  // カードのpin入力でも順位固定ができる（他タブと状態共有）
+  const secondCardCode = await p.locator('.acard').nth(1).getAttribute('data-code');
+  await p.fill(`.acard .pin[data-code="${secondCardCode}"]`, '1');
+  await p.locator(`.acard .pin[data-code="${secondCardCode}"]`).dispatchEvent('change');
+  await p.waitForTimeout(300);
+  const newFirstCode = await p.locator('.acard').first().getAttribute('data-code');
+  ok(newFirstCode === secondCardCode, 'カードでの順位固定が反映され、1位が入れ替わる');
+
   // 「最終結果」タブへ切替
   await p.click('.view-tab[data-view="final"]');
   await p.waitForTimeout(200);

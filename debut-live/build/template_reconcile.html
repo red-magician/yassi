@@ -32,6 +32,23 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .view-tab.on{background:var(--gold);color:var(--navy-deep);font-weight:700;border-color:var(--gold)}
 .reason,.comment-cell{white-space:normal;max-width:320px;font-size:12px;line-height:1.6;color:var(--ink)}
 .reason.na,.comment-cell.na{color:#c3cad4;white-space:nowrap}
+/* ---- award cards ---- */
+.award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:16px 18px}
+.acard{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fbfcfe;display:flex;flex-direction:column}
+.acard.empty2{align-items:center;justify-content:center;color:var(--mute);font-size:12px;min-height:120px}
+.ahead{background:var(--navy);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ahead .rk{background:var(--gold);color:var(--navy-deep);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.ahead .pin{margin-left:auto;width:52px;padding:4px;font:inherit;font-size:12px;text-align:center;border:1px solid rgba(255,255,255,.3);border-radius:4px;background:rgba(255,255,255,.12);color:#fff}
+.ahead .pin.on{background:#fff;color:var(--navy-deep);font-weight:700}
+.ahead .pin::placeholder{color:rgba(255,255,255,.6)}
+.abody{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ainfo b{display:block;font-size:12.5px;color:var(--navy-deep)}
+.ainfo span{font-size:11px;color:var(--mute)}
+.ascore{display:flex;gap:10px;font-size:11px;color:var(--mute);flex-wrap:wrap}
+.ascore b{color:var(--navy);font-size:13px}
+.acard label{font-size:10.5px;color:var(--mute);font-weight:600;display:block;margin-bottom:2px}
+.anote{font-size:12px;line-height:1.6;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:5px;padding:7px 9px;min-height:20px}
+.anote.na{color:#c3cad4}
 .sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
 .hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:420px}
 main{padding:22px 26px;max-width:1400px;margin:0 auto}
@@ -99,6 +116,7 @@ tr.nominee{background:#f7fafd}
   <button class="btn" id="btnClear">全部消す</button>
   <span class="sep"></span>
   <button class="btn view-tab on" data-view="compare">採点比較</button>
+  <button class="btn view-tab" data-view="cards">受賞候補カード</button>
   <button class="btn view-tab" data-view="final">最終結果</button>
   <span class="sep"></span>
   <label style="font-size:12px;color:var(--mute,#667)">受賞理由・講評コメントの採用元
@@ -304,7 +322,9 @@ function render(){
     html += `<div class="warnbar">読み込んだファイルの対象月が一致していません（${months.map(esc).join(' / ')}）。同じ月のメンバー結果どうしで集計してください。</div>`;
   }
 
-  html += view === 'final' ? renderFinalTable(sorted, rankOf) : renderCompareTable(sorted, rankOf, N);
+  if(view === 'final') html += renderFinalTable(sorted, rankOf);
+  else if(view === 'cards') html += renderAwardCards(sorted, rankOf);
+  else html += renderCompareTable(sorted, rankOf, N);
 
   out.innerHTML = html;
   wire();
@@ -391,6 +411,43 @@ function renderFinalTable(sorted, rankOf){
       <span>「Excelを書き出す」で、この画面の内容がそのまま出力されます</span>
     </div>
   </div>`;
+  return html;
+}
+// 「受賞候補カード」タブ：受賞選定ツールと同じカード形式で上位6件（受賞のみ）を見せる
+function renderAwardCards(sorted, rankOf){
+  const winners = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= AWARD_N; });
+  let html = `<div class="panel"><h2>受賞候補 ${AWARD_N}件 <span>平均最終スコア上位から自動選出。順位固定・受賞理由・講評コメントの採用元はツールバーから調整できます</span></h2><div class="award-grid">`;
+  for(let slot=1; slot<=AWARD_N; slot++){
+    const a = winners.find(x=>rankOf(x.code)===slot);
+    if(!a){
+      html += `<div class="acard empty2" data-slot="${slot}">
+        <div style="text-align:center">
+          <div class="ahead" style="justify-content:center"><span class="rk">${slot}位</span></div>
+          <div style="padding:14px;font-size:12px">該当なし</div>
+        </div>
+      </div>`;
+      continue;
+    }
+    const reason = reasonTextOf(a), comment = commentTextOf(a);
+    const pinVal = pinned[a.code] || '';
+    html += `<div class="acard" data-code="${esc(a.code)}">
+      <div class="ahead"><span class="rk">${slot}位</span>
+        <input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${NOMINEE_N}" value="${pinVal}" placeholder="auto" title="順位を手動で固定">
+      </div>
+      <div class="abody">
+        <div class="ainfo"><b>${esc(a.code)}</b><span>${esc(a.who)}</span></div>
+        <div class="ascore">
+          <span>平均最終スコア <b>${a.avg==null?'—':a.avg}</b></span>
+          <span>採点人数 <b>${a.scoredCount}</b> / ${FILES.length}</span>
+          <span>いいね加点 <b>+${a.likeBonus==null?0:a.likeBonus}</b></span>
+          <span>HTML加点 <b>+${a.htmlBonus==null?0:a.htmlBonus}</b></span>
+        </div>
+        <div><label>受賞理由</label><div class="anote ${reason?'':'na'}">${reason ? esc(reason) : '（採用元の講評コメントが未入力）'}</div></div>
+        <div><label>講評コメント</label><div class="anote ${comment?'':'na'}">${comment ? esc(comment) : '（未入力）'}</div></div>
+      </div>
+    </div>`;
+  }
+  html += `</div></div>`;
   return html;
 }
 function updateHeader(entries, nom, win){
