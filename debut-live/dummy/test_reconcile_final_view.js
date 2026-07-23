@@ -74,13 +74,18 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok((await p.locator('h2:has-text("最終結果")').count()) === 1, '最終結果の表に切り替わる');
   ok((await p.locator('#out tbody tr').count()) === 10, '最終結果には上位10件だけが表示される');
 
-  // コメント採用元を「田中」にして、受賞理由に田中の講評がそのまま入ることを確認
+  // コメント採用元を「田中」にする（講評コメント列の確認用。受賞理由には影響しない）
   await p.selectOption('#commentMemberSel', { label: '田中のみ' });
   await p.waitForTimeout(200);
   const firstRowText = await p.locator('#out tbody tr').first().innerText();
-  ok(firstRowText.includes('田中講評'), `受賞理由に採用元メンバーの講評コメントがそのまま入る（実際: ${firstRowText.replace(/\n/g, ' | ').slice(0, 200)}）`);
+  ok(firstRowText.includes('田中講評'), `講評コメント列に採用元メンバーのコメントが入る（実際: ${firstRowText.replace(/\n/g, ' | ').slice(0, 200)}）`);
 
-  // 書き出しExcelに受賞理由列があることを確認（python/openpyxlで検証）
+  // 受賞理由は講評コメントとは別に、この画面で手入力する（自動では入らない）
+  const firstCode = await p.locator('#out tbody tr').first().locator('.codelink').getAttribute('data-code');
+  ok(!(await p.locator('#out tbody tr').first().locator('.reason-inp').inputValue()), '受賞理由は自動では入らない（空欄）');
+  await p.fill(`.reason-inp[data-code="${firstCode}"]`, 'テスト受賞理由：3人で相談して決定');
+
+  // 書き出しExcelに受賞理由列があり、手入力した内容が反映されることを確認（python/openpyxlで検証）
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btnXLS')]);
   const outXlsx = path.resolve(__dirname, 'test_finalview_out.xlsx');
   await dl.saveAs(outXlsx);
@@ -99,7 +104,8 @@ if i:
 "`).toString();
   console.log(pyOut);
   ok(pyOut.includes('REASON_COL_FOUND: True'), '書き出しExcelに受賞理由列がある');
-  ok(pyOut.includes('田中講評'), '書き出しExcelの受賞理由に採用元メンバーの講評が入っている');
+  ok(pyOut.includes('テスト受賞理由'), '手入力した受賞理由が書き出しExcelに反映される');
+  ok(!pyOut.includes('田中講評: とても良い作品です'), '受賞理由には講評コメントが自動で入らない（別内容になっている）');
   fs.unlinkSync(outXlsx);
 
   ok(errors.length === 0, `JSエラーなし（実際: ${errors.length}件 ${errors.join(' / ')}）`);

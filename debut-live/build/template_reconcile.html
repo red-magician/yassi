@@ -49,6 +49,9 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .acard label{font-size:10.5px;color:var(--mute);font-weight:600;display:block;margin-bottom:2px}
 .anote{font-size:12px;line-height:1.6;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:5px;padding:7px 9px;min-height:20px}
 .anote.na{color:#c3cad4}
+.reason-inp{width:100%;font:inherit;font-size:12px;line-height:1.6;padding:7px 9px;border:1px solid var(--line);border-radius:5px;resize:vertical;min-height:44px;box-sizing:border-box}
+.reason-inp:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+td .reason-inp{min-width:220px;min-height:36px}
 .codelink{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px}
 .codelink:hover{color:var(--navy-soft)}
 /* ---- 提出物モーダル ---- */
@@ -143,7 +146,7 @@ tr.nominee{background:#f7fafd}
   <button class="btn view-tab" data-view="cards">受賞候補カード</button>
   <button class="btn view-tab" data-view="final">最終結果</button>
   <span class="sep"></span>
-  <label style="font-size:12px;color:var(--mute,#667)">受賞理由・講評コメントの採用元
+  <label style="font-size:12px;color:var(--mute,#667)">講評コメントの採用元
     <select id="commentMemberSel" style="margin-left:4px"><option value="">各メンバー全員（連結表示）</option></select>
   </label>
   <span class="hint">各メンバーが受賞選定ツールで書き出したExcel（全エントリーシート入り）を3本まとめてドロップ。EntryCodeで突合し、最終スコアを平均して順位付け → 上位10＝ノミネート／上位6＝受賞。「採点比較」は各メンバーの点数と平均、「最終結果」は受賞理由・講評コメント込みの最終出力プレビューです。</span>
@@ -175,7 +178,8 @@ const HTML_BONUS = 10;  // 作品ファイルがHTML形式なら一律+10（手�
 let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
-let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）
+let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'cards'=受賞候補カード／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）
+let reasons = {};        // code -> 受賞理由（講評コメントとは別に、最終結果／カード画面でその場で入力する）
 
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
@@ -340,12 +344,12 @@ function commentTextOf(a){
 function commentHeadLabel(){
   return commentMember ? `講評コメント（${commentMember}）` : '講評コメント（各メンバー）';
 }
-// 受賞理由は別途書かせず、採用元メンバーの講評コメントをそのまま流用する
+// 受賞理由は講評コメントとは別に、最終結果／カード画面でその場で入力する
 function reasonTextOf(a){
-  return commentTextOf(a);
+  return (reasons[a.code] || '').trim();
 }
 function reasonHeadLabel(){
-  return commentMember ? `受賞理由（${commentMember}の講評を流用）` : '受賞理由';
+  return '受賞理由';
 }
 function syncCommentMemberOptions(){
   const sel = document.getElementById('commentMemberSel');
@@ -466,7 +470,7 @@ function renderCompareTable(sorted, rankOf, N){
 // 「最終結果」タブ：ノミネート以上（上位10件）だけに絞った、書き出し内容そのままのプレビュー
 function renderFinalTable(sorted, rankOf){
   const finalRows = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; });
-  let html = `<div class="panel"><h2>最終結果 <span>上位${NOMINEE_N}件（受賞${AWARD_N}件＋ノミネート）。受賞理由・講評コメントは「${commentMember || '各メンバー全員（連結表示）'}」を採用中 — ツールバーの「受賞理由・講評コメントの採用元」で変更できます</span></h2>`;
+  let html = `<div class="panel"><h2>最終結果 <span>上位${NOMINEE_N}件（受賞${AWARD_N}件＋ノミネート）。講評コメントは「${commentMember || '各メンバー全員（連結表示）'}」を採用中 — ツールバーの「講評コメントの採用元」で変更できます</span></h2>`;
   if(!finalRows.length){
     html += `<div class="empty">まだ順位が確定した作品がありません（採点済みメンバーを増やすか、順位固定を設定してください）</div></div>`;
     return html;
@@ -481,7 +485,7 @@ function renderFinalTable(sorted, rankOf){
     const isWin = r <= AWARD_N;
     const cls = isWin ? 'award' : 'nominee';
     const badge = isWin ? '<span class="badge win">受賞</span>' : '<span class="badge nom">ノミネート</span>';
-    const reason = reasonTextOf(a), comment = commentTextOf(a);
+    const comment = commentTextOf(a);
     const pinVal = pinned[a.code] || '';
     html += `<tr class="${cls}">
       <td class="n"><span class="rk">${r}</span></td>
@@ -489,13 +493,13 @@ function renderFinalTable(sorted, rankOf){
       <td><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
       <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
       <td class="n"><input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${NOMINEE_N}" value="${pinVal}" placeholder="auto"></td>
-      <td><div class="reason ${reason?'':'na'}">${reason ? esc(reason) : '（採用元の講評コメントが未入力）'}</div></td>
+      <td><textarea class="reason-inp" data-code="${esc(a.code)}" placeholder="この作品を選んだ理由（3人で相談して記入）">${esc(reasons[a.code]||'')}</textarea></td>
       <td><div class="comment-cell ${comment?'':'na'}">${comment ? esc(comment) : '（未入力）'}</div></td>
     </tr>`;
   });
   html += `</tbody></table></div>
     <div class="legend">
-      <span><b>受賞理由</b>＝別途書かず、採用元メンバーの講評コメントをそのまま流用しています</span>
+      <span><b>受賞理由</b>＝講評コメントとは別に、この画面でその場で入力できます（自動入力ではありません）</span>
       <span>「Excelを書き出す」で、この画面の内容がそのまま出力されます</span>
     </div>
   </div>`;
@@ -504,7 +508,7 @@ function renderFinalTable(sorted, rankOf){
 // 「受賞候補カード」タブ：受賞選定ツールと同じカード形式で上位6件（受賞のみ）を見せる
 function renderAwardCards(sorted, rankOf){
   const winners = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= AWARD_N; });
-  let html = `<div class="panel"><h2>受賞候補 ${AWARD_N}件 <span>平均最終スコア上位から自動選出。順位固定・受賞理由・講評コメントの採用元はツールバーから調整できます</span></h2><div class="award-grid">`;
+  let html = `<div class="panel"><h2>受賞候補 ${AWARD_N}件 <span>平均最終スコア上位から自動選出。受賞理由はこの画面で直接入力できます。講評コメントの採用元はツールバーから調整できます</span></h2><div class="award-grid">`;
   for(let slot=1; slot<=AWARD_N; slot++){
     const a = winners.find(x=>rankOf(x.code)===slot);
     if(!a){
@@ -516,7 +520,7 @@ function renderAwardCards(sorted, rankOf){
       </div>`;
       continue;
     }
-    const reason = reasonTextOf(a), comment = commentTextOf(a);
+    const comment = commentTextOf(a);
     const pinVal = pinned[a.code] || '';
     html += `<div class="acard" data-code="${esc(a.code)}">
       <div class="ahead"><span class="rk">${slot}位</span>
@@ -530,7 +534,7 @@ function renderAwardCards(sorted, rankOf){
           <span>いいね加点 <b>+${a.likeBonus==null?0:a.likeBonus}</b></span>
           <span>HTML加点 <b>+${a.htmlBonus==null?0:a.htmlBonus}</b></span>
         </div>
-        <div><label>受賞理由</label><div class="anote ${reason?'':'na'}">${reason ? esc(reason) : '（採用元の講評コメントが未入力）'}</div></div>
+        <div><label>受賞理由</label><textarea class="reason-inp" data-code="${esc(a.code)}" placeholder="この作品を選んだ理由（3人で相談して記入）">${esc(reasons[a.code]||'')}</textarea></div>
         <div><label>講評コメント</label><div class="anote ${comment?'':'na'}">${comment ? esc(comment) : '（未入力）'}</div></div>
       </div>
     </div>`;
@@ -559,6 +563,10 @@ function wire(){
       // blur中にテーブルをinnerHTMLで作り直すとDOMエラーになるため次のタイミングに遅延
       setTimeout(render, 0);
     };
+  });
+  // 受賞理由は入力のたびに再描画するとフォーカスが外れるため、状態だけ更新する（表の作り直しはしない）
+  document.querySelectorAll('.reason-inp').forEach(ta=>{
+    ta.oninput = () => { reasons[ta.dataset.code] = ta.value; };
   });
 }
 
@@ -638,7 +646,7 @@ document.querySelectorAll('.view-tab').forEach(b=>{
   };
 });
 document.getElementById('btnPrint').onclick = () => window.print();
-document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと集計結果を全て消します。よろしいですか？')){ FILES=[]; pinned={}; render(); } };
+document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと集計結果を全て消します。よろしいですか？')){ FILES=[]; pinned={}; reasons={}; render(); } };
 document.getElementById('resModalClose').onclick = closeResourceModal;
 document.getElementById('resModal').onclick = ev => { if(ev.target.id==='resModal') closeResourceModal(); };
 document.addEventListener('keydown', ev => { if(ev.key === 'Escape') closeResourceModal(); });
