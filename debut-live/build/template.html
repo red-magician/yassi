@@ -263,6 +263,7 @@ const HTML_BONUS = 10;      // 作品ファイルがHTML形式なら一律+10（
 const RUBRIC_MAX = 60;      // ルーブリック合計の満点（各観点は0〜10のまま、換算をこの満点に合わせる）
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
 const STORE_PREFIX = 'debutLiveTool_v1::';
+const LAST_STAFF_KEY = STORE_PREFIX + '_lastStaffName';  // ブラウザに前回入力した作業者名を覚えておき、毎回の入力を省く
 
 // デビューライブのルーブリック（4指標×25%×満点10、2/5/8/10点の4段階）。スタッフの採点入力の選択肢・凡例に使う
 const RUBRIC = [
@@ -1188,7 +1189,7 @@ function exportXLSX(){
 }
 
 /* ---------- wiring ---------- */
-document.getElementById('staffName').oninput = e => { staffName = e.target.value; loadState(); render(); saveState(); };
+document.getElementById('staffName').oninput = e => { staffName = e.target.value; try{ localStorage.setItem(LAST_STAFF_KEY, staffName); }catch(_){} loadState(); render(); saveState(); };
 document.getElementById('targetMonth').oninput = e => { targetMonth = e.target.value; loadState(); render(); saveState(); };
 const drop = document.getElementById('drop');
 drop.onclick = () => document.getElementById('fileMaster').click();
@@ -1285,6 +1286,15 @@ document.getElementById('btnClear').onclick = () => {
     toast('入力を全消去しました');
   }
 };
+
+// 前回この端末で入力した作業者名を覚えていれば、開いた時点で自動入力する（毎回の手入力を省く）
+try{
+  const lastStaff = localStorage.getItem(LAST_STAFF_KEY);
+  if(lastStaff && !staffName){
+    staffName = lastStaff;
+    document.getElementById('staffName').value = lastStaff;
+  }
+}catch(_){}
 
 render();
 </script>
