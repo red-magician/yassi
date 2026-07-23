@@ -1165,14 +1165,14 @@ function awardRows(){
 }
 function allRows(){
   const excl = excludedMap();
-  const head = ['全体順位','受賞フラグ','受賞順位','対象月','EntryCode','応募者・部署','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','未採点','資料欠損','受賞済み(他月)','講評コメント'];
+  const head = ['全体順位','受賞フラグ','受賞順位','対象月','EntryCode','応募者・部署','作品リンク','手順書リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','未採点','資料欠損','受賞済み(他月)','講評コメント'];
   const rows = [head];
   const sorted = ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1));
   let overall = 0;
   sorted.forEach(e=>{
     const orank = e.hasScore ? (++overall) : '';        // 全体順位：採点済みを最終スコア降順で通し番号
     const wrank = rankOf(e.code) || '';                 // 受賞順位：1〜6（手動固定含む）。受賞していなければ空
-    rows.push([orank, wrank ? '受賞' : '', wrank, targetMonth, e.code, e.who, axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
+    rows.push([orank, wrank ? '受賞' : '', wrank, targetMonth, e.code, e.who, e.workLink||'', e.procLink||'', axVal(e,0), axVal(e,1), axVal(e,2), axVal(e,3), e.rubricTotal ?? '', e.likesRaw, e.likesGivenRaw, e.recvBonus, e.giveBonus, e.likeBonus,
       e.fmtWork, e.fmtProc, e.htmlBonus, e.finalScore ?? '', e.scoreSource||'', e.hasScore?'':'未', e.gap?'欠':'', excl.has(e.submitter)?excl.get(e.submitter):'', (notes[e.code]||{}).comment||'']);
   });
   return rows;

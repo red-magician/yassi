@@ -49,6 +49,30 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .acard label{font-size:10.5px;color:var(--mute);font-weight:600;display:block;margin-bottom:2px}
 .anote{font-size:12px;line-height:1.6;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:5px;padding:7px 9px;min-height:20px}
 .anote.na{color:#c3cad4}
+.codelink{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px}
+.codelink:hover{color:var(--navy-soft)}
+/* ---- 提出物モーダル ---- */
+.modal{position:fixed;inset:0;background:rgba(13,33,64,.55);display:none;align-items:center;justify-content:center;z-index:300;padding:20px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;box-shadow:0 20px 60px rgba(13,33,64,.35)}
+.mbox-head{padding:14px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px}
+.mbox-head b{font-size:14px;color:var(--navy)}
+.mbox-head span{font-size:11px;color:var(--mute)}
+.mbox-close{margin-left:auto;background:none;border:none;font-size:20px;color:var(--mute);cursor:pointer;line-height:1;padding:2px 6px}
+.mbox-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.resource-card{border:1px solid #d8e3f0;border-radius:7px;background:#fbfcfe;overflow:hidden;display:flex;flex-direction:column}
+.resource-card.empty{background:#f4f6f9;border-style:dashed;color:#9aa5b4;justify-content:center;align-items:center;text-align:center;padding:20px;font-size:12px}
+.resource-head{padding:11px 12px;background:#fff;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid #e6edf5}
+.resource-icon{width:26px;height:26px;border-radius:6px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.resource-icon.proc{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+.resource-title{font-size:12.5px;font-weight:700;color:var(--navy-deep);line-height:1.45;word-break:break-all}
+.resource-url{font-size:10px;color:var(--mute);margin-top:2px;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.resource-actions{display:flex;gap:7px;flex-wrap:wrap;padding:9px 12px;background:#fff}
+.resource-actions a,.resource-actions button{font:inherit;font-size:12px;font-weight:600;border-radius:5px;padding:6px 11px;text-decoration:none;cursor:pointer;border:none}
+.resource-actions a{background:var(--navy);color:#fff;border:1px solid var(--navy)}
+.resource-actions a.sub{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+.resource-actions button{background:#eef3fa;color:var(--navy);border:1px solid #cbd9ea}
+.resource-actions button.copied{background:var(--ok);color:#fff;border-color:var(--ok)}
 .sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
 .hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:420px}
 main{padding:22px 26px;max-width:1400px;margin:0 auto}
@@ -136,6 +160,13 @@ tr.nominee{background:#f7fafd}
 
 <div class="toast" id="toast"></div>
 
+<div class="modal" id="resModal">
+  <div class="mbox">
+    <div class="mbox-head"><b id="resModalTitle">提出物</b><span id="resModalSub"></span><button class="mbox-close" id="resModalClose">×</button></div>
+    <div class="mbox-body" id="resModalBody"></div>
+  </div>
+</div>
+
 <script>__SHEETJS__</script>
 <script>
 const AWARD_N   = 6;    // 受賞（上位）
@@ -151,6 +182,60 @@ function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? n
 function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
 let tt;
 function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3600); }
+
+/* ---------- 提出物モーダル（作品リンク・手順書リンク） ---------- */
+function shortResourceName(url){
+  try{
+    const clean = decodeURIComponent(String(url).split('?')[0].split('#')[0]);
+    const last = clean.substring(clean.lastIndexOf('/') + 1) || clean;
+    return decodeURIComponent(last).replace(/[_-]/g, ' ');
+  }catch(_){ return url; }
+}
+function viewerUrl(url){
+  if(!url) return '';
+  if(/[?&]web=1/i.test(url)) return url;
+  return url + (url.includes('?') ? '&' : '?') + 'web=1';
+}
+function resourceCard(label, url, kind){
+  if(!url) return `<div class="resource-card empty"><b>${esc(label)}</b><br>リンクが登録されていません</div>`;
+  const name = shortResourceName(url);
+  return `<div class="resource-card">
+    <div class="resource-head">
+      <span class="resource-icon ${kind==='proc'?'proc':''}">${kind==='proc'?'順':'作'}</span>
+      <div style="min-width:0">
+        <div class="resource-title">${esc(label)}：${esc(name || url)}</div>
+        <div class="resource-url" title="${esc(url)}">${esc(url)}</div>
+      </div>
+    </div>
+    <div class="resource-actions">
+      <a class="${kind==='proc'?'sub':''}" href="${esc(viewerUrl(url))}" target="_blank" rel="noopener">別タブで開く</a>
+      <button type="button" data-copy-text="${esc(url)}">URLをコピー</button>
+    </div>
+  </div>`;
+}
+function copyText(text, btn){
+  const done = () => { if(btn){ const old = btn.textContent; btn.textContent = 'コピーしました'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1600); } };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>toast('コピーに失敗しました')); }
+  else{
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(_){ toast('コピーに失敗しました'); }
+    document.body.removeChild(ta);
+  }
+}
+function openResourceModal(code){
+  const agg = aggregate();
+  const a = agg.find(x=>x.code===code);
+  if(!a) return;
+  document.getElementById('resModalTitle').textContent = code;
+  document.getElementById('resModalSub').textContent = a.who || '';
+  document.getElementById('resModalBody').innerHTML = resourceCard('作品', a.workLink, 'work') + resourceCard('手順書', a.procLink, 'proc');
+  document.getElementById('resModalBody').querySelectorAll('[data-copy-text]').forEach(btn=>{
+    btn.onclick = () => copyText(btn.dataset.copyText || '', btn);
+  });
+  document.getElementById('resModal').classList.add('on');
+}
+function closeResourceModal(){ document.getElementById('resModal').classList.remove('on'); }
 
 /* ---------- 取り込み ---------- */
 // 必須ヘッダを持つシートのうち、データ行が最も多いものを返す（＝全エントリーシート。受賞一覧は6行なので選ばれない）
@@ -214,6 +299,7 @@ function readFile(file){
           finalScore, rubricTotal, likeBonus, htmlBonus, fmtWork,
           likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
           comment: g(row,'講評コメント'),
+          workLink: g(row,'作品リンク'), procLink: g(row,'手順書リンク'),
         };
       });
       if(!Object.keys(entries).length){ toast(`${file.name}：エントリーデータが見つかりません`); return; }
@@ -237,8 +323,10 @@ function aggregate(){
     const scores = per.filter(x=>x.e.finalScore!=null).map(x=>({member:x.member, score:x.e.finalScore}));
     const avg = scores.length ? Math.round(scores.reduce((s,x)=>s+x.score,0)/scores.length*10)/10 : null;
     const base = per.map(x=>x.e).find(e=>e.who) || (per[0] && per[0].e) || {};
+    const withWork = per.map(x=>x.e).find(e=>e.workLink) || {};
     return {
       code, who: base.who||'', avg, scoredCount: scores.length, memberScores: scores,
+      workLink: withWork.workLink||'', procLink: withWork.procLink||'',
       likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus, htmlBonus: base.htmlBonus,
       comments: per.map(x=>({member:x.member, comment:x.e.comment})).filter(x=>x.comment),
       primaryComment: (per.find(x=>x.member===commentMember) || {}).e?.comment || '',
@@ -356,7 +444,7 @@ function renderCompareTable(sorted, rankOf, N){
     html += `<tr class="${cls}">
       <td class="n"><span class="rk">${r || '—'}</span></td>
       <td class="n">${badge}</td>
-      <td><b>${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
+      <td><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
       <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
       ${mcells}
       <td class="n"><span class="cnt-pill">${a.scoredCount} / ${FILES.length}</span></td>
@@ -398,7 +486,7 @@ function renderFinalTable(sorted, rankOf){
     html += `<tr class="${cls}">
       <td class="n"><span class="rk">${r}</span></td>
       <td class="n">${badge}</td>
-      <td><b>${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
+      <td><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><div class="who">${esc(a.who)}</div></td>
       <td class="n"><span class="avg">${a.avg==null?'—':a.avg}</span></td>
       <td class="n"><input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${NOMINEE_N}" value="${pinVal}" placeholder="auto"></td>
       <td><div class="reason ${reason?'':'na'}">${reason ? esc(reason) : '（採用元の講評コメントが未入力）'}</div></td>
@@ -435,7 +523,7 @@ function renderAwardCards(sorted, rankOf){
         <input type="number" class="pin ${pinVal?'on':''}" data-code="${esc(a.code)}" min="1" max="${NOMINEE_N}" value="${pinVal}" placeholder="auto" title="順位を手動で固定">
       </div>
       <div class="abody">
-        <div class="ainfo"><b>${esc(a.code)}</b><span>${esc(a.who)}</span></div>
+        <div class="ainfo"><b class="codelink" data-code="${esc(a.code)}">${esc(a.code)}</b><span>${esc(a.who)}</span></div>
         <div class="ascore">
           <span>平均最終スコア <b>${a.avg==null?'—':a.avg}</b></span>
           <span>採点人数 <b>${a.scoredCount}</b> / ${FILES.length}</span>
@@ -551,6 +639,14 @@ document.querySelectorAll('.view-tab').forEach(b=>{
 });
 document.getElementById('btnPrint').onclick = () => window.print();
 document.getElementById('btnClear').onclick = () => { if(confirm('読み込んだファイルと集計結果を全て消します。よろしいですか？')){ FILES=[]; pinned={}; render(); } };
+document.getElementById('resModalClose').onclick = closeResourceModal;
+document.getElementById('resModal').onclick = ev => { if(ev.target.id==='resModal') closeResourceModal(); };
+document.addEventListener('keydown', ev => { if(ev.key === 'Escape') closeResourceModal(); });
+// カード・表は毎回作り直されるので、EntryCodeクリックはイベント委譲で拾う
+document.getElementById('out').addEventListener('click', ev => {
+  const el = ev.target.closest('.codelink');
+  if(el) openResourceModal(el.dataset.code);
+});
 render();
 </script>
 </body>
