@@ -1,0 +1,100 @@
+// 集計ツール（3人平均）: 「ポータル表示」タブの回帰テスト
+// - 内部用語（ルーブリック・観点・採点人数など）を出さず、「審査の評価」「いいね＆発表ボーナス」の2本立てで見せる
+// - 受賞のみカード表示／受賞＋ノミネートは一覧表示、内部でタブ切替できる
+// - 講評コメントに執筆者名が出ない
+// - EntryCodeクリック→資料リンクが開ける
+const { chromium } = require('playwright');
+const path = require('path');
+const assert = require('assert');
+function ok(c, m) { assert(c, 'FAIL: ' + m); console.log('OK:', m); }
+
+const TOOL = 'file://' + path.resolve(__dirname, '../dist/AIFES2026_デビューライブ_受賞選定ツール.html');
+const AGG = 'file://' + path.resolve(__dirname, '../dist/AIFES2026_デビューライブ_集計ツール_3人平均.html');
+const MASTER = path.resolve(__dirname, 'master_test.xlsx');
+
+(async () => {
+  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+
+  const members = [{ name: '田中', key: 'A', base: 8 }, { name: '佐藤', key: 'B', base: 6 }, { name: '鈴木', key: 'C', base: 10 }];
+  const files = [];
+  for (const m of members) {
+    const p = await b.newPage();
+    await p.goto(TOOL);
+    await p.fill('#staffName', m.name); await p.fill('#targetMonth', '2026年7月');
+    await p.setInputFiles('#fileMaster', MASTER); await p.waitForTimeout(800);
+    const codes = await p.evaluate(() => ENTRIES.map(e => e.code));
+    const blocks = codes.map((c, i) => {
+      const v = Math.max(0, Math.min(10, m.base + (i % 5) - 2));
+      return `===SCORE===\nEntryCode: ${c}\n観点①: ${v}\n観点②: ${v}\n観点③: ${v}\n観点④: ${v}\n===END===`;
+    }).join('\n\n');
+    await p.evaluate((t) => { applyCopilot(t); saveState(); render(); }, blocks);
+    await p.evaluate((name) => {
+      ENTRIES.forEach(e => {
+        notes[e.code] = notes[e.code] || { reason: '', comment: '' };
+        notes[e.code].comment = `${name}講評: とても良い作品です`;
+      });
+      saveState(); render();
+    }, m.name);
+    const out = path.resolve(__dirname, `portal_member_${m.key}.xlsx`);
+    const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btnXLS')]);
+    await dl.saveAs(out); files.push(out);
+    await p.close();
+  }
+
+  const p = await b.newPage();
+  const errors = [];
+  p.on('pageerror', e => errors.push('pageerror: ' + e.message));
+  p.on('console', m => { if (m.type() === 'error') errors.push('console.error: ' + m.text()); });
+  await p.goto(AGG);
+  await p.setInputFiles('#fileIn', files);
+  await p.waitForTimeout(1000);
+
+  ok((await p.locator('.view-tab').count()) === 4, 'ツールバーに4つのタブがある（採点比較/受賞候補カード/最終結果/ポータル表示）');
+  await p.click('.view-tab[data-view="portal"]');
+  await p.waitForTimeout(300);
+  ok((await p.locator('.view-tab.on').textContent()) === 'ポータル表示', 'ポータル表示タブがアクティブになる');
+
+  // 案内文
+  ok((await p.locator('.portal-announce h2').count()) === 1, '案内文パネルが表示される');
+  const announceText = await p.locator('.portal-announce').innerText();
+  ok(announceText.includes('審査の評価'), '案内文に「審査の評価」の表記がある');
+  ok(announceText.includes('いいね＆発表ボーナス'), '案内文に「いいね＆発表ボーナス」の表記がある');
+  ok(!announceText.includes('ルーブリック'), '案内文に内部用語「ルーブリック」が出ない');
+
+  // デフォルトは受賞作品カード
+  ok((await p.locator('.portal-sub-tab.on').textContent()) === '受賞作品', 'ポータル表示のデフォルトは受賞作品カード');
+  const cardCount = await p.locator('.pcard').count();
+  ok(cardCount === 6, `受賞カードが6枠表示される（実際:${cardCount}）`);
+  const firstCardText = await p.locator('.pcard').first().innerText();
+  ok(/受賞 · 1位/.test(firstCardText), '1枚目のカードが「受賞・1位」（実際: ' + firstCardText.replace(/\n/g,' | ').slice(0,80) + '）');
+  ok(!/採点人数/.test(firstCardText), 'カードに採点人数が出ない');
+  ok(!/DEBUT-2026/.test(firstCardText), 'カードにEntryCodeが出ない（応募者名で表示）');
+  ok(/田中講評|佐藤講評|鈴木講評/.test(firstCardText), '講評コメント本文は表示される');
+  const commentLine = firstCardText.split('\n').find(l => /講評/.test(l)) || '';
+  ok(!/^【/.test(commentLine), '講評コメントに執筆者名（【メンバー名】形式）が付かない');
+
+  // カードのリンククリックでモーダルが開く
+  await p.locator('.pcard .codelink').first().click();
+  await p.waitForTimeout(300);
+  ok(await p.locator('#resModal.on').isVisible(), 'ポータル表示のカードからも資料モーダルが開く');
+  await p.click('#resModalClose');
+  await p.waitForTimeout(200);
+
+  // 「全体の結果」に切替
+  await p.click('.portal-sub-tab[data-portal-sub="list"]');
+  await p.waitForTimeout(300);
+  ok((await p.locator('.portal-sub-tab.on').textContent()) === '全体の結果（受賞・ノミネート）', '全体の結果タブに切り替わる');
+  const rowCount = await p.locator('.ptable tbody tr').count();
+  ok(rowCount === 10, `一覧には上位10件（受賞＋ノミネート）が表示される（実際:${rowCount}）`);
+  const listText = await p.locator('.ptable').innerText();
+  ok(!/採点人数/.test(listText), '一覧にも採点人数が出ない');
+  ok(!/DEBUT-2026/.test(listText), '一覧にもEntryCodeが出ない');
+  ok((await p.locator('.ptable .badge.win').count()) === 6, '一覧内の受賞バッジが6件');
+  ok((await p.locator('.ptable .badge.nom').count()) === 4, '一覧内のノミネートバッジが4件（10件中、受賞6件を除く）');
+
+  ok(errors.length === 0, `JSエラーなし（実際: ${errors.length}件 ${errors.join(' / ')}）`);
+  await b.close();
+  const fs = require('fs');
+  files.forEach(f => { try { fs.unlinkSync(f); } catch (_) {} });
+  console.log('\nALL TESTS PASSED');
+})().catch(e => { console.error(e); process.exit(1); });

@@ -54,6 +54,53 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 td .reason-inp{min-width:220px;min-height:36px}
 .codelink{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px}
 .codelink:hover{color:var(--navy-soft)}
+/* ---- ポータル表示（応募者・一般向け公開プレビュー） ---- */
+.portal-panel{padding:16px 18px}
+.portal-announce{background:#f3f0fb;border:1px solid #ddd4f3;border-radius:10px;padding:22px 24px;margin-bottom:20px}
+.pa-kicker{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c4aa8;margin-bottom:6px}
+.portal-announce h2{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--navy-deep)}
+.portal-announce p{font-size:13px;line-height:1.8;margin-bottom:10px;color:var(--ink)}
+.portal-announce p:last-child{margin-bottom:0}
+.pa-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.pa-half{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.pa-htitle{display:flex;align-items:center;gap:7px;font-weight:700;font-size:12.5px;margin-bottom:5px;color:var(--navy-deep)}
+.pa-dot{width:8px;height:8px;border-radius:99px;flex:none}
+.pa-d1 .pa-dot{background:var(--gold-dim)}
+.pa-d2 .pa-dot{background:var(--navy-soft)}
+.pa-half p{font-size:12px;line-height:1.7;color:var(--mute);margin:0}
+.portal-sub-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.portal-sub-tab{appearance:none;border:none;background:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:var(--mute);padding:8px 4px 10px;margin-right:18px;border-bottom:2px solid transparent}
+.portal-sub-tab.on{color:var(--navy-deep);border-bottom-color:var(--gold-dim)}
+.pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:flex}
+.pbar span{height:100%;display:block}
+.pbar .pb1{background:var(--gold-dim)}
+.pbar .pb2{background:var(--navy-soft)}
+.ptable{width:100%;border-collapse:collapse;font-size:13px}
+.ptable thead th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);padding:10px 12px;border-bottom:1px solid var(--line)}
+.ptable thead th.n{text-align:right}
+.ptable td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.ptable td.n{text-align:right}
+.ptable .rk{font-weight:700;font-size:14px}
+.prow-title{font-weight:600}
+.prow-score{font-weight:700;font-size:14px}
+.prow-bar{width:120px}
+.plink{white-space:nowrap;font-size:12px}
+.portal-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px}
+.pcard-top{display:flex;justify-content:space-between;align-items:center}
+.pc-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.pc-title{font-size:15px;line-height:1.5;margin:0}
+.pc-score-row{display:flex;align-items:baseline;gap:6px}
+.pc-score-num{font-size:32px;font-weight:700;letter-spacing:-.01em;color:var(--navy-deep)}
+.pc-score-max{font-size:12px;color:var(--mute)}
+.pc-breakdown{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--mute)}
+.pc-breakdown div{display:flex;align-items:center;gap:6px}
+.pc-breakdown b{margin-left:auto;color:var(--ink);font-weight:700}
+.pdot{width:7px;height:7px;border-radius:99px;flex:none}
+.pd1{background:var(--gold-dim)}
+.pd2{background:var(--navy-soft)}
+.pc-quote{font-style:italic;font-size:12.5px;line-height:1.65;color:var(--ink);border-top:1px solid var(--line);padding-top:9px;margin:0}
+.pc-links{margin-top:auto}
 /* ---- 提出物モーダル ---- */
 .modal{position:fixed;inset:0;background:rgba(13,33,64,.55);display:none;align-items:center;justify-content:center;z-index:300;padding:20px}
 .modal.on{display:flex}
@@ -145,6 +192,7 @@ tr.nominee{background:#f7fafd}
   <button class="btn view-tab on" data-view="compare">採点比較</button>
   <button class="btn view-tab" data-view="cards">受賞候補カード</button>
   <button class="btn view-tab" data-view="final">最終結果</button>
+  <button class="btn view-tab" data-view="portal">ポータル表示</button>
   <span class="sep"></span>
   <label style="font-size:12px;color:var(--mute,#667)">講評コメントの採用元
     <select id="commentMemberSel" style="margin-left:4px"><option value="">各メンバー全員（連結表示）</option></select>
@@ -187,8 +235,9 @@ const HTML_BONUS = 10;  // 作品ファイルがHTML形式なら一律+10（手�
 let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
-let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'cards'=受賞候補カード／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）
+let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'cards'=受賞候補カード／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）／'portal'=ポータル表示（応募者・一般向けの公開プレビュー）
 let reasons = {};        // code -> 受賞理由（講評コメントとは別に、最終結果／カード画面でその場で入力する）
+let portalSub = 'cards'; // ポータル表示タブ内の切替。'cards'=受賞作品（カード）／'list'=全体の結果（受賞＋ノミネート一覧）
 
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
@@ -355,6 +404,12 @@ function commentTextOf(a){
 function commentHeadLabel(){
   return commentMember ? `講評コメント（${commentMember}）` : '講評コメント（各メンバー）';
 }
+// ポータル表示用：誰が書いたコメントかを出さず、本文だけを1件返す（採用元メンバー指定時はその人、無指定なら最初に見つかったもの）
+function portalCommentOf(a){
+  if(commentMember) return a.primaryComment || '';
+  const first = a.comments.find(c=>c.comment);
+  return first ? first.comment : '';
+}
 // 受賞理由は講評コメントとは別に、最終結果／カード画面でその場で入力する
 function reasonTextOf(a){
   return (reasons[a.code] || '').trim();
@@ -427,6 +482,7 @@ function render(){
 
   if(view === 'final') html += renderFinalTable(sorted, rankOf);
   else if(view === 'cards') html += renderAwardCards(sorted, rankOf);
+  else if(view === 'portal') html += renderPortalView(sorted, rankOf);
   else html += renderCompareTable(sorted, rankOf, N);
 
   out.innerHTML = html;
@@ -563,6 +619,73 @@ function renderAwardCards(sorted, rankOf){
   html += `</div></div>`;
   return html;
 }
+// 「ポータル表示」タブ：応募者・一般向けの公開プレビュー。内部用語（ルーブリック・観点別内訳・採点人数など）は出さず、
+// 「審査の評価」＋「いいね＆発表ボーナス」の2本立て・各50点で見せる。受賞のみカード表示／受賞＋ノミネートは一覧表示、タブで切替
+function renderPortalView(sorted, rankOf){
+  const nominees = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; });
+  const winners = nominees.filter(a=> rankOf(a.code) <= AWARD_N);
+
+  let html = `<div class="panel portal-panel">
+    <div class="portal-announce">
+      <p class="pa-kicker">結果発表にあたって（ポータル掲載文案）</p>
+      <h2>スコアの見方について</h2>
+      <p>Debut Live にご応募いただいた皆さん、ありがとうございました。今回、各作品の最終スコアをあわせて公開します。「なぜこの順位になったのか」ができるだけ伝わるよう、スコアの仕組みを簡単にご説明します。</p>
+      <p>最終スコアは、<b>専門的な観点からの評価</b>と<b>実際に見てくれた皆さんからの反応</b>を、半分ずつ組み合わせて算出しています。どちらか一方だけで決まる仕組みではありません。</p>
+      <div class="pa-split">
+        <div class="pa-half pa-d1"><div class="pa-htitle"><span class="pa-dot"></span>審査の評価（50点）</div><p>提出された作品・手順書をもとに、AIによる一次評価を土台にしながら、審査担当者が内容を確認して採点しています。AIが観点ごとの見落としを防ぎ、最終的な妥当性は必ず人が確認する、という二段構えです。</p></div>
+        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>いいね＆発表ボーナス（50点）</div><p>社内ポータルで実際に集まった「いいね」の数と、発表資料をHTML形式で作成したかどうかを加点しています。審査担当者の評価だけでなく、現場で見て応援してくれた反応も、同じ重みでスコアに反映されます。</p></div>
+      </div>
+      <p>つまり最終スコアは、<b>AI＋審査担当者による評価</b>と、<b>皆さんからの応援</b>を半々で足し合わせたものです。結果をご覧いただく際の参考にしていただければと思います。</p>
+    </div>
+    <div class="portal-sub-tabs">
+      <button class="portal-sub-tab ${portalSub==='cards'?'on':''}" data-portal-sub="cards">受賞作品</button>
+      <button class="portal-sub-tab ${portalSub==='list'?'on':''}" data-portal-sub="list">全体の結果（受賞・ノミネート）</button>
+    </div>`;
+
+  if(portalSub === 'list'){
+    html += `<div class="table-scroll"><table class="ptable"><thead><tr>
+        <th class="n">順位</th><th>判定</th><th>作品 / 応募者</th><th class="n">スコア</th><th>内訳</th><th></th>
+      </tr></thead><tbody>`;
+    nominees.forEach(a=>{
+      const r = rankOf(a.code);
+      const isWin = r <= AWARD_N;
+      const rubric = a.avgRubric==null?0:a.avgRubric, bonus = (a.likeBonus==null?0:a.likeBonus)+(a.htmlBonus==null?0:a.htmlBonus);
+      html += `<tr>
+        <td class="n rk">${r}</td>
+        <td><span class="badge ${isWin?'win':'nom'}">${isWin?'受賞':'ノミネート'}</span></td>
+        <td><div class="prow-title codelink" data-code="${esc(a.code)}">${esc(a.who)}</div></td>
+        <td class="n prow-score">${a.avg==null?'—':a.avg}</td>
+        <td class="prow-bar"><div class="pbar"><span class="pb1" style="width:${rubric/50*100}%"></span><span class="pb2" style="width:${bonus/50*100}%"></span></div></td>
+        <td><span class="codelink plink" data-code="${esc(a.code)}">資料</span></td>
+      </tr>`;
+    });
+    html += `</tbody></table></div>`;
+    if(!nominees.length) html += `<div class="empty">まだ順位が確定した作品がありません</div>`;
+  } else {
+    html += `<div class="portal-cards">`;
+    if(!winners.length) html += `<div class="empty">まだ受賞が確定した作品がありません</div>`;
+    winners.forEach(a=>{
+      const r = rankOf(a.code);
+      const rubric = a.avgRubric==null?0:a.avgRubric, bonus = (a.likeBonus==null?0:a.likeBonus)+(a.htmlBonus==null?0:a.htmlBonus);
+      const comment = portalCommentOf(a);
+      html += `<div class="pcard">
+        <div class="pcard-top"><span class="pc-eyebrow">Debut Live</span><span class="badge win">受賞 · ${r}位</span></div>
+        <h3 class="pc-title codelink" data-code="${esc(a.code)}">${esc(a.who)}</h3>
+        <div class="pc-score-row"><span class="pc-score-num">${a.avg==null?'—':a.avg}</span><span class="pc-score-max">/ 100点</span></div>
+        <div class="pbar"><span class="pb1" style="width:${rubric/50*100}%"></span><span class="pb2" style="width:${bonus/50*100}%"></span></div>
+        <div class="pc-breakdown">
+          <div><span class="pdot pd1"></span>審査の評価<b>${rubric} / 50</b></div>
+          <div><span class="pdot pd2"></span>いいね＆発表ボーナス<b>${bonus} / 50</b></div>
+        </div>
+        <blockquote class="pc-quote">${comment ? esc(comment) : '（講評コメント未入力）'}</blockquote>
+        <div class="pc-links"><span class="codelink plink" data-code="${esc(a.code)}">作品・手順書を見る</span></div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
 function updateHeader(entries, nom, win){
   document.getElementById('hFiles').innerHTML = FILES.length + '<small> 名</small>';
   document.getElementById('hEntries').innerHTML = entries + '<small> 件</small>';
@@ -674,7 +797,9 @@ document.addEventListener('keydown', ev => { if(ev.key === 'Escape') closeResour
 // カード・表は毎回作り直されるので、EntryCodeクリックはイベント委譲で拾う
 document.getElementById('out').addEventListener('click', ev => {
   const el = ev.target.closest('.codelink');
-  if(el) openResourceModal(el.dataset.code);
+  if(el){ openResourceModal(el.dataset.code); return; }
+  const sub = ev.target.closest('.portal-sub-tab');
+  if(sub){ portalSub = sub.dataset.portalSub; render(); }
 });
 render();
 </script>
