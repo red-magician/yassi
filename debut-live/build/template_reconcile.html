@@ -198,6 +198,7 @@ tr.nominee{background:#f7fafd}
   <input type="file" id="fileIn" accept=".xlsx,.xlsm" multiple hidden>
   <span class="sep"></span>
   <button class="btn-gold" id="btnXLS">集計結果Excelを書き出す</button>
+  <button class="btn" id="btnPortalXLS">ポータル掲載データを書き出す</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">全部消す</button>
   <span class="sep"></span>
@@ -782,6 +783,38 @@ function exportXLSX(){
   toast('集計結果Excelを書き出しました（受賞・ノミネート一覧＋全エントリー集計）');
 }
 
+// ポータル掲載班向けのエクスポート。「ポータル表示」タブに出す項目だけに絞った1シート構成
+// （階層・順位・氏名/部署・最終スコア・いいね数・HTML加点・評価コメント・投稿URL）。
+// 内部項目（EntryCode・採点人数・観点別内訳・講評コメントの執筆者名など）は含めない
+function exportPortalXLSX(){
+  if(!FILES.length){ toast('採点メンバーのExcelを読み込んでください'); return; }
+  const month = [...new Set(FILES.map(f=>f.month).filter(Boolean))][0] || '';
+  const agg = aggregate();
+  const {ranks} = computeRanks(agg);
+  const rankOf = c => ranks[c] || '';
+  const nominees = agg.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; })
+    .sort((a,b)=> rankOf(a.code) - rankOf(b.code));
+  if(!nominees.length){ toast('受賞・ノミネートが確定していません（採点比較タブで順位を確定させてください）'); return; }
+
+  const tierOf = r => r === 1 ? 'ゴールド' : (r <= 3 ? 'シルバー' : (r <= AWARD_N ? 'ブロンズ' : 'ノミネート'));
+  const head = ['階層','順位','氏名・部署','最終スコア','いいね数','HTML加点','評価コメント','投稿URL（作品）','投稿URL（手順書）'];
+  const rows = [head];
+  nominees.forEach(a=>{
+    const r = rankOf(a.code);
+    rows.push([
+      tierOf(r), r, a.who, a.avg==null?'':a.avg, a.likesRaw==null?'':a.likesRaw, a.htmlBonus==null?0:a.htmlBonus,
+      portalCommentOf(a), a.workLink||'', a.procLink||'',
+    ]);
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:10},{wch:6},{wch:26},{wch:10},{wch:10},{wch:10},{wch:60},{wch:50},{wch:50}];
+  ws['!freeze'] = {xSplit:'0', ySplit:'1'};
+  XLSX.utils.book_append_sheet(wb, ws, 'ポータル掲載データ');
+  XLSX.writeFile(wb, `デビューライブ_ポータル掲載データ_${(month||'').replace(/[^0-9a-zA-Z年月]/g,'')}_${stamp()}.xlsx`);
+  toast(`ポータル掲載データを書き出しました（受賞${Math.min(AWARD_N,nominees.length)}件＋ノミネート）`);
+}
+
 /* ---------- wiring ---------- */
 const drop = document.getElementById('drop');
 drop.onclick = () => document.getElementById('fileIn').click();
@@ -791,6 +824,7 @@ drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); [...e.data
 document.getElementById('btnAdd').onclick = () => document.getElementById('fileIn').click();
 document.getElementById('fileIn').onchange = e => { [...e.target.files].forEach(readFile); e.target.value=''; };
 document.getElementById('btnXLS').onclick = exportXLSX;
+document.getElementById('btnPortalXLS').onclick = exportPortalXLSX;
 document.getElementById('commentMemberSel').onchange = e => { commentMember = e.target.value; render(); };
 document.querySelectorAll('.view-tab').forEach(b=>{
   b.onclick = () => {
