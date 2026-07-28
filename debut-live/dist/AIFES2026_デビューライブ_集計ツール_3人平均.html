@@ -68,39 +68,51 @@ td .reason-inp{min-width:220px;min-height:36px}
 .pa-d1 .pa-dot{background:var(--gold-dim)}
 .pa-d2 .pa-dot{background:var(--navy-soft)}
 .pa-half p{font-size:12px;line-height:1.7;color:var(--mute);margin:0}
-.portal-sub-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:16px}
-.portal-sub-tab{appearance:none;border:none;background:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:var(--mute);padding:8px 4px 10px;margin-right:18px;border-bottom:2px solid transparent}
-.portal-sub-tab.on{color:var(--navy-deep);border-bottom-color:var(--gold-dim)}
-.pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:flex}
-.pbar span{height:100%;display:block}
-.pbar .pb1{background:var(--gold-dim)}
-.pbar .pb2{background:var(--navy-soft)}
-.ptable{width:100%;border-collapse:collapse;font-size:13px}
-.ptable thead th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);padding:10px 12px;border-bottom:1px solid var(--line)}
-.ptable thead th.n{text-align:right}
-.ptable td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
-.ptable td.n{text-align:right}
-.ptable .rk{font-weight:700;font-size:14px}
-.prow-title{font-weight:600}
-.prow-score{font-weight:700;font-size:14px}
-.prow-bar{width:120px}
-.plink{white-space:nowrap;font-size:12px}
-.portal-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.pcard{border:1px solid var(--line);border-radius:10px;background:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px}
-.pcard-top{display:flex;justify-content:space-between;align-items:center}
-.pc-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-.pc-title{font-size:15px;line-height:1.5;margin:0}
-.pc-score-row{display:flex;align-items:baseline;gap:6px}
-.pc-score-num{font-size:32px;font-weight:700;letter-spacing:-.01em;color:var(--navy-deep)}
-.pc-score-max{font-size:12px;color:var(--mute)}
-.pc-breakdown{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--mute)}
-.pc-breakdown div{display:flex;align-items:center;gap:6px}
-.pc-breakdown b{margin-left:auto;color:var(--ink);font-weight:700}
-.pdot{width:7px;height:7px;border-radius:99px;flex:none}
-.pd1{background:var(--gold-dim)}
-.pd2{background:var(--navy-soft)}
-.pc-quote{font-style:italic;font-size:12.5px;line-height:1.65;color:var(--ink);border-top:1px solid var(--line);padding-top:9px;margin:0}
-.pc-links{margin-top:auto}
+/* メダル階層（ゴールド/シルバー/ブロンズ） */
+.pt-tier{margin-bottom:26px}
+.pt-tier:last-child{margin-bottom:0}
+.pt-tier-label{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.04em;padding:6px 15px;border-radius:99px;margin-bottom:14px;color:#fff}
+.pt-tier-label .pt-tier-icon{font-size:14px}
+.pt-tier-label .pt-tier-count{font-size:10.5px;font-weight:700;opacity:.9;padding-left:8px;margin-left:4px;border-left:1px solid rgba(255,255,255,.4)}
+.pt-tier-label.gold{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:var(--navy-deep)}
+.pt-tier-label.silver{background:linear-gradient(135deg,var(--silver),#5f7290)}
+.pt-tier-label.bronze{background:linear-gradient(135deg,#c68a4e,#8a5a2b)}
+.pt-grid{display:grid;gap:16px}
+.pt-grid.cols-1{grid-template-columns:1fr}
+.pt-grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.pt-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:820px){.pt-grid.cols-2,.pt-grid.cols-3{grid-template-columns:1fr}}
+.pt-card{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column;border-top:4px solid var(--line);box-shadow:0 1px 3px rgba(13,33,64,.05)}
+.pt-tier.gold .pt-card{border-top-color:var(--gold)}
+.pt-tier.silver .pt-card{border-top-color:var(--silver)}
+.pt-tier.bronze .pt-card{border-top-color:#c68a4e}
+.pt-card-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
+.pt-name{font-size:15px;font-weight:700;color:var(--navy-deep)}
+.pt-stat-row{display:flex;flex-wrap:wrap;gap:8px}
+.pt-stat{flex:1 1 auto;min-width:0;padding:9px 12px;border-radius:8px;background:var(--paper);border:1px solid var(--line)}
+.pt-stat .k{display:block;font-size:9.5px;font-weight:800;letter-spacing:.08em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+.pt-stat .v{font-size:15px;font-weight:800;color:var(--navy-deep);line-height:1.2}
+.pt-stat .v small{font-size:10px;font-weight:700;color:var(--mute);margin-left:2px}
+.pt-stat.score{flex:1 1 100%;background:linear-gradient(135deg,#fff7de,#fffbf0);border-color:#f0e2bd}
+.pt-stat.score .v{color:var(--gold-dim);font-size:19px}
+.pt-comment{position:relative;font-size:12.5px;line-height:1.7;color:var(--ink);padding:10px 12px 10px 16px;border-radius:8px;background:#fff9ec;border:1px solid #f0e2bd}
+.pt-comment::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(var(--gold),var(--gold-dim))}
+.pt-comment .lbl{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--gold-dim);margin-bottom:4px}
+.pt-link{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;padding:9px 14px;border-radius:8px;border:1.5px solid var(--navy);color:var(--navy);background:#fff;cursor:pointer}
+.pt-link:hover{background:var(--navy);color:#fff}
+/* ノミネート一覧 */
+.pt-nominees{margin-top:30px;padding-top:22px;border-top:1px dashed var(--line)}
+.pt-nominees-head{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;color:var(--navy-deep);margin-bottom:14px}
+.pt-nom-badge{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--mute);background:var(--paper);border:1px solid var(--line);padding:3px 10px;border-radius:99px}
+.pt-nominee-list{display:flex;flex-direction:column;gap:8px}
+.pt-nominee-item{display:flex;align-items:center;gap:14px;padding:11px 16px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.pt-nominee-item:hover{border-color:var(--navy)}
+.pt-nom-rank{font-size:11px;font-weight:800;color:var(--mute);width:22px;text-align:center;flex-shrink:0}
+.pt-nom-title{flex:1 1 auto;min-width:0;font-size:13.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.pt-nom-score{font-size:12.5px;font-weight:800;color:var(--gold-dim);white-space:nowrap;flex-shrink:0}
+.pt-nom-link{font-size:11px;font-weight:700;color:var(--navy);white-space:nowrap;flex-shrink:0;cursor:pointer}
+.pt-nom-link:hover{text-decoration:underline}
+@media(max-width:640px){.pt-nominee-item{flex-wrap:wrap;gap:6px 12px}.pt-nom-title{flex:1 1 100%;white-space:normal}}
 /* ---- 提出物モーダル ---- */
 .modal{position:fixed;inset:0;background:rgba(13,33,64,.55);display:none;align-items:center;justify-content:center;z-index:300;padding:20px}
 .modal.on{display:flex}
@@ -237,7 +249,6 @@ let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
 let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'cards'=受賞候補カード／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）／'portal'=ポータル表示（応募者・一般向けの公開プレビュー）
 let reasons = {};        // code -> 受賞理由（講評コメントとは別に、最終結果／カード画面でその場で入力する）
-let portalSub = 'cards'; // ポータル表示タブ内の切替。'cards'=受賞作品（カード）／'list'=全体の結果（受賞＋ノミネート一覧）
 
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(x){ const n = Number(x); return (x==='' || x==null || isNaN(n)) ? null : n; }
@@ -619,11 +630,40 @@ function renderAwardCards(sorted, rankOf){
   html += `</div></div>`;
   return html;
 }
-// 「ポータル表示」タブ：応募者・一般向けの公開プレビュー。内部用語（ルーブリック・観点別内訳・採点人数など）は出さず、
-// 「審査の評価」＋「いいね＆発表ボーナス」の2本立て・各50点で見せる。受賞のみカード表示／受賞＋ノミネートは一覧表示、タブで切替
+// 「ポータル表示」タブ：応募者・一般向けの公開プレビュー。ポータル班から共有されたデザイン
+// （ゴールド/シルバー/ブロンズのメダル階層カード＋ノミネート一覧）に構成を合わせている。配色は本ツールの
+// 既存トーン（紺・ゴールド）のまま。内部用語（ルーブリック・観点別内訳・採点人数など）は出さない
 function renderPortalView(sorted, rankOf){
-  const nominees = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; });
-  const winners = nominees.filter(a=> rankOf(a.code) <= AWARD_N);
+  const winners = sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= AWARD_N; })
+    .sort((a,b)=> rankOf(a.code) - rankOf(b.code));
+  const nomineesOnly = sorted.filter(a=>{ const r = rankOf(a.code); return r && r > AWARD_N && r <= NOMINEE_N; })
+    .sort((a,b)=> rankOf(a.code) - rankOf(b.code));
+  const gold = winners.filter(a => rankOf(a.code) === 1);
+  const silver = winners.filter(a => { const r = rankOf(a.code); return r === 2 || r === 3; });
+  const bronze = winners.filter(a => { const r = rankOf(a.code); return r >= 4 && r <= 6; });
+
+  const winnerCard = a => {
+    const comment = portalCommentOf(a);
+    return `<article class="pt-card">
+      <div class="pt-card-body">
+        <div class="pt-name codelink" data-code="${esc(a.code)}">${esc(a.who)}</div>
+        <div class="pt-stat-row">
+          <div class="pt-stat score"><span class="k">最終スコア</span><span class="v">${a.avg==null?'—':a.avg}<small>点</small></span></div>
+          <div class="pt-stat like"><span class="k">いいね数</span><span class="v">${a.likesRaw==null?'—':a.likesRaw}<small>いいね</small></span></div>
+          <div class="pt-stat html"><span class="k">HTML加点</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
+        </div>
+        <div class="pt-comment"><span class="lbl">評価コメント</span>${comment ? esc(comment) : '（未入力）'}</div>
+        <span class="pt-link codelink" data-code="${esc(a.code)}">投稿を見る</span>
+      </div>
+    </article>`;
+  };
+  const tier = (cls, icon, label, list, cols) => {
+    if(!list.length) return '';
+    return `<div class="pt-tier ${cls}">
+      <span class="pt-tier-label ${cls}"><span class="pt-tier-icon">${icon}</span>${label}<span class="pt-tier-count">${list.length}名</span></span>
+      <div class="pt-grid cols-${cols}">${list.map(winnerCard).join('')}</div>
+    </div>`;
+  };
 
   let html = `<div class="panel portal-panel">
     <div class="portal-announce">
@@ -636,53 +676,31 @@ function renderPortalView(sorted, rankOf){
         <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>いいね＆発表ボーナス（50点）</div><p>社内ポータルで実際に集まった「いいね」の数と、発表資料をHTML形式で作成したかどうかを加点しています。審査担当者の評価だけでなく、現場で見て応援してくれた反応も、同じ重みでスコアに反映されます。</p></div>
       </div>
       <p>つまり最終スコアは、<b>AI＋審査担当者による評価</b>と、<b>皆さんからの応援</b>を半々で足し合わせたものです。結果をご覧いただく際の参考にしていただければと思います。</p>
-    </div>
-    <div class="portal-sub-tabs">
-      <button class="portal-sub-tab ${portalSub==='cards'?'on':''}" data-portal-sub="cards">受賞作品</button>
-      <button class="portal-sub-tab ${portalSub==='list'?'on':''}" data-portal-sub="list">全体の結果（受賞・ノミネート）</button>
     </div>`;
 
-  if(portalSub === 'list'){
-    html += `<div class="table-scroll"><table class="ptable"><thead><tr>
-        <th class="n">順位</th><th>判定</th><th>作品 / 応募者</th><th class="n">スコア</th><th>内訳</th><th></th>
-      </tr></thead><tbody>`;
-    nominees.forEach(a=>{
-      const r = rankOf(a.code);
-      const isWin = r <= AWARD_N;
-      const rubric = a.avgRubric==null?0:a.avgRubric, bonus = (a.likeBonus==null?0:a.likeBonus)+(a.htmlBonus==null?0:a.htmlBonus);
-      html += `<tr>
-        <td class="n rk">${r}</td>
-        <td><span class="badge ${isWin?'win':'nom'}">${isWin?'受賞':'ノミネート'}</span></td>
-        <td><div class="prow-title codelink" data-code="${esc(a.code)}">${esc(a.who)}</div></td>
-        <td class="n prow-score">${a.avg==null?'—':a.avg}</td>
-        <td class="prow-bar"><div class="pbar"><span class="pb1" style="width:${rubric/50*100}%"></span><span class="pb2" style="width:${bonus/50*100}%"></span></div></td>
-        <td><span class="codelink plink" data-code="${esc(a.code)}">資料</span></td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-    if(!nominees.length) html += `<div class="empty">まだ順位が確定した作品がありません</div>`;
+  if(!winners.length){
+    html += `<div class="empty">まだ受賞が確定した作品がありません</div>`;
   } else {
-    html += `<div class="portal-cards">`;
-    if(!winners.length) html += `<div class="empty">まだ受賞が確定した作品がありません</div>`;
-    winners.forEach(a=>{
-      const r = rankOf(a.code);
-      const rubric = a.avgRubric==null?0:a.avgRubric, bonus = (a.likeBonus==null?0:a.likeBonus)+(a.htmlBonus==null?0:a.htmlBonus);
-      const comment = portalCommentOf(a);
-      html += `<div class="pcard">
-        <div class="pcard-top"><span class="pc-eyebrow">Debut Live</span><span class="badge win">受賞 · ${r}位</span></div>
-        <h3 class="pc-title codelink" data-code="${esc(a.code)}">${esc(a.who)}</h3>
-        <div class="pc-score-row"><span class="pc-score-num">${a.avg==null?'—':a.avg}</span><span class="pc-score-max">/ 100点</span></div>
-        <div class="pbar"><span class="pb1" style="width:${rubric/50*100}%"></span><span class="pb2" style="width:${bonus/50*100}%"></span></div>
-        <div class="pc-breakdown">
-          <div><span class="pdot pd1"></span>審査の評価<b>${rubric} / 50</b></div>
-          <div><span class="pdot pd2"></span>いいね＆発表ボーナス<b>${bonus} / 50</b></div>
-        </div>
-        <blockquote class="pc-quote">${comment ? esc(comment) : '（講評コメント未入力）'}</blockquote>
-        <div class="pc-links"><span class="codelink plink" data-code="${esc(a.code)}">作品・手順書を見る</span></div>
-      </div>`;
-    });
-    html += `</div>`;
+    html += tier('gold', '🥇', 'ゴールドアワード', gold, 1);
+    html += tier('silver', '🥈', 'シルバーアワード', silver, 2);
+    html += tier('bronze', '🥉', 'ブロンズアワード', bronze, 3);
   }
+
+  if(nomineesOnly.length){
+    html += `<div class="pt-nominees">
+      <div class="pt-nominees-head">✨ ノミネート作品 <span class="pt-nom-badge">惜しくも受賞を逃した注目作</span></div>
+      <div class="pt-nominee-list">${nomineesOnly.map(a => {
+        const r = rankOf(a.code);
+        return `<div class="pt-nominee-item">
+          <span class="pt-nom-rank">${r}</span>
+          <span class="pt-nom-title codelink" data-code="${esc(a.code)}">${esc(a.who)}</span>
+          <span class="pt-nom-score">${a.avg==null?'—':a.avg}点</span>
+          <span class="pt-nom-link codelink" data-code="${esc(a.code)}">投稿を見る →</span>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
   html += `</div>`;
   return html;
 }
@@ -797,9 +815,7 @@ document.addEventListener('keydown', ev => { if(ev.key === 'Escape') closeResour
 // カード・表は毎回作り直されるので、EntryCodeクリックはイベント委譲で拾う
 document.getElementById('out').addEventListener('click', ev => {
   const el = ev.target.closest('.codelink');
-  if(el){ openResourceModal(el.dataset.code); return; }
-  const sub = ev.target.closest('.portal-sub-tab');
-  if(sub){ portalSub = sub.dataset.portalSub; render(); }
+  if(el) openResourceModal(el.dataset.code);
 });
 render();
 </script>
