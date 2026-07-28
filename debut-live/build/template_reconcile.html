@@ -432,8 +432,9 @@ function syncCommentMemberOptions(){
 }
 // 平均降順に総合順位を付ける。pinned（手動固定）を優先し、残りを平均順で詰める
 function computeRanks(agg){
+  // 同点時の優先順位（README・受賞選定ツールと同じ基準）：①平均ルーブリックが高い方 → ②いいね数が多い方 → ③EntryCode
   const scored = agg.filter(a=>a.avg!=null).slice()
-    .sort((a,b)=> b.avg - a.avg || (a.code < b.code ? -1 : 1));
+    .sort((a,b)=> b.avg - a.avg || (b.avgRubric??-1) - (a.avgRubric??-1) || (b.likesRaw??-1) - (a.likesRaw??-1) || (a.code < b.code ? -1 : 1));
   const N = scored.length;
   const ranks = {}; const used = new Set();
   // 手動固定を先に確定（範囲内・重複しない分だけ）
