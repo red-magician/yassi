@@ -52,10 +52,13 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   await p.waitForTimeout(300);
   ok((await p.locator('.view-tab.on').textContent()) === 'ポータル表示', 'ポータル表示タブがアクティブになる');
 
-  // 案内文
+  // 案内文（公式の配点構成：書く40／学ぶ40／響く20／＋α10＝110点）
   const announceText = await p.locator('.portal-announce').innerText();
-  ok(announceText.includes('審査の評価'), '案内文に「審査の評価」の表記がある');
-  ok(announceText.includes('いいね＆発表ボーナス'), '案内文に「いいね＆発表ボーナス」の表記がある');
+  ok(announceText.includes('書く（40点）'), '案内文に「書く（40点）」の表記がある');
+  ok(announceText.includes('学ぶ（40点）'), '案内文に「学ぶ（40点）」の表記がある');
+  ok(announceText.includes('響く（20点）'), '案内文に「響く（20点）」の表記がある');
+  ok(announceText.includes('Cowork'), '案内文に＋α（Cowork経由の自動加点）の説明がある');
+  ok(announceText.includes('110点'), '案内文に満点110点の記載がある');
   ok(!announceText.includes('ルーブリック'), '案内文に内部用語「ルーブリック」が出ない');
 
   // メダル階層（ゴールド1名／シルバー2名／ブロンズ3名 ＝ 受賞6件）
@@ -67,7 +70,7 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   const goldCardText = await p.locator('.pt-tier.gold .pt-card').innerText();
   ok(!/採点人数/.test(goldCardText), 'カードに採点人数が出ない');
   ok(!/DEBUT-2026/.test(goldCardText), 'カードにEntryCodeが出ない（応募者名で表示）');
-  ok(/最終スコア/.test(goldCardText) && /いいね数/.test(goldCardText) && /HTML加点/.test(goldCardText), 'カードに最終スコア／いいね数／HTML加点の3スタッツが出る');
+  ok(/最終スコア/.test(goldCardText) && /いいね数/.test(goldCardText) && /Cowork加点/i.test(goldCardText), 'カードに最終スコア／いいね数／Cowork加点の3スタッツが出る');
   ok(/田中講評|佐藤講評|鈴木講評/.test(goldCardText), '評価コメント本文は表示される');
   const commentLine = goldCardText.split('\n').find(l => /講評/.test(l)) || '';
   ok(!/^【/.test(commentLine), '評価コメントに執筆者名（【メンバー名】形式）が付かない');

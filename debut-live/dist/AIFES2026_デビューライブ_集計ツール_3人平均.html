@@ -65,8 +65,10 @@ td .reason-inp{min-width:220px;min-height:36px}
 .pa-half{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px}
 .pa-htitle{display:flex;align-items:center;gap:7px;font-weight:700;font-size:12.5px;margin-bottom:5px;color:var(--navy-deep)}
 .pa-dot{width:8px;height:8px;border-radius:99px;flex:none}
-.pa-d1 .pa-dot{background:var(--gold-dim)}
-.pa-d2 .pa-dot{background:var(--navy-soft)}
+.pa-d1 .pa-dot{background:var(--navy)}
+.pa-d2 .pa-dot{background:var(--gold-dim)}
+.pa-d3 .pa-dot{background:#c8102e}
+.pa-d4 .pa-dot{background:#1f9d6b}
 .pa-half p{font-size:12px;line-height:1.7;color:var(--mute);margin:0}
 /* メダル階層（ゴールド/シルバー/ブロンズ） */
 .pt-tier{margin-bottom:26px}
@@ -244,7 +246,9 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 <script>
 const AWARD_N   = 6;    // 受賞（上位）
 const NOMINEE_N = 10;   // ノミネート（上位）
-const HTML_BONUS = 10;  // 作品ファイルがHTML形式なら一律+10（手順書の形式は問わない）
+const HTML_BONUS = 10;  // Cowork加点：Cowork経由の応募（＝作品ファイルがHTML形式）なら一律+10（手順書の形式は問わない）
+const GIVE_CAP = 40;    // いいね（押す＝学ぶ）加点の上限
+const RECV_CAP = 20;    // いいね（もらう＝響く）加点の上限
 let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
@@ -358,20 +362,25 @@ function readFile(file){
         const code = g(row,'EntryCode'); if(!code) return;
         if(!month) month = g(row,'対象月');
         const rubricTotal = num(g(row,'ルーブリック合計'));
-        const likeBonus = num(g(row,'いいね加点'));
-        // HTML加点は取り込み側では信用せず、作品ファイル形式から常に再計算する
-        // （作品ファイルがHTMLなら一律+10、手順書の形式は不問。旧仕様＝作品+5/手順書+5で書き出された
-        //   古いExcelを読み込んでも、現行ルールで正しく再計算される）
+        // いいね加点は取り込み側では列を信用せず、生のいいね数から現行の上限
+        // （押す「学ぶ」上限+40／もらう「響く」上限+20）で常に再計算する。
+        // 旧上限（押す15／もらう25）で書き出された古いExcelを読み込んでも現行ルールに揃う
+        const likesRaw = num(g(row,'いいね（もらう）')), likesGivenRaw = num(g(row,'いいね（押す）'));
+        const likeBonus = (likesRaw!=null || likesGivenRaw!=null)
+          ? Math.min(likesGivenRaw??0, GIVE_CAP) + Math.min(likesRaw??0, RECV_CAP)
+          : num(g(row,'いいね加点'));
+        // Cowork加点（旧称HTML加点）も同様に、作品ファイル形式から常に再計算する
+        // （Cowork経由＝作品ファイルがHTMLなら一律+10、手順書の形式は不問）
         const fmtWork = g(row,'作品ファイル形式');
         const hasFmtWork = h.includes('作品ファイル形式');
-        const htmlBonus = hasFmtWork ? (fmtWork === 'HTML' ? HTML_BONUS : 0) : num(g(row,'HTML加点'));
+        const htmlBonus = hasFmtWork ? (fmtWork === 'HTML' ? HTML_BONUS : 0) : (num(g(row,'Cowork加点')) ?? num(g(row,'HTML加点')));
         const finalScore = (rubricTotal!=null && likeBonus!=null && htmlBonus!=null)
           ? Math.round((rubricTotal + likeBonus + htmlBonus) * 10) / 10
           : num(g(row,'最終スコア'));
         entries[code] = {
           who: g(row,'応募者・部署'),
           finalScore, rubricTotal, likeBonus, htmlBonus, fmtWork,
-          likesRaw: num(g(row,'いいね（もらう）')), likesGivenRaw: num(g(row,'いいね（押す）')),
+          likesRaw, likesGivenRaw,
           comment: g(row,'講評コメント'),
           workLink: g(row,'作品リンク'), procLink: g(row,'手順書リンク'),
         };
@@ -507,11 +516,11 @@ function render(){
 // 「採点比較」タブ：各メンバーの点数と平均が横並びで見える一覧（従来の集計表）
 function renderCompareTable(sorted, rankOf, N){
   const memberHeads = FILES.map(f=>`<th class="n">${esc(f.memberName)}</th>`).join('');
-  let html = `<div class="panel"><h2>採点比較（最終スコアの平均で順位付け） <span>上位${NOMINEE_N}＝ノミネート／上位${AWARD_N}＝受賞。手動で順位を固定できます。平均最終スコア＝平均ルーブリック＋いいね加点＋HTML加点</span></h2>
+  let html = `<div class="panel"><h2>採点比較（最終スコアの平均で順位付け） <span>上位${NOMINEE_N}＝ノミネート／上位${AWARD_N}＝受賞。手動で順位を固定できます。平均最終スコア＝平均ルーブリック＋いいね加点＋Cowork加点</span></h2>
     <div class="table-scroll"><table><thead><tr>
       <th class="n">総合順位</th><th class="n">判定</th><th>EntryCode / 応募者</th>
       <th class="n">平均<br>最終スコア</th>
-      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">HTML加点</th>
+      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">Cowork加点</th>
       ${memberHeads}<th class="n">採点<br>人数</th>
       <th class="n">順位固定<br>（手動）</th>
     </tr></thead><tbody>`;
@@ -561,7 +570,7 @@ function renderFinalTable(sorted, rankOf){
   html += `<div class="table-scroll"><table><thead><tr>
       <th class="n">順位</th><th class="n">判定</th><th>EntryCode / 応募者</th>
       <th class="n">平均<br>最終スコア</th>
-      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">HTML加点</th>
+      <th class="n">平均<br>ルーブリック</th><th class="n">いいね加点</th><th class="n">Cowork加点</th>
       <th class="n">順位固定<br>（手動）</th>
       <th>${esc(reasonHeadLabel())}</th><th>${esc(commentHeadLabel())}</th>
     </tr></thead><tbody>`;
@@ -587,7 +596,7 @@ function renderFinalTable(sorted, rankOf){
   });
   html += `</tbody></table></div>
     <div class="legend">
-      <span><b>平均最終スコア</b>＝平均ルーブリック＋いいね加点＋HTML加点</span>
+      <span><b>平均最終スコア</b>＝平均ルーブリック＋いいね加点＋Cowork加点</span>
       <span><b>受賞理由</b>＝講評コメントとは別に、この画面でその場で入力できます（自動入力ではありません）</span>
       <span>「Excelを書き出す」で、この画面の内容がそのまま出力されます</span>
     </div>
@@ -622,7 +631,7 @@ function renderAwardCards(sorted, rankOf){
           <span>平均ルーブリック <b>${a.avgRubric==null?'—':a.avgRubric}</b></span>
           <span>採点人数 <b>${a.scoredCount}</b> / ${FILES.length}</span>
           <span>いいね加点 <b>+${a.likeBonus==null?0:a.likeBonus}</b></span>
-          <span>HTML加点 <b>+${a.htmlBonus==null?0:a.htmlBonus}</b></span>
+          <span>Cowork加点 <b>+${a.htmlBonus==null?0:a.htmlBonus}</b></span>
         </div>
         <div><label>受賞理由</label><textarea class="reason-inp" data-code="${esc(a.code)}" placeholder="この作品を選んだ理由（3人で相談して記入）">${esc(reasons[a.code]||'')}</textarea></div>
         <div><label>講評コメント</label><div class="anote ${comment?'':'na'}">${comment ? esc(comment) : '（未入力）'}</div></div>
@@ -652,7 +661,7 @@ function renderPortalView(sorted, rankOf){
         <div class="pt-stat-row">
           <div class="pt-stat score"><span class="k">最終スコア</span><span class="v">${a.avg==null?'—':a.avg}<small>点</small></span></div>
           <div class="pt-stat like"><span class="k">いいね数</span><span class="v">${a.likesRaw==null?'—':a.likesRaw}<small>いいね</small></span></div>
-          <div class="pt-stat html"><span class="k">HTML加点</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
+          <div class="pt-stat html"><span class="k">Cowork加点</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
         </div>
         <div class="pt-comment"><span class="lbl">評価コメント</span>${comment ? esc(comment) : '（未入力）'}</div>
         <span class="pt-link codelink" data-code="${esc(a.code)}">投稿を見る</span>
@@ -672,12 +681,14 @@ function renderPortalView(sorted, rankOf){
       <p class="pa-kicker">結果発表にあたって（ポータル掲載文案）</p>
       <h2>スコアの見方について</h2>
       <p>Debut Live にご応募いただいた皆さん、ありがとうございました。今回、各作品の最終スコアをあわせて公開します。「なぜこの順位になったのか」ができるだけ伝わるよう、スコアの仕組みを簡単にご説明します。</p>
-      <p>最終スコアは、<b>専門的な観点からの評価</b>と<b>実際に見てくれた皆さんからの反応</b>を、半分ずつ組み合わせて算出しています。どちらか一方だけで決まる仕組みではありません。</p>
-      <div class="pa-split">
-        <div class="pa-half pa-d1"><div class="pa-htitle"><span class="pa-dot"></span>審査の評価（50点）</div><p>提出された作品・手順書をもとに、AIによる一次評価を土台にしながら、審査担当者が内容を確認して採点しています。AIが観点ごとの見落としを防ぎ、最終的な妥当性は必ず人が確認する、という二段構えです。</p></div>
-        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>いいね＆発表ボーナス（50点）</div><p>社内ポータルで実際に集まった「いいね」の数と、発表資料をHTML形式で作成したかどうかを加点しています。審査担当者の評価だけでなく、現場で見て応援してくれた反応も、同じ重みでスコアに反映されます。</p></div>
+      <p>最終スコアは、3つの行動に<b>110点</b>を配分しています。盛れば勝てる設計ではなく、<b>具体的に書けば伝わる・行動すれば積み上がる</b>設計です。審査だけで決まる仕組みでも、人気投票だけで決まる仕組みでもありません。</p>
+      <div class="pa-split pa-quad">
+        <div class="pa-half pa-d1"><div class="pa-htitle"><span class="pa-dot"></span>書く（40点）</div><p>4つの問いをどれだけ具体的に書けたか。AIによる一次評価を土台に、審査担当者が内容を確認して採点しています。AIが観点ごとの見落としを防ぎ、最終的な妥当性は必ず人が確認する二段構えです。</p></div>
+        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>学ぶ（40点）</div><p>1ヶ月で仲間のTipsをどれだけ読みに行ったか（押したいいねの数）。読んで応援する行動そのものが、審査と同じ重みでスコアになります。</p></div>
+        <div class="pa-half pa-d3"><div class="pa-htitle"><span class="pa-dot"></span>響く（20点）</div><p>自分の物語に集まったいいねの数。実際に見てくれた皆さんの反応を反映します。</p></div>
+        <div class="pa-half pa-d4"><div class="pa-htitle"><span class="pa-dot"></span>＋α（+10点）</div><p>Microsoft Copilot Cowork経由で応募すると自動加点されます。</p></div>
       </div>
-      <p>つまり最終スコアは、<b>AI＋審査担当者による評価</b>と、<b>皆さんからの応援</b>を半々で足し合わせたものです。結果をご覧いただく際の参考にしていただければと思います。</p>
+      <p>つまり最終スコアは、<b>AI＋審査担当者による評価（書く）</b>と、<b>皆さんの学び・応援の行動（学ぶ・響く・＋α）</b>を足し合わせた、満点110点です。結果をご覧いただく際の参考にしていただければと思います。</p>
     </div>`;
 
   if(!winners.length){
@@ -748,7 +759,7 @@ function exportXLSX(){
   const memberCols = FILES.map(f=>`${f.memberName} 最終スコア`);
   const head = ['総合順位','判定','受賞フラグ','ノミネートフラグ','対象月','EntryCode','応募者・部署','平均最終スコア','平均ルーブリック','採点人数']
     .concat(memberCols)
-    .concat(['いいね（もらう）','いいね（押す）','いいね加点','HTML加点',reasonHeadLabel(),commentHeadLabel()]);
+    .concat(['いいね（もらう）','いいね（押す）','いいね加点','Cowork加点',reasonHeadLabel(),commentHeadLabel()]);
   const rows = [head];
   sorted.forEach(a=>{
     const r = rankOf(a.code);
@@ -766,7 +777,7 @@ function exportXLSX(){
   const wb = XLSX.utils.book_new();
 
   // シート1：受賞・ノミネート一覧（最終結果・上位のみ。受賞6件＋ノミネート10件を綺麗に）
-  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','平均ルーブリック','いいね加点','HTML加点','採点人数'].concat(memberCols).concat([reasonHeadLabel(),commentHeadLabel()]);
+  const finHead = ['総合順位','判定','対象月','EntryCode','応募者・部署','平均最終スコア','平均ルーブリック','いいね加点','Cowork加点','採点人数'].concat(memberCols).concat([reasonHeadLabel(),commentHeadLabel()]);
   const finRows = [finHead];
   sorted.filter(a=>{ const r = rankOf(a.code); return r && r <= NOMINEE_N; }).forEach(a=>{
     const r = rankOf(a.code);
@@ -793,7 +804,7 @@ function exportXLSX(){
 }
 
 // ポータル掲載班向けのエクスポート。「ポータル表示」タブに出す項目だけに絞った1シート構成
-// （階層・順位・氏名/部署・最終スコア・いいね数・HTML加点・評価コメント・投稿URL）。
+// （階層・順位・氏名/部署・最終スコア・いいね数・Cowork加点・評価コメント・投稿URL）。
 // 内部項目（EntryCode・採点人数・観点別内訳・講評コメントの執筆者名など）は含めない
 function exportPortalXLSX(){
   if(!FILES.length){ toast('採点メンバーのExcelを読み込んでください'); return; }
@@ -806,7 +817,7 @@ function exportPortalXLSX(){
   if(!nominees.length){ toast('受賞・ノミネートが確定していません（採点比較タブで順位を確定させてください）'); return; }
 
   const tierOf = r => r === 1 ? 'ゴールド' : (r <= 3 ? 'シルバー' : (r <= AWARD_N ? 'ブロンズ' : 'ノミネート'));
-  const head = ['階層','順位','氏名・部署','最終スコア','いいね数','HTML加点','評価コメント','投稿URL（作品）','投稿URL（手順書）'];
+  const head = ['階層','順位','氏名・部署','最終スコア','いいね数','Cowork加点','評価コメント','投稿URL（作品）','投稿URL（手順書）'];
   const rows = [head];
   nominees.forEach(a=>{
     const r = rankOf(a.code);

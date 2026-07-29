@@ -188,7 +188,7 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック50点＋いいね加点(もらう上限+25／押す上限+15・合計上限+40)＋HTML加点(上限+10)で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
+  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック「書く」40点＋いいね加点(押す「学ぶ」上限+40／もらう「響く」上限+20)＋Cowork加点(+10)＝110点満点で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -256,11 +256,11 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
 
 <script>__SHEETJS__</script>
 <script>
-const LIKE_CAP = 25;        // いいね（もらう）加点の上限
-const GIVE_CAP = 15;        // いいね（押す）加点の上限
-const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう25＋押す15＝40）
-const HTML_BONUS = 10;      // 作品ファイルがHTML形式なら一律+10（手順書の形式は問わない）
-const RUBRIC_MAX = 50;      // ルーブリック合計の満点（各観点は0〜10のまま、換算をこの満点に合わせる）
+const LIKE_CAP = 20;        // いいね（もらう＝響く）加点の上限
+const GIVE_CAP = 40;        // いいね（押す＝学ぶ）加点の上限
+const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう20＋押す40＝60）
+const HTML_BONUS = 10;      // Cowork加点：Cowork経由の応募（＝作品ファイルがHTML形式）なら一律+10（手順書の形式は問わない）
+const RUBRIC_MAX = 40;      // ルーブリック合計の満点（「書く」40点。各観点は0〜10のまま、換算をこの満点に合わせる）
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
 const STORE_PREFIX = 'debutLiveTool_v1::';
 const LAST_STAFF_KEY = STORE_PREFIX + '_lastStaffName';  // ブラウザに前回入力した作業者名を覚えておき、毎回の入力を省く
@@ -465,12 +465,12 @@ function tryJoinedSheets(wb){
   return {entries: out, scoreSheetFound: !!scoreSheet};
 }
 function buildEntry(d){
-  const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS : 0;   // 作品ファイルがHTMLなら一律+10
+  const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS : 0;   // Cowork経由（＝作品がHTML）なら一律+10
   const bonusProc = 0;                                       // 手順書の形式は加点に影響しない
   const likesGivenRaw = d.likesGivenRaw || 0;
-  const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点（上限25）
-  const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点（上限15）
-  const likeBonus = recvBonus + giveBonus;                // いいね加点合計（上限40）
+  const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点＝響く（上限20）
+  const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点＝学ぶ（上限40）
+  const likeBonus = recvBonus + giveBonus;                // いいね加点合計（上限60）
   // 作品リンクが無くても、作品ファイル形式（スタッフ書き出し済みExcート等）が分かっていれば提出済みとみなす
   const gap = !d.workLink && !d.fmtWork;                       // どちらも無い＝提出物欠損
   // ルーブリック点数はスタッフが画面で編集できる。マスターにAI採点があれば初期値として使う（aiAxis）
@@ -950,7 +950,7 @@ function renderAwardPanel(){
         <div class="ascore">
           <span>ルーブリック <b>${e.rubricTotal}</b></span>
           <span>いいね もらう<b>${e.likesRaw}</b>／押す<b>${e.likesGivenRaw}</b>（加点+${e.likeBonus} = もらう+${e.recvBonus}／押す+${e.giveBonus}）</span>
-          <span>HTML加点 <b>+${e.htmlBonus}</b></span>
+          <span>Cowork加点 <b>+${e.htmlBonus}</b></span>
           <span>最終 <b style="color:var(--navy);font-size:14px">${e.finalScore}</b></span>
         </div>
         <div><label>受賞理由</label><textarea class="note-reason" data-code="${esc(e.code)}" placeholder="なぜこの作品を受賞に選んだか">${esc(n.reason)}</textarea></div>
@@ -1006,7 +1006,7 @@ function renderTable(excl){
       <th class="n" title="観点①〜④を${RUBRIC_MAX}点満点に換算した合計">ルーブリック<br><span class="sub">/${RUBRIC_MAX}</span></th>
       <th class="n">いいね<br><span class="sub">もらう／押す</span></th>
       <th class="n">いいね加点<br><span class="sub">上限+${LIKE_TOTAL_CAP}</span></th>
-      <th class="n">HTML加点<br><span class="sub">上限+10</span></th>
+      <th class="n">Cowork加点<br><span class="sub">+10</span></th>
       <th class="n">最終スコア</th>
       <th>状態</th>
       <th class="cmt-h">講評コメント<br><span class="sub">全件・任意</span></th>
@@ -1033,7 +1033,7 @@ function renderTable(excl){
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
       <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
       <td class="n" title="${esc(`もらう +${e.recvBonus}／押す +${e.giveBonus}`)}">${fmtBonus(e.likeBonus, LIKE_TOTAL_CAP)}</td>
-      <td class="n" title="${esc(`作品ファイル形式：${e.fmtWork||'—'}（HTMLなら一律+10／手順書の形式は不問）`)}">${fmtBonus(e.htmlBonus, 10)}</td>
+      <td class="n" title="${esc(`作品ファイル形式：${e.fmtWork||'—'}（Cowork経由＝HTML形式なら一律+10／手順書の形式は不問）`)}">${fmtBonus(e.htmlBonus, 10)}</td>
       <td class="n" id="fin-${esc(e.code)}"><span class="sc final ${e.hasScore?'':'na'}">${e.hasScore ? e.finalScore : '—'}</span></td>
       <td>${badges}</td>
       <td class="cmt"><textarea class="row-comment" data-code="${esc(e.code)}" placeholder="講評コメント（全件・任意）">${esc((notes[e.code]||{}).comment||'')}</textarea></td>
@@ -1147,7 +1147,7 @@ function runCheck(){
 /* ---------- 書き出し ---------- */
 function axVal(e, i){ return e.hasScore ? e.axis[i] : ''; }
 function awardRows(){
-  const rows = [['作業者','対象月','受賞順位','EntryCode','応募者・部署','作品リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','HTML加点','最終スコア','採点方法','受賞理由','講評コメント']];
+  const rows = [['作業者','対象月','受賞順位','EntryCode','応募者・部署','作品リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','Cowork加点','最終スコア','採点方法','受賞理由','講評コメント']];
   for(let slot=1; slot<=AWARD_SLOTS; slot++){
     const e = slotEntry(slot); if(!e) continue;
     const n = notes[e.code] || {reason:'', comment:''};
@@ -1157,7 +1157,7 @@ function awardRows(){
 }
 function allRows(){
   const excl = excludedMap();
-  const head = ['全体順位','受賞フラグ','受賞順位','対象月','EntryCode','応募者・部署','作品リンク','手順書リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','HTML加点','最終スコア','採点方法','未採点','資料欠損','受賞済み(他月)','講評コメント'];
+  const head = ['全体順位','受賞フラグ','受賞順位','対象月','EntryCode','応募者・部署','作品リンク','手順書リンク','観点①スコア','観点②スコア','観点③スコア','観点④スコア','ルーブリック合計','いいね（もらう）','いいね（押す）','もらう加点','押す加点','いいね加点','作品ファイル形式','手順書ファイル形式','Cowork加点','最終スコア','採点方法','未採点','資料欠損','受賞済み(他月)','講評コメント'];
   const rows = [head];
   const sorted = ENTRIES.slice().sort((a,b)=>(b.finalScore??-1)-(a.finalScore??-1));
   let overall = 0;

@@ -1,6 +1,6 @@
 // 集計ツール（3人平均）: 「ポータル掲載データを書き出す」ボタンの回帰テスト
 // ポータル班に渡す1シートExcel。階層(ゴールド/シルバー/ブロンズ/ノミネート)・順位・氏名/部署・
-// 最終スコア・いいね数・HTML加点・評価コメント・投稿URLだけに絞られていて、内部項目が入らないこと
+// 最終スコア・いいね数・Cowork加点・評価コメント・投稿URLだけに絞られていて、内部項目が入らないこと
 const { chromium } = require('playwright');
 const path = require('path');
 const { execSync } = require('child_process');
@@ -70,7 +70,7 @@ print('FIRST_ROW:', json.dumps(rows[1], ensure_ascii=False, default=str))
   console.log(pyOut);
 
   ok(pyOut.includes("SHEETS: ['ポータル掲載データ']"), 'シートが1枚（ポータル掲載データ）だけ');
-  ok(pyOut.includes("'階層', '順位', '氏名・部署', '最終スコア', 'いいね数', 'HTML加点', '評価コメント', '投稿URL（作品）', '投稿URL（手順書）'"), '列見出しが想定通り');
+  ok(pyOut.includes("'階層', '順位', '氏名・部署', '最終スコア', 'いいね数', 'Cowork加点', '評価コメント', '投稿URL（作品）', '投稿URL（手順書）'"), '列見出しが想定通り');
   ok(pyOut.includes('ROWCOUNT: 10'), '受賞6件＋ノミネート4件＝10行（実際の件数はROWCOUNT参照）');
   ok(pyOut.includes("'ゴールド'"), 'ゴールドの行がある');
   ok(pyOut.includes("'シルバー'"), 'シルバーの行がある');
