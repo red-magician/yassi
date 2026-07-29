@@ -90,13 +90,19 @@ td .reason-inp{min-width:220px;min-height:36px}
 .pt-tier.bronze .pt-card{border-top-color:#c68a4e}
 .pt-card-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
 .pt-name{font-size:15px;font-weight:700;color:var(--navy-deep)}
-.pt-stat-row{display:flex;flex-wrap:wrap;gap:8px}
-.pt-stat{flex:1 1 auto;min-width:0;padding:9px 12px;border-radius:8px;background:var(--paper);border:1px solid var(--line)}
-.pt-stat .k{display:block;font-size:9.5px;font-weight:800;letter-spacing:.08em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+.pt-score-row{display:flex;align-items:baseline;gap:6px}
+.pt-score-num{font-size:30px;font-weight:800;letter-spacing:-.01em;color:var(--gold-dim)}
+.pt-score-max{font-size:12px;color:var(--mute)}
+.pt-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pt-stat{min-width:0;padding:9px 12px;border-radius:8px;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--line)}
+.pt-stat .k{display:block;font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-stat .v{font-size:15px;font-weight:800;color:var(--navy-deep);line-height:1.2}
 .pt-stat .v small{font-size:10px;font-weight:700;color:var(--mute);margin-left:2px}
-.pt-stat.score{flex:1 1 100%;background:linear-gradient(135deg,#fff7de,#fffbf0);border-color:#f0e2bd}
-.pt-stat.score .v{color:var(--gold-dim);font-size:19px}
+.pt-stat.d1{border-left-color:var(--navy)}
+.pt-stat.d2{border-left-color:var(--gold-dim)}
+.pt-stat.d3{border-left-color:#c8102e}
+.pt-stat.d4{border-left-color:#1f9d6b}
+@media(max-width:480px){.pt-stat-row{grid-template-columns:1fr}}
 .pt-comment{position:relative;font-size:12.5px;line-height:1.7;color:var(--ink);padding:10px 12px 10px 16px;border-radius:8px;background:#fff9ec;border:1px solid #f0e2bd}
 .pt-comment::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(var(--gold),var(--gold-dim))}
 .pt-comment .lbl{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--gold-dim);margin-bottom:4px}
@@ -649,10 +655,12 @@ function renderPortalView(sorted, rankOf){
     return `<article class="pt-card">
       <div class="pt-card-body">
         <div class="pt-name codelink" data-code="${esc(a.code)}">${esc(a.who)}</div>
+        <div class="pt-score-row"><span class="pt-score-num">${a.avg==null?'—':a.avg}</span><span class="pt-score-max">/ 110点</span></div>
         <div class="pt-stat-row">
-          <div class="pt-stat score"><span class="k">最終スコア</span><span class="v">${a.avg==null?'—':a.avg}<small>点</small></span></div>
-          <div class="pt-stat like"><span class="k">いいね数</span><span class="v">${a.likesRaw==null?'—':a.likesRaw}<small>いいね</small></span></div>
-          <div class="pt-stat html"><span class="k">Cowork加点</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
+          <div class="pt-stat d1"><span class="k">書く</span><span class="v">${a.avgRubric==null?'—':a.avgRubric}<small>/40点</small></span></div>
+          <div class="pt-stat d2"><span class="k">学ぶ（押したいいね）</span><span class="v">${a.likesGivenRaw==null?'—':a.likesGivenRaw}<small>いいね</small></span></div>
+          <div class="pt-stat d3"><span class="k">響く（もらったいいね）</span><span class="v">${a.likesRaw==null?'—':a.likesRaw}<small>いいね</small></span></div>
+          <div class="pt-stat d4"><span class="k">＋α（Cowork）</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
         </div>
         <div class="pt-comment"><span class="lbl">評価コメント</span>${comment ? esc(comment) : '（未入力）'}</div>
         <span class="pt-link codelink" data-code="${esc(a.code)}">投稿を見る</span>

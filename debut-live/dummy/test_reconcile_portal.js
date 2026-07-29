@@ -70,7 +70,9 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   const goldCardText = await p.locator('.pt-tier.gold .pt-card').innerText();
   ok(!/採点人数/.test(goldCardText), 'カードに採点人数が出ない');
   ok(!/DEBUT-2026/.test(goldCardText), 'カードにEntryCodeが出ない（応募者名で表示）');
-  ok(/最終スコア/.test(goldCardText) && /いいね数/.test(goldCardText) && /Cowork加点/i.test(goldCardText), 'カードに最終スコア／いいね数／Cowork加点の3スタッツが出る');
+  ok(/書く/.test(goldCardText) && /学ぶ（押したいいね）/.test(goldCardText) && /響く（もらったいいね）/.test(goldCardText) && /＋α（Cowork）/.test(goldCardText),
+    'カードに書く／学ぶ（押したいいね）／響く（もらったいいね）／＋α（Cowork）の4スタッツが出る');
+  ok(/\/ 110点/.test(goldCardText), 'カードの最終スコアが110点満点表記になっている');
   ok(/田中講評|佐藤講評|鈴木講評/.test(goldCardText), '評価コメント本文は表示される');
   const commentLine = goldCardText.split('\n').find(l => /講評/.test(l)) || '';
   ok(!/^【/.test(commentLine), '評価コメントに執筆者名（【メンバー名】形式）が付かない');
