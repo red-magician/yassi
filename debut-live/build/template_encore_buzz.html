@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI FES 2026 アンコール・バズ 講評コメント作成ツール</title>
+<style>
+:root{
+  --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
+  --gold:#FFCD00; --gold-dim:#c9a300;
+  --paper:#f4f6f9; --card:#fff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
+  --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Yu Gothic UI","Meiryo","Segoe UI",-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:22px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;min-width:230px}
+.brand .en{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.brand .jp{font-size:16px;font-weight:700}
+.hstat{display:flex;gap:20px;flex:1;flex-wrap:wrap}
+.hstat .item{display:flex;flex-direction:column;line-height:1.3}
+.hstat .k{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.hstat .v{font-size:18px;font-weight:700}
+.hstat .v small{font-size:11px;font-weight:400;color:#9fb3cd}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld label{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.fld input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 9px;border-radius:4px;font:inherit;font-size:13px;width:130px}
+.fld input::placeholder{color:#9fb3cd}
+.tabs{background:var(--navy-deep);padding:0 22px;display:flex;gap:4px;flex-wrap:wrap}
+.tab{background:none;border:none;color:#9fb3cd;font:inherit;font-size:13px;font-weight:700;padding:11px 18px;cursor:pointer;border-bottom:3px solid transparent}
+.tab:hover{color:#e7edf5}
+.tab.on{color:#fff;border-bottom-color:var(--gold)}
+.tab small{display:block;font-size:10px;font-weight:400;color:#8ba0bd}
+.toolbar{background:#1b355f;padding:9px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparent;padding:7px 13px;transition:.15s}
+.btn{background:rgba(255,255,255,.09);color:#e7edf5;border-color:rgba(255,255,255,.22)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700}
+.btn-gold:hover{background:#ffd93a}
+.sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 5px}
+.hint{margin-left:auto;font-size:11px;color:#9fb3cd;max-width:380px}
+main{padding:22px 26px;max-width:1200px;margin:0 auto}
+.drop{border:2px dashed #c3cfdd;border-radius:10px;background:#fff;padding:30px;text-align:center;color:var(--mute);margin-bottom:16px;transition:.15s;cursor:pointer}
+.drop.on{border-color:var(--gold);background:#fffdf3}
+.drop b{display:block;font-size:15px;color:var(--navy);margin-bottom:5px}
+.drop span{font-size:12px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.panel h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.panel h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
+.empty{padding:36px;text-align:center;color:var(--mute);font-size:13px}
+.copilot{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px 18px;margin-bottom:20px}
+.copilot h3{font-size:13px;color:var(--navy);margin-bottom:4px}
+.copilot .sub{font-size:12px;color:var(--mute);margin-bottom:12px;line-height:1.7}
+.copilot textarea{width:100%;height:150px;font-family:monospace;font-size:12px;padding:10px;border:1.5px solid var(--line);border-radius:8px;box-sizing:border-box;margin-bottom:10px}
+.award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:16px 18px}
+.acard{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fbfcfe;display:flex;flex-direction:column}
+.acard.empty2{align-items:center;justify-content:center;color:var(--mute);font-size:12px;min-height:110px}
+.ahead{background:var(--navy);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ahead .rk{background:var(--gold);color:var(--navy-deep);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.ahead select{margin-left:auto;font-size:12px;padding:4px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;max-width:150px}
+.ahead select option{color:#000}
+.ahead .rowprompt{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10.5px;padding:3px 8px;border-radius:99px}
+.ahead .rowprompt:hover{background:rgba(255,255,255,.28)}
+.abody{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ainfo b{display:block;font-size:13px;color:var(--navy-deep);line-height:1.4}
+.ainfo span{font-size:11px;color:var(--mute)}
+.ascore{display:flex;gap:10px;font-size:11px;color:var(--mute);flex-wrap:wrap}
+.ascore b{color:var(--navy);font-size:13px}
+.acard label{font-size:10.5px;color:var(--mute);font-weight:600}
+.acard textarea{width:100%;font:inherit;font-size:12.5px;padding:8px;border:1px solid var(--line);border-radius:5px;resize:vertical;min-height:56px;box-sizing:border-box}
+.acard textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.acard .lnk{margin-top:auto;text-align:center;font-size:12px;font-weight:600;padding:8px;border-radius:6px;border:1.5px solid var(--navy);color:var(--navy);text-decoration:none;background:#fff}
+.acard .lnk:hover{background:var(--navy);color:#fff}
+.legend{display:flex;gap:16px;padding:11px 18px;background:#f8fafc;border-top:1px solid var(--line);font-size:11px;color:var(--mute);flex-wrap:wrap}
+.legend b{color:var(--ink)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-deep);color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(13,33,64,.3);z-index:200;opacity:0;transition:.25s;border-left:3px solid var(--gold)}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+@media print{ .tabs,.toolbar,.drop,.copilot,header .btn{display:none !important} main{padding:0} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="en">AI FES 2026 / ENCORE &amp; BUZZ</span>
+    <span class="jp" id="brandJp">アンコール・バズ 講評コメント作成ツール</span>
+  </div>
+  <div class="hstat">
+    <div class="item"><span class="k">対象エントリー</span><span class="v" id="hEntries">0<small> 件</small></span></div>
+    <div class="item"><span class="k">受賞候補</span><span class="v" id="hAwards">0<small> / 6</small></span></div>
+    <div class="item"><span class="k">コメント済み</span><span class="v" id="hCommented">0<small> / 6</small></span></div>
+  </div>
+  <div class="fld"><label>作業者名</label><input type="text" id="staffName" placeholder="例）城間"></div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-comp="encore">アンコール<small>全競技横断の獲得いいね</small></button>
+  <button class="tab" data-comp="buzz">バズステージ<small>被いいね数</small></button>
+</div>
+
+<div class="toolbar">
+  <button class="btn" id="btnLoad">マスターExcelを読み込む</button>
+  <input type="file" id="fileMaster" accept=".xlsx,.xlsm" hidden>
+  <span class="sep"></span>
+  <button class="btn-gold" id="btnXLS">Excelを書き出す</button>
+  <button class="btn" id="btnPrint">印刷 / PDF</button>
+  <button class="btn" id="btnClear">この競技の入力を消去</button>
+  <span class="hint" id="topHint"></span>
+</div>
+
+<main>
+  <div class="drop" id="drop">
+    <b>ここにマスターExcelをドロップ</b>
+    <span>クリックして選択も可。Encore_by_entry／Buzz_by_entry（または Encore_Top20／Buzz_Top20）を含むワークブックを読み込みます。両競技のデータが1本のファイルに入っていればまとめて反映されます。</span>
+  </div>
+
+  <div class="copilot">
+    <h3>Copilotで受賞コメントを作成 → 取り込み</h3>
+    <div class="sub">
+      ① 下の「①コメント生成プロンプトをコピー」→ Copilot Cowork に貼る → ② 返ってきた <code>===COMMENT===</code> ブロックを下の欄に貼り付け → ③ 取り込む。
+      アンコール・バズとも作品リンクは開かず、<b>タイトル・提出者・部署・いいね数だけ</b>を根拠にコメントを書かせます（実際の投稿内容は反映されません）。
+      精度重視なら、各カードの「プロンプト」ボタンで1件ずつ作成するのがおすすめです。
+    </div>
+    <button class="btn-gold" id="btnCopyPrompt">① 受賞6件分のコメント生成プロンプトをコピー</button>
+    <div style="margin-top:12px">
+      <textarea id="cpPaste" placeholder="② ここに Copilot の出力（===COMMENT=== … ===END===）を貼り付け"></textarea>
+      <button class="btn-gold" id="btnApplyCopilot">③ 取り込む</button>
+    </div>
+  </div>
+
+  <div id="out"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>__SHEETJS__</script>
+<script>
+const AWARD_SLOTS = 6;
+const STORE_PREFIX = 'aiFesEncoreBuzz_v1::';
+const COMP_META = {
+  encore: {jp:'アンコール', sheetHint:'Encore', persona:'一度きりで終わらせず、後から見た人の心にも届いた人',
+           hint:'全競技（デビュー・ソロ・コラボ・ジャム等）横断で、獲得いいねが多い上位6件が受賞候補になります。'},
+  buzz:   {jp:'バズステージ', sheetHint:'Buzz', persona:'先駆者として情報発信し続けた人',
+           hint:'バズステージ投稿の被いいね数で、上位6件が受賞候補になります。'},
+};
+
+let COMP = 'encore';
+let ENTRIES = { encore: [], buzz: [] };   // {code, title, name, dept, who, likes, link}
+let staffName = '';
+let stateByComp = {};   // comp -> {pinned:{code:slot}, comments:{code:text}}
+function S(){ return stateByComp[COMP] || (stateByComp[COMP] = {pinned:{}, comments:{}}); }
+let ranks = {};   // code -> 1..6
+
+/* ---------- utils ---------- */
+function esc(s){ return (s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function num(x){ const n=Number(x); return (x===''||x==null||isNaN(n))?0:n; }
+function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+let tt; function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3400); }
+async function copyText(text, btn){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); }
+    else{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+    if(btn){ const o=btn.textContent; btn.textContent='コピーしました'; setTimeout(()=>{ btn.textContent=o; },1400); }
+    else toast('コピーしました');
+  }catch(_){ toast('コピーに失敗しました'); }
+}
+
+/* ---------- Excel 読み込み ---------- */
+function sheetRows(wb, name){ return XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''}); }
+function idxer(head){ return n => head.indexOf(n); }
+// mustHave をすべて持つシートのうち、シート名に nameHint を含むものを優先。無ければデータ行が最多のものを選ぶ
+function pickSheetForComp(wb, mustHave, nameHint){
+  let best=null;
+  for(const name of wb.SheetNames){
+    const rows = sheetRows(wb, name); if(rows.length<2) continue;
+    const head = rows[0].map(x=>String(x).trim());
+    if(!mustHave.every(h=>head.includes(h))) continue;
+    if(!name.toLowerCase().includes(nameHint.toLowerCase())) continue;
+    const hit = {name, rows, head};
+    if(name.toLowerCase().includes('by_entry')) return hit;   // 全件シートを最優先
+    if(!best) best = hit;
+  }
+  return best;
+}
+function loadMasterFile(file){
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
+      const must = ['EntryCode','タイトル','LikeCount'];
+      let loaded = [];
+      Object.keys(COMP_META).forEach(comp=>{
+        const sheet = pickSheetForComp(wb, must, COMP_META[comp].sheetHint);
+        if(!sheet) return;
+        const h=sheet.head, c=idxer(h);
+        const col = { code:c('EntryCode'), title:c('タイトル'), name:c('SubmitterDisplayName'), dept:c('Department'),
+          likes:c('LikeCount'), link:c('PrimaryFileUrl') };
+        const entries = sheet.rows.slice(1).map(r=>{
+          const g = k => col[k]>=0 ? String(r[col[k]]??'').trim() : '';
+          const name = g('name'), dept = g('dept');
+          return { code:g('code'), title:g('title'), name, dept, who: dept?`${name}/${dept}`:name,
+            likes: col.likes>=0 ? num(r[col.likes]) : 0, link:g('link') };
+        }).filter(e=>e.code);
+        if(entries.length){ ENTRIES[comp] = entries; loaded.push(`${COMP_META[comp].jp}:${entries.length}件`); }
+      });
+      if(!loaded.length){ toast(`${file.name}：Encore_by_entry / Buzz_by_entry 相当のシートが見つかりません`); return; }
+      Object.keys(ENTRIES).forEach(comp=>{ if(ENTRIES[comp].length) autoRank(comp); });
+      render();
+      toast(`読み込み：${loaded.join(' / ')}`);
+    }catch(err){ toast(`${file.name} を開けませんでした`); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+
+/* ---------- ランキング（いいね数の多い順。同数はEntryCode順。手動で順位固定も可） ---------- */
+function sortedEntries(comp){
+  return ENTRIES[comp].slice().sort((a,b)=> b.likes - a.likes || (a.code < b.code ? -1 : 1));
+}
+function autoRank(comp){
+  const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}});
+  const sorted = sortedEntries(comp);
+  const valid = new Set(sorted.map(e=>e.code));
+  Object.keys(st.pinned).forEach(k=>{ if(!valid.has(k)) delete st.pinned[k]; });
+  const r = {}; const used = new Set();
+  Object.keys(st.pinned).forEach(k=>{ const slot=st.pinned[k]; if(slot>=1 && slot<=AWARD_SLOTS && !used.has(slot)){ r[k]=slot; used.add(slot); } });
+  let slot = 1;
+  sorted.forEach(e=>{
+    if(r[e.code]) return;
+    while(used.has(slot) && slot<=AWARD_SLOTS) slot++;
+    if(slot>AWARD_SLOTS) return;
+    r[e.code] = slot; used.add(slot); slot++;
+  });
+  if(comp===COMP) ranks = r;
+  return r;
+}
+function winnersOf(comp){
+  const r = comp===COMP ? ranks : autoRank(comp);
+  return ENTRIES[comp].filter(e=>r[e.code]).sort((a,b)=>r[a.code]-r[b.code]);
+}
+
+/* ---------- Copilotプロンプト生成・取り込み ---------- */
+function buildCommentPrompt(comp, list){
+  const meta = COMP_META[comp];
+  const es = list && list.length ? list : winnersOf(comp);
+  const entries = es.map((e,i)=>`【${i+1}】EntryCode: ${e.code}\n　タイトル: ${e.title||'（不明）'}\n　提出者: ${e.who||'（不明）'}\n　獲得いいね数: ${e.likes}`).join('\n\n');
+  const one = es.length === 1;
+  return `あなたは AI Fes 2026「${meta.jp}」の受賞コメント作成アシスタントです。テーマは「${meta.persona}」。
+以下の受賞者${es.length}名について、それぞれ受賞を讃える短いコメント（100字前後・日本語）を作成してください。
+
+【重要な制約】
+- 作品リンクは開けません。**タイトル・提出者・部署・獲得いいね数だけ**を手がかりにコメントを書いてください。
+- タイトルから読み取れる工夫や着眼点には触れて構いませんが、リンク先の中身を読んだかのような断定（「〜という実装が」等の詳細描写）は避けてください。
+- 誇張しすぎず、具体的な誇張表現は避け、温かく前向きなトーンで書いてください。
+- ${one ? 'この1件を丁寧に' : `${es.length}件すべてを`}作成する。件数の間引き・省略・「以下同様」は禁止（全件それぞれにブロックを出す）。
+
+【対象${es.length}件】
+${entries}
+
+──────────
+【取り込み用ブロック（必須）】各エントリーについて、次のブロックを続けて出力してください（1エントリー1ブロック・ラベルとEntryCodeは変えない）。
+===COMMENT===
+EntryCode: <そのエントリーのEntryCode>
+講評: <100字前後の受賞コメント>
+===END===`;
+}
+function parseCopilotComments(text){
+  const out = [];
+  const clean = s => s.trim().replace(/^[<「『]|[>」』]$/g,'').trim();
+  const blocks = String(text||'').split(/===\s*COMMENT\s*===/i).slice(1);
+  blocks.forEach(b=>{
+    const raw = b.split(/===\s*END\s*===/i)[0];
+    const cm = raw.match(/EntryCode\s*[:：]\s*([A-Za-z0-9][A-Za-z0-9\-_]*)/);
+    if(!cm) return;
+    const code = cm[1];
+    const rm = raw.match(/講評\s*[:：]\s*([\s\S]*?)(?=\n[A-Za-z0-9①②③④]+\s*[:：]|$)/);
+    const comment = rm ? clean(rm[1]) : '';
+    if(comment) out.push({code, comment});
+  });
+  return out;
+}
+function applyCopilot(text){
+  const parsed = parseCopilotComments(text);
+  if(!parsed.length){ toast('取り込めるブロックが見つかりませんでした（===COMMENT===...===END=== 形式を確認してください）'); return; }
+  const st = S();
+  const codes = new Set(ENTRIES[COMP].map(e=>e.code));
+  let n = 0;
+  parsed.forEach(p=>{ if(codes.has(p.code)){ st.comments[p.code] = p.comment; n++; } });
+  saveState();
+  toast(`${n}件のコメントを取り込みました`);
+  return n;
+}
+
+/* ---------- 保存/復元 ---------- */
+function stateKey(comp){ return STORE_PREFIX + (staffName||'__anon__') + '::' + comp; }
+function saveState(){
+  const st = S();
+  try{ localStorage.setItem(stateKey(COMP), JSON.stringify({ staffName, pinned:st.pinned, comments:st.comments })); }catch(e){}
+}
+function loadState(comp){
+  const st = stateByComp[comp] = {pinned:{}, comments:{}};
+  try{
+    const raw = localStorage.getItem(stateKey(comp)); if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d.pinned) st.pinned = d.pinned;
+    if(d.comments) st.comments = d.comments;
+  }catch(e){}
+}
+try{
+  const lastName = localStorage.getItem(STORE_PREFIX + '_lastStaffName');
+  if(lastName) staffName = lastName;
+}catch(_){}
+
+/* ---------- 描画 ---------- */
+function render(){
+  const meta = COMP_META[COMP];
+  document.getElementById('brandJp').textContent = 'アンコール・バズ 講評コメント作成ツール ― ' + meta.jp;
+  document.getElementById('topHint').textContent = meta.hint;
+  document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('on', t.dataset.comp===COMP));
+
+  const out = document.getElementById('out');
+  if(!ENTRIES[COMP].length){ out.innerHTML=''; updateHeader(); return; }
+
+  const winners = winnersOf(COMP);
+  const sorted = sortedEntries(COMP);
+  const st = S();
+
+  let html = `<div class="panel"><h2>受賞候補 ${AWARD_SLOTS}件 <span>${meta.jp}：獲得いいね数上位。順位はプルダウンで手動固定できます</span></h2><div class="award-grid">`;
+  for(let slot=1; slot<=AWARD_SLOTS; slot++){
+    const e = winners.find(x=>ranks[x.code]===slot);
+    if(!e){
+      html += `<div class="acard empty2"><div style="text-align:center"><div class="ahead" style="justify-content:center"><span class="rk">${slot}位</span></div><div style="padding:14px;font-size:12px">該当なし</div></div></div>`;
+      continue;
+    }
+    const options = sorted.map(x=>`<option value="${esc(x.code)}" ${x.code===e.code?'selected':''}>${esc(x.who||x.code)}（${x.likes}）</option>`).join('');
+    const comment = st.comments[e.code] || '';
+    html += `<div class="acard" data-code="${esc(e.code)}">
+      <div class="ahead">
+        <span class="rk">${slot}位</span>
+        <button class="rowprompt" data-code="${esc(e.code)}" title="この1件だけのコメント生成プロンプトをコピー">プロンプト</button>
+        <select class="rankSel" data-slot="${slot}">${options}</select>
+      </div>
+      <div class="abody">
+        <div class="ainfo"><b>${esc(e.title||'（タイトル不明）')}</b><span>${esc(e.who)}</span></div>
+        <div class="ascore"><span>獲得いいね数 <b>${e.likes}</b></span></div>
+        <div><label>受賞コメント</label><textarea class="comment-inp" data-code="${esc(e.code)}" placeholder="Copilotで生成するか、直接入力してください">${esc(comment)}</textarea></div>
+        ${e.link ? `<a class="lnk" href="${esc(e.link)}" target="_blank" rel="noopener">投稿を見る</a>` : ''}
+      </div>
+    </div>`;
+  }
+  html += `</div>
+    <div class="legend">
+      <span><b>順位固定</b>＝同点・誤検知対応で手動指定できます（プルダウンで入れ替え）</span>
+      <span><b>受賞コメント</b>＝Copilotで一括生成するか、直接入力できます</span>
+    </div>
+  </div>`;
+  out.innerHTML = html;
+  wire();
+  updateHeader();
+}
+function updateHeader(){
+  const st = S();
+  document.getElementById('hEntries').innerHTML = ENTRIES[COMP].length + '<small> 件</small>';
+  const winCount = winnersOf(COMP).length;
+  document.getElementById('hAwards').innerHTML = winCount + '<small> / ' + AWARD_SLOTS + '</small>';
+  const commented = winnersOf(COMP).filter(e=>(st.comments[e.code]||'').trim()).length;
+  document.getElementById('hCommented').innerHTML = commented + '<small> / ' + winCount + '</small>';
+}
+function wire(){
+  document.querySelectorAll('.rankSel').forEach(sel=>{
+    sel.onchange = () => {
+      const slot = Number(sel.dataset.slot);
+      const code = sel.value;
+      const st = S();
+      Object.keys(st.pinned).forEach(k=>{ if(st.pinned[k]===slot) delete st.pinned[k]; });
+      st.pinned[code] = slot;
+      autoRank(COMP); saveState();
+      setTimeout(render, 0);
+    };
+  });
+  document.querySelectorAll('.rowprompt').forEach(btn=>{
+    btn.onclick = () => {
+      const e = ENTRIES[COMP].find(x=>x.code===btn.dataset.code);
+      if(e){ copyText(buildCommentPrompt(COMP, [e]), btn); }
+    };
+  });
+  document.querySelectorAll('.comment-inp').forEach(ta=>{
+    ta.oninput = () => { S().comments[ta.dataset.code] = ta.value; saveState(); updateHeader(); };
+  });
+}
+
+/* ---------- 書き出し ---------- */
+function exportXLSX(){
+  const hasAny = Object.values(ENTRIES).some(a=>a.length);
+  if(!hasAny){ toast('マスターExcelを読み込んでください'); return; }
+  const wb = XLSX.utils.book_new();
+  Object.keys(COMP_META).forEach(comp=>{
+    if(!ENTRIES[comp].length) return;
+    const st = stateByComp[comp] || {pinned:{}, comments:{}};
+    const r = autoRank(comp);
+    const winners = ENTRIES[comp].filter(e=>r[e.code]).sort((a,b)=>r[a.code]-r[b.code]);
+    const head = ['順位','EntryCode','タイトル','応募者','部署','獲得いいね数','受賞コメント','投稿URL'];
+    const rows = [head];
+    winners.forEach(e=>{
+      rows.push([r[e.code], e.code, e.title, e.name, e.dept, e.likes, st.comments[e.code]||'', e.link||'']);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:6},{wch:18},{wch:40},{wch:16},{wch:24},{wch:11},{wch:60},{wch:50}];
+    ws['!freeze'] = {xSplit:'0', ySplit:'1'};
+    XLSX.utils.book_append_sheet(wb, ws, `${COMP_META[comp].jp}受賞一覧`);
+  });
+  XLSX.writeFile(wb, `AIFES2026_アンコール_バズ_受賞コメント_${stamp()}.xlsx`);
+  toast('Excelを書き出しました');
+}
+
+/* ---------- wiring ---------- */
+const drop = document.getElementById('drop');
+drop.onclick = () => document.getElementById('fileMaster').click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('on'); };
+drop.ondragleave = () => drop.classList.remove('on');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); const f=[...e.dataTransfer.files][0]; if(f) loadMasterFile(f); };
+document.getElementById('btnLoad').onclick = () => document.getElementById('fileMaster').click();
+document.getElementById('fileMaster').onchange = e => { const f=e.target.files[0]; if(f) loadMasterFile(f); e.target.value=''; };
+document.getElementById('btnXLS').onclick = exportXLSX;
+document.getElementById('btnPrint').onclick = () => window.print();
+document.getElementById('btnClear').onclick = () => {
+  if(confirm(`「${COMP_META[COMP].jp}」の入力（順位固定・コメント）を消します。よろしいですか？`)){
+    stateByComp[COMP] = {pinned:{}, comments:{}};
+    autoRank(COMP); saveState(); render();
+  }
+};
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick = () => { COMP = t.dataset.comp; autoRank(COMP); render(); };
+});
+document.getElementById('staffName').oninput = e => {
+  staffName = e.target.value;
+  try{ localStorage.setItem(STORE_PREFIX + '_lastStaffName', staffName); }catch(_){}
+  loadState('encore'); loadState('buzz'); autoRank('encore'); autoRank('buzz'); render();
+};
+document.getElementById('staffName').value = staffName;
+document.getElementById('btnCopyPrompt').onclick = () => {
+  if(!winnersOf(COMP).length){ toast('マスターExcelを読み込んでください'); return; }
+  copyText(buildCommentPrompt(COMP, winnersOf(COMP)));
+  toast(`${COMP_META[COMP].jp}：受賞${winnersOf(COMP).length}件分のプロンプトをコピーしました`);
+};
+document.getElementById('btnApplyCopilot').onclick = () => {
+  const txt = document.getElementById('cpPaste').value;
+  if(!txt.trim()){ toast('Copilotの出力を貼り付けてください'); return; }
+  const n = applyCopilot(txt);
+  if(n){ document.getElementById('cpPaste').value=''; render(); }
+};
+
+loadState('encore'); loadState('buzz');
+render();
+</script>
+</body>
+</html>

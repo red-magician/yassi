@@ -9,6 +9,7 @@ TARGETS = [
     ('template.html', 'AIFES2026_デビューライブ_受賞選定ツール.html'),
     ('template_reconcile.html', 'AIFES2026_デビューライブ_集計ツール_3人平均.html'),
     ('template_auto.html', 'AIFES2026_自動集計競技_受賞選定ツール.html'),
+    ('template_encore_buzz.html', 'AIFES2026_アンコール_バズ_講評コメント作成ツール.html'),
 ]
 
 for src_name, out_name in TARGETS:

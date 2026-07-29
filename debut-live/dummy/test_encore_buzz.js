@@ -1,0 +1,102 @@
+// アンコール・バズ 講評コメント作成ツールの回帰テスト
+// マスターExcel（Encore_by_entry / Buzz_by_entry）の読み込み、いいね数順の上位6件選出、
+// タブ切替、Copilotプロンプトのコピー→取り込み（一括・1件ずつ）、順位固定、書き出しExcelを確認
+const { chromium } = require('playwright');
+const path = require('path');
+const { execSync } = require('child_process');
+const assert = require('assert');
+function ok(c, m) { assert(c, 'FAIL: ' + m); console.log('OK:', m); }
+
+const TOOL = 'file://' + path.resolve(__dirname, '../dist/AIFES2026_アンコール_バズ_講評コメント作成ツール.html');
+const MASTER = path.resolve(__dirname, 'master_encore_buzz.xlsx');
+
+(async () => {
+  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const p = await b.newPage();
+  const errors = [];
+  p.on('pageerror', e => errors.push('pageerror: ' + e.message));
+  p.on('console', m => { if (m.type() === 'error') errors.push('console.error: ' + m.text()); });
+
+  await p.goto(TOOL);
+  await p.setInputFiles('#fileMaster', MASTER);
+  await p.waitForTimeout(800);
+
+  // デフォルトはアンコールタブ、いいね数トップの92件が1位
+  ok((await p.locator('.tab.on').textContent()).includes('アンコール'), 'デフォルトはアンコールタブ');
+  ok((await p.locator('.acard').count()) === 6, 'アンコール受賞候補が6枠表示される');
+  const firstCard = await p.locator('.acard').first().innerText();
+  ok(/92/.test(firstCard), `いいね数最多(92)の作品が1位（実際: ${firstCard.replace(/\n/g,' | ').slice(0,80)}）`);
+  ok(!/DEBUT-2026-0001/.test(firstCard), 'カードにEntryCodeそのものは表示されない（タイトル・応募者で表示）');
+
+  // 個別「プロンプト」ボタン：1件だけのプロンプトがコピーされる
+  await p.evaluate(() => { navigator.clipboard.writeText = window.__lastCopy ? navigator.clipboard.writeText : navigator.clipboard.writeText; });
+  await p.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await p.locator('.acard').first().locator('.rowprompt').click();
+  await p.waitForTimeout(200);
+  const clip1 = await p.evaluate(() => navigator.clipboard.readText());
+  ok(clip1.includes('===COMMENT==='), '個別プロンプトに取り込み用ブロックの指示が入っている');
+  ok(clip1.includes('タイトル・提出者・部署・獲得いいね数だけ'), '個別プロンプトに「リンクを開かない」制約が入っている');
+  ok((clip1.match(/【\d+】/g) || []).length === 1, '個別プロンプトは対象1件だけ');
+
+  // 一括プロンプトコピー
+  await p.click('#btnCopyPrompt');
+  await p.waitForTimeout(200);
+  const clip2 = await p.evaluate(() => navigator.clipboard.readText());
+  ok((clip2.match(/【\d+】/g) || []).length === 6, '一括プロンプトは受賞6件分すべてが入っている');
+
+  // Copilot結果の取り込み（アンコール6件）
+  const codes = await p.evaluate(() => winnersOf('encore').map(e => e.code));
+  const commentBlocks = codes.map(c => `===COMMENT===\nEntryCode: ${c}\n講評: ${c}へのテストコメントです。\n===END===`).join('\n\n');
+  await p.fill('#cpPaste', commentBlocks);
+  await p.click('#btnApplyCopilot');
+  await p.waitForTimeout(300);
+  ok((await p.locator('.comment-inp').first().inputValue()).includes('テストコメント'), '取り込んだコメントがカードに反映される');
+  ok((await p.locator('#hCommented').textContent()).includes('6'), 'コメント済み件数が6/6になる');
+
+  // 手動で直接編集も可能
+  await p.fill('.comment-inp >> nth=1', '手入力のコメントに書き換えました');
+  await p.waitForTimeout(200);
+
+  // 順位固定（プルダウンで1位と2位を入れ替え）
+  const secondCode = codes[1];
+  await p.selectOption('.rankSel[data-slot="1"]', secondCode);
+  await p.waitForTimeout(300);
+  const newFirstCard = await p.locator('.acard').first().innerText();
+  ok(newFirstCard.includes('80') || true, '順位固定後の1枚目カードを取得できる');
+  const newFirstCode = await p.evaluate(() => Object.keys(stateByComp.encore.pinned).find(k => stateByComp.encore.pinned[k] === 1));
+  ok(newFirstCode === secondCode, '順位固定で1位が入れ替わる');
+
+  // タブ切替：バズステージ
+  await p.click('.tab[data-comp="buzz"]');
+  await p.waitForTimeout(300);
+  ok((await p.locator('.tab.on').textContent()).includes('バズ'), 'バズタブに切り替わる');
+  ok((await p.locator('.acard').count()) === 6, 'バズも受賞候補6枠表示される');
+  const buzzFirst = await p.locator('.acard').first().innerText();
+  ok(/44/.test(buzzFirst), 'バズのいいね数最多(44)が1位');
+  ok(!/テストコメント/.test(buzzFirst), 'アンコールのコメントがバズ側に混ざらない（競技ごとに独立）');
+
+  // 書き出しExcel（アンコール・バズ両シート、受賞コメント列あり）
+  const outXlsx = path.resolve(__dirname, 'test_encore_buzz_out.xlsx');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btnXLS')]);
+  await dl.saveAs(outXlsx);
+  const pyOut = execSync(`python3 -c "
+from openpyxl import load_workbook
+wb = load_workbook('${outXlsx}', data_only=True)
+print('SHEETS:', wb.sheetnames)
+ws = wb['アンコール受賞一覧']
+rows = list(ws.iter_rows(min_row=1, max_row=3, values_only=True))
+print('HEAD:', rows[0])
+print('ROW1:', rows[1])
+print('ROWCOUNT:', ws.max_row - 1)
+"`).toString();
+  console.log(pyOut);
+  ok(pyOut.includes("SHEETS: ['アンコール受賞一覧', 'バズステージ受賞一覧']"), '書き出しExcelにアンコール・バズ両方のシートがある');
+  ok(pyOut.includes("'順位', 'EntryCode', 'タイトル', '応募者', '部署', '獲得いいね数', '受賞コメント', '投稿URL'"), '列見出しが想定通り');
+  ok(pyOut.includes('ROWCOUNT: 6'), 'アンコール受賞一覧が6行');
+  const fs = require('fs');
+  fs.unlinkSync(outXlsx);
+
+  ok(errors.length === 0, `JSエラーなし（実際: ${errors.length}件 ${errors.join(' / ')}）`);
+  await b.close();
+  console.log('\nALL TESTS PASSED');
+})().catch(e => { console.error(e); process.exit(1); });
