@@ -60,6 +60,9 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok(announceText.includes('Cowork'), '案内文に＋α（Cowork経由の自動加点）の説明がある');
   ok(announceText.includes('110点'), '案内文に満点110点の記載がある');
   ok(!announceText.includes('ルーブリック'), '案内文に内部用語「ルーブリック」が出ない');
+  ok(announceText.includes('40件分までは、押した数がそのまま得点に積み上がります') && announceText.includes('20件分までは、もらった数がそのまま得点に積み上がります'),
+    '案内文の学ぶ／響く説明が前向きな言い回し（頭打ち、ではなく積み上がる）になっている');
+  ok(!announceText.includes('頭打ち'), '案内文にネガティブな言い回し「頭打ち」が使われていない');
 
   // メダル階層（ゴールド1名／シルバー2名／ブロンズ3名 ＝ 受賞6件）
   ok((await p.locator('.pt-tier.gold .pt-card').count()) === 1, 'ゴールドアワードが1名（実際:' + (await p.locator('.pt-tier.gold .pt-card').count()) + '）');
@@ -86,6 +89,10 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   });
   ok(Number(goldStats.d2) === Math.min(goldStats.given, 40), `学ぶの表示値(${goldStats.d2})が押したいいねの得点（上限40で頭打ち、実数${goldStats.given}）と一致する`);
   ok(Number(goldStats.d3) === Math.min(goldStats.received, 20), `響くの表示値(${goldStats.d3})がもらったいいねの得点（上限20で頭打ち、実数${goldStats.received}）と一致する`);
+
+  // ポータル班レビュー対応：得点（メイン）に加え、生のいいね数もサブ表示で併記する
+  ok(new RegExp(`いいね ${goldStats.given}件`).test(goldCardText), `学ぶのカードに生のいいね数（押した${goldStats.given}件）がサブ表示される`);
+  ok(new RegExp(`いいね ${goldStats.received}件`).test(goldCardText), `響くのカードに生のいいね数（もらった${goldStats.received}件）がサブ表示される`);
   ok(/田中講評|佐藤講評|鈴木講評/.test(goldCardText), '評価コメント本文は表示される');
   const commentLine = goldCardText.split('\n').find(l => /講評/.test(l)) || '';
   ok(!/^【/.test(commentLine), '評価コメントに執筆者名（【メンバー名】形式）が付かない');

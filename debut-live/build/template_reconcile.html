@@ -98,6 +98,7 @@ td .reason-inp{min-width:220px;min-height:36px}
 .pt-stat .k{display:block;font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-stat .v{font-size:15px;font-weight:800;color:var(--navy-deep);line-height:1.2}
 .pt-stat .v small{font-size:10px;font-weight:700;color:var(--mute);margin-left:2px}
+.pt-stat .sub{display:block;font-size:9.5px;color:var(--mute);margin-top:1px}
 .pt-stat.d1{border-left-color:var(--navy)}
 .pt-stat.d2{border-left-color:var(--gold-dim)}
 .pt-stat.d3{border-left-color:#c8102e}
@@ -658,8 +659,8 @@ function renderPortalView(sorted, rankOf){
         <div class="pt-score-row"><span class="pt-score-num">${a.avg==null?'—':a.avg}</span><span class="pt-score-max">/ 110点</span></div>
         <div class="pt-stat-row">
           <div class="pt-stat d1"><span class="k">書く</span><span class="v">${a.avgRubric==null?'—':a.avgRubric}<small>/40点</small></span></div>
-          <div class="pt-stat d2"><span class="k">学ぶ（押したいいね）</span><span class="v">${a.likesGivenRaw==null?'—':Math.min(a.likesGivenRaw, GIVE_CAP)}<small>/40点</small></span></div>
-          <div class="pt-stat d3"><span class="k">響く（もらったいいね）</span><span class="v">${a.likesRaw==null?'—':Math.min(a.likesRaw, RECV_CAP)}<small>/20点</small></span></div>
+          <div class="pt-stat d2"><span class="k">学ぶ（押したいいね）</span><span class="v">${a.likesGivenRaw==null?'—':Math.min(a.likesGivenRaw, GIVE_CAP)}<small>/40点</small></span>${a.likesGivenRaw==null?'':`<span class="sub">いいね ${a.likesGivenRaw}件</span>`}</div>
+          <div class="pt-stat d3"><span class="k">響く（もらったいいね）</span><span class="v">${a.likesRaw==null?'—':Math.min(a.likesRaw, RECV_CAP)}<small>/20点</small></span>${a.likesRaw==null?'':`<span class="sub">いいね ${a.likesRaw}件</span>`}</div>
           <div class="pt-stat d4"><span class="k">＋α（Cowork）</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
         </div>
         <div class="pt-comment"><span class="lbl">評価コメント</span>${comment ? esc(comment) : '（未入力）'}</div>
@@ -683,8 +684,8 @@ function renderPortalView(sorted, rankOf){
       <p>最終スコアは、3つの行動に<b>110点</b>を配分しています。盛れば勝てる設計ではなく、<b>具体的に書けば伝わる・行動すれば積み上がる</b>設計です。審査だけで決まる仕組みでも、人気投票だけで決まる仕組みでもありません。</p>
       <div class="pa-split pa-quad">
         <div class="pa-half pa-d1"><div class="pa-htitle"><span class="pa-dot"></span>書く（40点）</div><p>4つの問いをどれだけ具体的に書けたか。AIによる一次評価を土台に、審査担当者が内容を確認して採点しています。AIが観点ごとの見落としを防ぎ、最終的な妥当性は必ず人が確認する二段構えです。</p></div>
-        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>学ぶ（40点）</div><p>1ヶ月で仲間のTipsをどれだけ読みに行ったか（押したいいねの数）。読んで応援する行動そのものが、審査と同じ重みでスコアになります。</p></div>
-        <div class="pa-half pa-d3"><div class="pa-htitle"><span class="pa-dot"></span>響く（20点）</div><p>自分の物語に集まったいいねの数。実際に見てくれた皆さんの反応を反映します。</p></div>
+        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>学ぶ（40点）</div><p>1ヶ月で仲間のTipsをどれだけ読みに行ったか（押したいいねの数）。読んで応援する行動そのものが、審査と同じ重みでスコアになります。40件分までは、押した数がそのまま得点に積み上がります。</p></div>
+        <div class="pa-half pa-d3"><div class="pa-htitle"><span class="pa-dot"></span>響く（20点）</div><p>自分の物語に集まったいいねの数。実際に見てくれた皆さんの反応を反映します。20件分までは、もらった数がそのまま得点に積み上がります。</p></div>
         <div class="pa-half pa-d4"><div class="pa-htitle"><span class="pa-dot"></span>＋α（+10点）</div><p>Microsoft Copilot Cowork経由で応募すると自動加点されます。</p></div>
       </div>
       <p>つまり最終スコアは、<b>AI＋審査担当者による評価（書く）</b>と、<b>皆さんの学び・応援の行動（学ぶ・響く・＋α）</b>を足し合わせた、満点110点です。結果をご覧いただく際の参考にしていただければと思います。</p>
