@@ -105,6 +105,10 @@ main{padding:22px 26px;max-width:1200px;margin:0 auto}
   <button class="btn-gold" id="btnXLS">Excelを書き出す</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">この競技の入力を消去</button>
+  <span class="sep"></span>
+  <label style="font-size:12px;color:#c8d3e3">生成スタイル
+    <select id="commentStyleSel" style="margin-left:4px"></select>
+  </label>
   <span class="hint" id="topHint"></span>
 </div>
 
@@ -115,10 +119,11 @@ main{padding:22px 26px;max-width:1200px;margin:0 auto}
   </div>
 
   <div class="copilot">
-    <h3>Copilotで受賞コメントを作成 → 取り込み</h3>
+    <h3>Copilotで投稿概要を作成 → 取り込み</h3>
     <div class="sub">
       ① 下の「①コメント生成プロンプトをコピー」→ Copilot Cowork に貼る → ② 返ってきた <code>===COMMENT===</code> ブロックを下の欄に貼り付け → ③ 取り込む。
-      アンコール・バズとも作品リンクは開かず、<b>タイトル・提出者・部署・いいね数だけ</b>を根拠にコメントを書かせます（実際の投稿内容は反映されません）。
+      アンコール・バズとも作品リンクは開かず、<b>タイトル・提出者・部署・いいね数だけ</b>を根拠に書かせます（実際の投稿内容は反映されません）。
+      右上の「<b>生成スタイル</b>」で、受賞を祝うコメント／投稿内容の概要（説明文）を切り替えられます。
       精度重視なら、各カードの「プロンプト」ボタンで1件ずつ作成するのがおすすめです。
     </div>
     <button class="btn-gold" id="btnCopyPrompt">① 受賞6件分のコメント生成プロンプトをコピー</button>
@@ -143,8 +148,18 @@ const COMP_META = {
   buzz:   {jp:'バズステージ', sheetHint:'Buzz', persona:'先駆者として情報発信し続けた人',
            hint:'バズステージ投稿の被いいね数で、上位6件が受賞候補になります。'},
 };
+// 「投稿概要」欄をCopilotに書かせる際の2つのスタイル。ツールバーの「生成スタイル」で切替
+const COMMENT_STYLES = {
+  congrats: {jp:'受賞を祝うコメント', roleLabel:'受賞コメント作成', task:'受賞を讃える短いコメント',
+    extraRule:'- 誇張しすぎず、具体的な誇張表現は避け、温かく前向きなトーンで書いてください。',
+    fieldHint:'受賞コメント'},
+  summary: {jp:'投稿内容の概要（説明文）', roleLabel:'投稿概要作成', task:'その投稿がどんな内容・工夫についてのものかを説明する概要文',
+    extraRule:'- 「素晴らしい」「見事」等の賞賛・評価の言葉は使わず、タイトルから読み取れる内容を客観的に要約してください。断定を避け「〜と考えられます」等の推測表現を使ってください。',
+    fieldHint:'投稿概要'},
+};
 
 let COMP = 'encore';
+let commentStyle = 'congrats';   // 'congrats'=受賞を祝うコメント／'summary'=投稿概要（説明文）
 let ENTRIES = { encore: [], buzz: [] };   // {code, title, name, dept, who, likes, link}
 let staffName = '';
 let stateByComp = {};   // comp -> {pinned:{code:slot}, comments:{code:text}}
@@ -244,13 +259,14 @@ function buildCommentPrompt(comp, list){
   const es = list && list.length ? list : winnersOf(comp);
   const entries = es.map((e,i)=>`【${i+1}】EntryCode: ${e.code}\n　タイトル: ${e.title||'（不明）'}\n　提出者: ${e.who||'（不明）'}\n　獲得いいね数: ${e.likes}`).join('\n\n');
   const one = es.length === 1;
-  return `あなたは AI Fes 2026「${meta.jp}」の受賞コメント作成アシスタントです。テーマは「${meta.persona}」。
-以下の受賞者${es.length}名について、それぞれ受賞を讃える短いコメント（100字前後・日本語）を作成してください。
+  const styleBlock = COMMENT_STYLES[commentStyle] || COMMENT_STYLES.congrats;
+  return `あなたは AI Fes 2026「${meta.jp}」の${styleBlock.roleLabel}アシスタントです。テーマは「${meta.persona}」。
+以下の受賞者${es.length}名について、それぞれ${styleBlock.task}（100字前後・日本語）を作成してください。
 
 【重要な制約】
-- 作品リンクは開けません。**タイトル・提出者・部署・獲得いいね数だけ**を手がかりにコメントを書いてください。
+- 作品リンクは開けません。**タイトル・提出者・部署・獲得いいね数だけ**を手がかりに書いてください。
 - タイトルから読み取れる工夫や着眼点には触れて構いませんが、リンク先の中身を読んだかのような断定（「〜という実装が」等の詳細描写）は避けてください。
-- 誇張しすぎず、具体的な誇張表現は避け、温かく前向きなトーンで書いてください。
+${styleBlock.extraRule}
 - ${one ? 'この1件を丁寧に' : `${es.length}件すべてを`}作成する。件数の間引き・省略・「以下同様」は禁止（全件それぞれにブロックを出す）。
 
 【対象${es.length}件】
@@ -260,7 +276,7 @@ ${entries}
 【取り込み用ブロック（必須）】各エントリーについて、次のブロックを続けて出力してください（1エントリー1ブロック・ラベルとEntryCodeは変えない）。
 ===COMMENT===
 EntryCode: <そのエントリーのEntryCode>
-講評: <100字前後の受賞コメント>
+講評: <100字前後の${styleBlock.fieldHint}>
 ===END===`;
 }
 function parseCopilotComments(text){
@@ -342,7 +358,7 @@ function render(){
       <div class="abody">
         <div class="ainfo"><b>${esc(e.title||'（タイトル不明）')}</b><span>${esc(e.who)}</span></div>
         <div class="ascore"><span>獲得いいね数 <b>${e.likes}</b></span></div>
-        <div><label>受賞コメント</label><textarea class="comment-inp" data-code="${esc(e.code)}" placeholder="Copilotで生成するか、直接入力してください">${esc(comment)}</textarea></div>
+        <div><label>投稿概要</label><textarea class="comment-inp" data-code="${esc(e.code)}" placeholder="Copilotで生成するか、直接入力してください">${esc(comment)}</textarea></div>
         ${e.link ? `<a class="lnk" href="${esc(e.link)}" target="_blank" rel="noopener">投稿を見る</a>` : ''}
       </div>
     </div>`;
@@ -350,7 +366,7 @@ function render(){
   html += `</div>
     <div class="legend">
       <span><b>順位固定</b>＝同点・誤検知対応で手動指定できます（プルダウンで入れ替え）</span>
-      <span><b>受賞コメント</b>＝Copilotで一括生成するか、直接入力できます</span>
+      <span><b>投稿概要</b>＝Copilotで一括生成するか、直接入力できます</span>
     </div>
   </div>`;
   out.innerHTML = html;
@@ -398,7 +414,7 @@ function exportXLSX(){
     const st = stateByComp[comp] || {pinned:{}, comments:{}};
     const r = autoRank(comp);
     const winners = ENTRIES[comp].filter(e=>r[e.code]).sort((a,b)=>r[a.code]-r[b.code]);
-    const head = ['順位','EntryCode','タイトル','応募者','部署','獲得いいね数','受賞コメント','投稿URL'];
+    const head = ['順位','EntryCode','タイトル','応募者','部署','獲得いいね数','投稿概要','投稿URL'];
     const rows = [head];
     winners.forEach(e=>{
       rows.push([r[e.code], e.code, e.title, e.name, e.dept, e.likes, st.comments[e.code]||'', e.link||'']);
@@ -408,7 +424,7 @@ function exportXLSX(){
     ws['!freeze'] = {xSplit:'0', ySplit:'1'};
     XLSX.utils.book_append_sheet(wb, ws, `${COMP_META[comp].jp}受賞一覧`);
   });
-  XLSX.writeFile(wb, `AIFES2026_アンコール_バズ_受賞コメント_${stamp()}.xlsx`);
+  XLSX.writeFile(wb, `AIFES2026_アンコール_バズ_投稿概要_${stamp()}.xlsx`);
   toast('Excelを書き出しました');
 }
 
@@ -447,6 +463,18 @@ document.getElementById('btnApplyCopilot').onclick = () => {
   if(!txt.trim()){ toast('Copilotの出力を貼り付けてください'); return; }
   const n = applyCopilot(txt);
   if(n){ document.getElementById('cpPaste').value=''; render(); }
+};
+
+const styleSel = document.getElementById('commentStyleSel');
+styleSel.innerHTML = Object.keys(COMMENT_STYLES).map(k=>`<option value="${k}">${esc(COMMENT_STYLES[k].jp)}</option>`).join('');
+try{
+  const lastStyle = localStorage.getItem(STORE_PREFIX + '_lastCommentStyle');
+  if(lastStyle && COMMENT_STYLES[lastStyle]) commentStyle = lastStyle;
+}catch(_){}
+styleSel.value = commentStyle;
+styleSel.onchange = () => {
+  commentStyle = styleSel.value;
+  try{ localStorage.setItem(STORE_PREFIX + '_lastCommentStyle', commentStyle); }catch(_){}
 };
 
 loadState('encore'); loadState('buzz');

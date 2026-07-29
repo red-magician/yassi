@@ -38,6 +38,22 @@ const MASTER = path.resolve(__dirname, 'master_encore_buzz.xlsx');
   ok(clip1.includes('タイトル・提出者・部署・獲得いいね数だけ'), '個別プロンプトに「リンクを開かない」制約が入っている');
   ok((clip1.match(/【\d+】/g) || []).length === 1, '個別プロンプトは対象1件だけ');
 
+  // フィールドラベルは「投稿概要」（受賞コメントではない）
+  ok((await p.locator('.acard label').first().textContent()) === '投稿概要', 'カードの入力欄ラベルが「投稿概要」になっている');
+
+  // 生成スタイルの切替：デフォルトは「受賞を祝うコメント」、切り替えるとプロンプトの指示も変わる
+  ok((await p.locator('#commentStyleSel').inputValue()) === 'congrats', '生成スタイルの初期値は「受賞を祝うコメント」');
+  const clipCongrats = await p.evaluate(() => buildCommentPrompt('encore', [ENTRIES.encore[0]]));
+  ok(clipCongrats.includes('受賞を讃える短いコメント'), '「受賞を祝うコメント」スタイルのプロンプトには讃える旨の指示が入る');
+  await p.selectOption('#commentStyleSel', 'summary');
+  await p.waitForTimeout(100);
+  const clipSummary = await p.evaluate(() => buildCommentPrompt('encore', [ENTRIES.encore[0]]));
+  ok(clipSummary.includes('概要文'), '「投稿内容の概要」スタイルのプロンプトには概要文の指示が入る');
+  ok(!clipSummary.includes('受賞を讃える短いコメント'), '「投稿内容の概要」スタイルには讃える旨の指示が入らない');
+  ok(clipSummary.includes('賞賛・評価の言葉は使わず'), '「投稿内容の概要」スタイルには賞賛を避ける旨の指示が入る');
+  await p.selectOption('#commentStyleSel', 'congrats');
+  await p.waitForTimeout(100);
+
   // 一括プロンプトコピー
   await p.click('#btnCopyPrompt');
   await p.waitForTimeout(200);
@@ -75,7 +91,7 @@ const MASTER = path.resolve(__dirname, 'master_encore_buzz.xlsx');
   ok(/44/.test(buzzFirst), 'バズのいいね数最多(44)が1位');
   ok(!/テストコメント/.test(buzzFirst), 'アンコールのコメントがバズ側に混ざらない（競技ごとに独立）');
 
-  // 書き出しExcel（アンコール・バズ両シート、受賞コメント列あり）
+  // 書き出しExcel（アンコール・バズ両シート、投稿概要列あり）
   const outXlsx = path.resolve(__dirname, 'test_encore_buzz_out.xlsx');
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btnXLS')]);
   await dl.saveAs(outXlsx);
@@ -91,7 +107,7 @@ print('ROWCOUNT:', ws.max_row - 1)
 "`).toString();
   console.log(pyOut);
   ok(pyOut.includes("SHEETS: ['アンコール受賞一覧', 'バズステージ受賞一覧']"), '書き出しExcelにアンコール・バズ両方のシートがある');
-  ok(pyOut.includes("'順位', 'EntryCode', 'タイトル', '応募者', '部署', '獲得いいね数', '受賞コメント', '投稿URL'"), '列見出しが想定通り');
+  ok(pyOut.includes("'順位', 'EntryCode', 'タイトル', '応募者', '部署', '獲得いいね数', '投稿概要', '投稿URL'"), '列見出しが想定通り');
   ok(pyOut.includes('ROWCOUNT: 6'), 'アンコール受賞一覧が6行');
   const fs = require('fs');
   fs.unlinkSync(outXlsx);
