@@ -51,6 +51,9 @@ const MASTER = path.resolve(__dirname, 'master_encore_buzz.xlsx');
   ok(clipSummary.includes('概要文'), '「投稿内容の概要」スタイルのプロンプトには概要文の指示が入る');
   ok(!clipSummary.includes('受賞を讃える短いコメント'), '「投稿内容の概要」スタイルには讃える旨の指示が入らない');
   ok(clipSummary.includes('賞賛・評価の言葉は使わず'), '「投稿内容の概要」スタイルには賞賛を避ける旨の指示が入る');
+  ok(clipSummary.includes('断定的に要約'), '「投稿内容の概要」スタイルは断定的に書く旨の指示が入る');
+  ok(!clipSummary.includes('推測表現を使ってください'), '「投稿内容の概要」スタイルには推測表現を促す指示（使ってください側）が入らない');
+  ok(clipSummary.includes('推測・ぼかし表現は使わないでください'), '「投稿内容の概要」スタイルには推測表現を避ける旨の指示が入る');
   await p.selectOption('#commentStyleSel', 'congrats');
   await p.waitForTimeout(100);
 
