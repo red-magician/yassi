@@ -73,6 +73,19 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok(/書く/.test(goldCardText) && /学ぶ（押したいいね）/.test(goldCardText) && /響く（もらったいいね）/.test(goldCardText) && /＋α（Cowork）/.test(goldCardText),
     'カードに書く／学ぶ（押したいいね）／響く（もらったいいね）／＋α（Cowork）の4スタッツが出る');
   ok(/\/ 110点/.test(goldCardText), 'カードの最終スコアが110点満点表記になっている');
+
+  // 学ぶ・響くは「もらったいいねの総数」ではなく、上限で頭打ちした得点そのものを表示する（ポータル班からの要望）
+  ok(/\/40点/.test(goldCardText) && /\/20点/.test(goldCardText), 'カードの学ぶ／響くは「/40点」「/20点」の得点表示になっている（総数表示ではない）');
+  const goldStats = await p.evaluate(() => {
+    const el = document.querySelector('.pt-tier.gold .pt-card');
+    const d2 = el.querySelector('.pt-stat.d2 .v').childNodes[0].textContent.trim();
+    const d3 = el.querySelector('.pt-stat.d3 .v').childNodes[0].textContent.trim();
+    const code = el.querySelector('.codelink').dataset.code;
+    const raw = aggregate().find(e => e.code === code);
+    return { d2, d3, given: raw.likesGivenRaw, received: raw.likesRaw };
+  });
+  ok(Number(goldStats.d2) === Math.min(goldStats.given, 40), `学ぶの表示値(${goldStats.d2})が押したいいねの得点（上限40で頭打ち、実数${goldStats.given}）と一致する`);
+  ok(Number(goldStats.d3) === Math.min(goldStats.received, 20), `響くの表示値(${goldStats.d3})がもらったいいねの得点（上限20で頭打ち、実数${goldStats.received}）と一致する`);
   ok(/田中講評|佐藤講評|鈴木講評/.test(goldCardText), '評価コメント本文は表示される');
   const commentLine = goldCardText.split('\n').find(l => /講評/.test(l)) || '';
   ok(!/^【/.test(commentLine), '評価コメントに執筆者名（【メンバー名】形式）が付かない');
