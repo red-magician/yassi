@@ -60,9 +60,11 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok(announceText.includes('Cowork'), '案内文に＋α（Cowork経由の自動加点）の説明がある');
   ok(announceText.includes('110点'), '案内文に満点110点の記載がある');
   ok(!announceText.includes('ルーブリック'), '案内文に内部用語「ルーブリック」が出ない');
-  ok(announceText.includes('40件分までは、押した数がそのまま得点に積み上がります') && announceText.includes('20件分までは、もらった数がそのまま得点に積み上がります'),
-    '案内文の学ぶ／響く説明が前向きな言い回し（頭打ち、ではなく積み上がる）になっている');
+  ok(announceText.includes('1件につき1点、最大40点までスコアに反映されます') && announceText.includes('1件につき1点、最大20点までスコアに反映されます'),
+    '案内文の学ぶ／響く説明が「1件につき1点、最大◯点まで」という誤解のない前向きな言い回しになっている');
   ok(!announceText.includes('頭打ち'), '案内文にネガティブな言い回し「頭打ち」が使われていない');
+  ok(!announceText.includes('までは、') && !announceText.includes('までは、押した数がそのまま得点に積み上がります'),
+    '案内文が「〜までは」という、上限超過後も何かが続くかのように読める言い回しになっていない');
 
   // メダル階層（ゴールド1名／シルバー2名／ブロンズ3名 ＝ 受賞6件）
   ok((await p.locator('.pt-tier.gold .pt-card').count()) === 1, 'ゴールドアワードが1名（実際:' + (await p.locator('.pt-tier.gold .pt-card').count()) + '）');
