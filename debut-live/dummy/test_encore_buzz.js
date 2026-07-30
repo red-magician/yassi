@@ -112,6 +112,27 @@ print('ROWCOUNT:', ws.max_row - 1)
   ok(pyOut.includes("SHEETS: ['アンコール受賞一覧', 'バズステージ受賞一覧']"), '書き出しExcelにアンコール・バズ両方のシートがある');
   ok(pyOut.includes("'順位', 'EntryCode', 'タイトル', '応募者', '部署', '獲得いいね数', '投稿概要', '投稿URL'"), '列見出しが想定通り');
   ok(pyOut.includes('ROWCOUNT: 6'), 'アンコール受賞一覧が6行');
+
+  // 書き出したファイルを「マスターExcel」欄に再読み込みできる（ポータル班/スタッフが書き出し済みファイルしか
+  // 手元に残っていないケースの救済ルート）。EntryCode・順位・投稿概要が復元されることを確認する
+  const p2 = await b.newPage();
+  const errors2 = [];
+  p2.on('pageerror', e => errors2.push('pageerror: ' + e.message));
+  p2.on('console', m => { if (m.type() === 'error') errors2.push('console.error: ' + m.text()); });
+  await p2.goto(TOOL);
+  await p2.setInputFiles('#fileMaster', outXlsx);
+  await p2.waitForTimeout(800);
+  ok((await p2.locator('.acard').count()) === 6, '書き出し済みファイルの再読み込みでもアンコール受賞候補6枠が復元される');
+  const reimportedValues = await Promise.all((await p2.locator('.comment-inp').all()).map(l => l.inputValue()));
+  ok(reimportedValues.some(v => v.includes('手入力のコメントに書き換えました')) && reimportedValues.every(v => /テストコメント/.test(v) || v.includes('手入力')),
+    '再読み込みで投稿概要（コメント）も復元される');
+  ok((await p2.locator('#hCommented').textContent()).includes('6'), '再読み込み後もコメント済み件数が6/6になる');
+  await p2.click('.tab[data-comp="buzz"]');
+  await p2.waitForTimeout(300);
+  ok((await p2.locator('.acard').count()) === 6, '書き出し済みファイルの再読み込みでバズ受賞候補6枠も復元される');
+  ok(errors2.length === 0, `再読み込み時もJSエラーなし（実際: ${errors2.length}件 ${errors2.join(' / ')}）`);
+  await p2.close();
+
   const fs = require('fs');
   fs.unlinkSync(outXlsx);
 

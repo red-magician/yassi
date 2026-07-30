@@ -206,6 +206,29 @@ function pickSheetForComp(wb, mustHave, nameHint){
   }
   return best;
 }
+// 本ツールが書き出した「◯◯受賞一覧」シート（順位・EntryCode・タイトル・応募者・部署・獲得いいね数・投稿概要・投稿URL）から
+// 読み込む。マスターExcelを紛失した／別の端末で続きの作業をしたい場合に、書き出し済みファイルをそのまま読み込ませて
+// 順位（pinned）と投稿概要（comments）ごと復元できるようにするための救済ルート
+function loadFromExportSheet(wb, comp){
+  const meta = COMP_META[comp];
+  const sheet = pickSheetForComp(wb, ['EntryCode','タイトル','応募者','部署','獲得いいね数'], meta.jp);
+  if(!sheet) return null;
+  const h=sheet.head, c=idxer(h);
+  const col = { rank:c('順位'), code:c('EntryCode'), title:c('タイトル'), name:c('応募者'), dept:c('部署'),
+    likes:c('獲得いいね数'), comment:c('投稿概要'), link:c('投稿URL') };
+  const entries = []; const pinned = {}; const comments = {};
+  sheet.rows.slice(1).forEach(r=>{
+    const g = k => col[k]>=0 ? String(r[col[k]]??'').trim() : '';
+    const code = g('code'); if(!code) return;
+    const name = g('name'), dept = g('dept');
+    entries.push({ code, title:g('title'), name, dept, who: dept?`${name}/${dept}`:name,
+      likes: col.likes>=0 ? num(r[col.likes]) : 0, link:g('link') });
+    const rank = col.rank>=0 ? num(r[col.rank]) : 0;
+    if(rank>=1 && rank<=AWARD_SLOTS) pinned[code] = rank;
+    const comment = g('comment'); if(comment) comments[code] = comment;
+  });
+  return entries.length ? {entries, pinned, comments} : null;
+}
 function loadMasterFile(file){
   const rd = new FileReader();
   rd.onload = () => {
@@ -215,19 +238,29 @@ function loadMasterFile(file){
       let loaded = [];
       Object.keys(COMP_META).forEach(comp=>{
         const sheet = pickSheetForComp(wb, must, COMP_META[comp].sheetHint);
-        if(!sheet) return;
-        const h=sheet.head, c=idxer(h);
-        const col = { code:c('EntryCode'), title:c('タイトル'), name:c('SubmitterDisplayName'), dept:c('Department'),
-          likes:c('LikeCount'), link:c('PrimaryFileUrl') };
-        const entries = sheet.rows.slice(1).map(r=>{
-          const g = k => col[k]>=0 ? String(r[col[k]]??'').trim() : '';
-          const name = g('name'), dept = g('dept');
-          return { code:g('code'), title:g('title'), name, dept, who: dept?`${name}/${dept}`:name,
-            likes: col.likes>=0 ? num(r[col.likes]) : 0, link:g('link') };
-        }).filter(e=>e.code);
-        if(entries.length){ ENTRIES[comp] = entries; loaded.push(`${COMP_META[comp].jp}:${entries.length}件`); }
+        if(sheet){
+          const h=sheet.head, c=idxer(h);
+          const col = { code:c('EntryCode'), title:c('タイトル'), name:c('SubmitterDisplayName'), dept:c('Department'),
+            likes:c('LikeCount'), link:c('PrimaryFileUrl') };
+          const entries = sheet.rows.slice(1).map(r=>{
+            const g = k => col[k]>=0 ? String(r[col[k]]??'').trim() : '';
+            const name = g('name'), dept = g('dept');
+            return { code:g('code'), title:g('title'), name, dept, who: dept?`${name}/${dept}`:name,
+              likes: col.likes>=0 ? num(r[col.likes]) : 0, link:g('link') };
+          }).filter(e=>e.code);
+          if(entries.length){ ENTRIES[comp] = entries; loaded.push(`${COMP_META[comp].jp}:${entries.length}件`); return; }
+        }
+        // マスター形式のシートが無い場合、本ツール自身の書き出しファイルからの再読み込みを試みる
+        const fromExport = loadFromExportSheet(wb, comp);
+        if(fromExport){
+          ENTRIES[comp] = fromExport.entries;
+          const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}});
+          st.pinned = fromExport.pinned;
+          st.comments = Object.assign({}, st.comments, fromExport.comments);
+          loaded.push(`${COMP_META[comp].jp}:${fromExport.entries.length}件（書き出し済みファイルから復元）`);
+        }
       });
-      if(!loaded.length){ toast(`${file.name}：Encore_by_entry / Buzz_by_entry 相当のシートが見つかりません`); return; }
+      if(!loaded.length){ toast(`${file.name}：Encore_by_entry / Buzz_by_entry 相当のシート、または本ツールの書き出しシートが見つかりません`); return; }
       Object.keys(ENTRIES).forEach(comp=>{ if(ENTRIES[comp].length) autoRank(comp); });
       render();
       toast(`読み込み：${loaded.join(' / ')}`);
