@@ -354,7 +354,7 @@ const ENTRY_COLS = {
   submitterKey: ['SubmitterUserKey','SubmitterEntraId'],
   workLink: ['作品リンク','WorkUrl','PrimaryFileUrl'],
   procLink: ['ProcedureFileUrl','手順書リンク'],
-  fmtWork: ['作品ファイル形式','提出形式（作品）','提出形式 (作品)'],
+  fmtWork: ['作品ファイル形式','提出形式（作品）','提出形式 (作品)','提出形式 (HTML/MD)'],
   fmtProc: ['手順書ファイル形式','提出形式（手順書）','提出形式 (手順書)'],
   likes: ['いいね（もらう）','LikesReceived（もらう）','いいね数（もらう）'],
   likesGiven: ['いいね（押す）','LikesGiven（押す）','いいね数（押す）'],
@@ -366,6 +366,7 @@ const SCORE_COLS = {
   ax1: ['観点①スコア'], ax2: ['観点②スコア'], ax3: ['観点③スコア'], ax4: ['観点④スコア'],
   rubricTotal: ['RubricTotal','ルーブリック合計'],
   aiComment: ['AI講評','役員エージェント講評'],
+  fmtWork: ['提出形式 (HTML/MD)','提出形式（作品）','提出形式 (作品)','作品ファイル形式'],
 };
 function colMap(head, defs){
   const col = {};
@@ -446,6 +447,7 @@ function tryJoinedSheets(wb){
         axis: [num(sg(row,'ax1')), num(sg(row,'ax2')), num(sg(row,'ax3')), num(sg(row,'ax4'))],
         rubricTotal: sCol.rubricTotal>=0 && sg(row,'rubricTotal') !== '' ? num(sg(row,'rubricTotal')) : null,
         aiComment: sg(row,'aiComment'),
+        fmtWork: sg(row,'fmtWork'),
       };
     });
   }
@@ -465,7 +467,8 @@ function tryJoinedSheets(wb){
     const axis = s ? s.axis : [0,0,0,0];
     const rubricTotal = s ? (s.rubricTotal ?? Math.round(axis.reduce((sum,v)=>sum+v/10*25,0)*RUBRIC_MAX/100*10)/10) : null;
     const workLink = eg(row,'workLink'), procLink = eg(row,'procLink');
-    const fmtWork = fmtLabel(workLink, eg(row,'fmtWork'));
+    // 提出形式は「02_採点結果台帳」側の明示列（あれば）を優先し、無ければ従来通りエントリー側の列／URL拡張子で判定する
+    const fmtWork = fmtLabel(workLink, (s && s.fmtWork) || eg(row,'fmtWork'));
     const fmtProc = fmtLabel(procLink, eg(row,'fmtProc'));
     out.push(buildEntry({code, gid:eg(row,'gid'), who, submitterKey:eg(row,'submitterKey'),
       workLink, procLink, fmtWork, fmtProc, axis, rubricTotal, hasScore,

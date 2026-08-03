@@ -47,8 +47,9 @@ for i in scored_idx:
     code = f'DEBUT-2026-{i:06d}'
     axis = [random.choice([2,5,8,10]) for _ in range(4)]
     rubric = round(sum(a/10*25 for a in axis), 1)
+    fmt = 'HTML' if i != 5 else 'MD'   # 提出形式は「02_採点結果台帳」側が正で、URL拡張子（i==5だけmd）と一致させる
     ws02.append([code, f'hackathon-debut-item-{i}', 'debut', 'debut-cool2', 'debut-agent',
-                 *axis, rubric, 'HTML', 0, rubric, f'{code} のAI講評ダミー'])
+                 *axis, rubric, fmt, 0, rubric, f'{code} のAI講評ダミー'])
 # 他競技の採点行も混ぜる（フィルタで除外されるべき）
 ws02.append(['SOLO-2026-000099', 'hackathon-solo-item-99', 'solo', 'cool1', 'solo-agent',
              5,5,5,None, 75, 'HTML', 10, 85, 'ソロのAI講評ダミー'])
