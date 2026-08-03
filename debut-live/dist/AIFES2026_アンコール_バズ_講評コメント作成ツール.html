@@ -73,6 +73,10 @@ main{padding:22px 26px;max-width:1200px;margin:0 auto}
 .acard .lnk:hover{background:var(--navy);color:#fff}
 .legend{display:flex;gap:16px;padding:11px 18px;background:#f8fafc;border-top:1px solid var(--line);font-size:11px;color:var(--mute);flex-wrap:wrap}
 .legend b{color:var(--ink)}
+.awarded-list{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px}
+.awarded-item{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);border-radius:99px;padding:5px 6px 5px 12px;font-size:12px;color:var(--ink)}
+.awarded-item .unaward{background:none;border:1px solid var(--line);color:var(--mute);font-size:11px;padding:3px 9px;border-radius:99px}
+.awarded-item .unaward:hover{background:var(--warn);border-color:var(--warn);color:#fff}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-deep);color:#fff;padding:11px 22px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(13,33,64,.3);z-index:200;opacity:0;transition:.25s;border-left:3px solid var(--gold)}
 .toast.on{transform:translateX(-50%) translateY(0);opacity:1}
 @media print{ .tabs,.toolbar,.drop,.copilot,header .btn{display:none !important} main{padding:0} }
@@ -89,6 +93,7 @@ main{padding:22px 26px;max-width:1200px;margin:0 auto}
     <div class="item"><span class="k">対象エントリー</span><span class="v" id="hEntries">0<small> 件</small></span></div>
     <div class="item"><span class="k">受賞候補</span><span class="v" id="hAwards">0<small> / 6</small></span></div>
     <div class="item"><span class="k">コメント済み</span><span class="v" id="hCommented">0<small> / 6</small></span></div>
+    <div class="item"><span class="k">受賞済み（除外中）</span><span class="v" id="hAwarded">0<small> 名</small></span></div>
   </div>
   <div class="fld"><label>作業者名</label><input type="text" id="staffName" placeholder="例）城間"></div>
 </header>
@@ -172,7 +177,7 @@ let commentStyle = 'congrats';   // 'congrats'=受賞を祝うコメント／'su
 let ENTRIES = { encore: [], buzz: [] };   // {code, title, name, dept, who, likes, link}
 let staffName = '';
 let stateByComp = {};   // comp -> {pinned:{code:slot}, comments:{code:text}}
-function S(){ return stateByComp[COMP] || (stateByComp[COMP] = {pinned:{}, comments:{}}); }
+function S(){ return stateByComp[COMP] || (stateByComp[COMP] = {pinned:{}, comments:{}, awarded:{}}); }
 let ranks = {};   // code -> 1..6
 
 /* ---------- utils ---------- */
@@ -254,7 +259,7 @@ function loadMasterFile(file){
         const fromExport = loadFromExportSheet(wb, comp);
         if(fromExport){
           ENTRIES[comp] = fromExport.entries;
-          const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}});
+          const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}, awarded:{}});
           st.pinned = fromExport.pinned;
           st.comments = Object.assign({}, st.comments, fromExport.comments);
           loaded.push(`${COMP_META[comp].jp}:${fromExport.entries.length}件（書き出し済みファイルから復元）`);
@@ -273,9 +278,15 @@ function loadMasterFile(file){
 function sortedEntries(comp){
   return ENTRIES[comp].slice().sort((a,b)=> b.likes - a.likes || (a.code < b.code ? -1 : 1));
 }
+// 「受賞済み」フラグが立ったエントリーは、いいね数がどれだけ多くても自動選出の対象外にする
+// （アンコールは全競技横断の累積いいねのため、一度受賞した人は次クール以降も上位に残り続けてしまう）
+function eligibleEntries(comp){
+  const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}, awarded:{}});
+  return sortedEntries(comp).filter(e=>!st.awarded[e.code]);
+}
 function autoRank(comp){
-  const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}});
-  const sorted = sortedEntries(comp);
+  const st = stateByComp[comp] || (stateByComp[comp] = {pinned:{}, comments:{}, awarded:{}});
+  const sorted = eligibleEntries(comp);
   const valid = new Set(sorted.map(e=>e.code));
   Object.keys(st.pinned).forEach(k=>{ if(!valid.has(k)) delete st.pinned[k]; });
   const r = {}; const used = new Set();
@@ -352,15 +363,16 @@ function applyCopilot(text){
 function stateKey(comp){ return STORE_PREFIX + (staffName||'__anon__') + '::' + comp; }
 function saveState(){
   const st = S();
-  try{ localStorage.setItem(stateKey(COMP), JSON.stringify({ staffName, pinned:st.pinned, comments:st.comments })); }catch(e){}
+  try{ localStorage.setItem(stateKey(COMP), JSON.stringify({ staffName, pinned:st.pinned, comments:st.comments, awarded:st.awarded })); }catch(e){}
 }
 function loadState(comp){
-  const st = stateByComp[comp] = {pinned:{}, comments:{}};
+  const st = stateByComp[comp] = {pinned:{}, comments:{}, awarded:{}};
   try{
     const raw = localStorage.getItem(stateKey(comp)); if(!raw) return;
     const d = JSON.parse(raw);
     if(d.pinned) st.pinned = d.pinned;
     if(d.comments) st.comments = d.comments;
+    if(d.awarded) st.awarded = d.awarded;
   }catch(e){}
 }
 try{
@@ -379,7 +391,7 @@ function render(){
   if(!ENTRIES[COMP].length){ out.innerHTML=''; updateHeader(); return; }
 
   const winners = winnersOf(COMP);
-  const sorted = sortedEntries(COMP);
+  const sorted = eligibleEntries(COMP);
   const st = S();
 
   let html = `<div class="panel"><h2>受賞候補 ${AWARD_SLOTS}件 <span>${meta.jp}：獲得いいね数上位。順位はプルダウンで手動固定できます</span></h2><div class="award-grid">`;
@@ -389,13 +401,14 @@ function render(){
       html += `<div class="acard empty2"><div style="text-align:center"><div class="ahead" style="justify-content:center"><span class="rk">${slot}位</span></div><div style="padding:14px;font-size:12px">該当なし</div></div></div>`;
       continue;
     }
-    const options = sorted.map(x=>`<option value="${esc(x.code)}" ${x.code===e.code?'selected':''}>${esc(x.who||x.code)}（${x.likes}）</option>`).join('');
+    const options = sorted.map(x=>`<option value="${esc(x.code)}" ${x.code===e.code?'selected':''}>${esc(x.who||x.code)}（${x.likes}）</option>`).join('')
+      + `<option value="__awarded__">── ${esc(e.who||e.code)} を受賞済みにする（今後除外） ──</option>`;
     const comment = st.comments[e.code] || '';
     html += `<div class="acard" data-code="${esc(e.code)}">
       <div class="ahead">
         <span class="rk">${slot}位</span>
         <button class="rowprompt" data-code="${esc(e.code)}" title="この1件だけのコメント生成プロンプトをコピー">プロンプト</button>
-        <select class="rankSel" data-slot="${slot}">${options}</select>
+        <select class="rankSel" data-slot="${slot}" data-code="${esc(e.code)}">${options}</select>
       </div>
       <div class="abody">
         <div class="ainfo"><b>${esc(e.title||'（タイトル不明）')}</b><span>${esc(e.who)}</span></div>
@@ -409,8 +422,17 @@ function render(){
     <div class="legend">
       <span><b>順位固定</b>＝同点・誤検知対応で手動指定できます（プルダウンで入れ替え）</span>
       <span><b>投稿概要</b>＝Copilotで一括生成するか、直接入力できます</span>
+      <span><b>受賞済みにする</b>＝過去クールの受賞者を今後の自動選出から除外します（プルダウン末尾から選択）</span>
     </div>
   </div>`;
+
+  const awardedList = ENTRIES[COMP].filter(x=>st.awarded[x.code]).sort((a,b)=> b.likes - a.likes);
+  html += `<div class="panel awarded-panel"><h2>受賞済み（除外中） <span>${awardedList.length}名。過去クールで受賞済みのため、いいね数に関わらず自動選出の対象外です</span></h2>`;
+  html += awardedList.length
+    ? `<div class="awarded-list">${awardedList.map(x=>`<div class="awarded-item"><span>${esc(x.who||x.code)}（${x.likes}）</span><button class="unaward" data-code="${esc(x.code)}">解除</button></div>`).join('')}</div>`
+    : `<div class="empty" style="padding:16px">まだ受賞済みに指定された人はいません</div>`;
+  html += `</div>`;
+
   out.innerHTML = html;
   wire();
   updateHeader();
@@ -422,15 +444,32 @@ function updateHeader(){
   document.getElementById('hAwards').innerHTML = winCount + '<small> / ' + AWARD_SLOTS + '</small>';
   const commented = winnersOf(COMP).filter(e=>(st.comments[e.code]||'').trim()).length;
   document.getElementById('hCommented').innerHTML = commented + '<small> / ' + winCount + '</small>';
+  document.getElementById('hAwarded').innerHTML = Object.keys(st.awarded).length + '<small> 名</small>';
 }
 function wire(){
   document.querySelectorAll('.rankSel').forEach(sel=>{
     sel.onchange = () => {
       const slot = Number(sel.dataset.slot);
-      const code = sel.value;
       const st = S();
+      if(sel.value === '__awarded__'){
+        const code = sel.dataset.code;
+        st.awarded[code] = true;
+        delete st.pinned[code];
+        autoRank(COMP); saveState();
+        setTimeout(render, 0);
+        return;
+      }
+      const code = sel.value;
       Object.keys(st.pinned).forEach(k=>{ if(st.pinned[k]===slot) delete st.pinned[k]; });
       st.pinned[code] = slot;
+      autoRank(COMP); saveState();
+      setTimeout(render, 0);
+    };
+  });
+  document.querySelectorAll('.unaward').forEach(btn=>{
+    btn.onclick = () => {
+      const st = S();
+      delete st.awarded[btn.dataset.code];
       autoRank(COMP); saveState();
       setTimeout(render, 0);
     };
@@ -453,7 +492,7 @@ function exportXLSX(){
   const wb = XLSX.utils.book_new();
   Object.keys(COMP_META).forEach(comp=>{
     if(!ENTRIES[comp].length) return;
-    const st = stateByComp[comp] || {pinned:{}, comments:{}};
+    const st = stateByComp[comp] || {pinned:{}, comments:{}, awarded:{}};
     const r = autoRank(comp);
     const winners = ENTRIES[comp].filter(e=>r[e.code]).sort((a,b)=>r[a.code]-r[b.code]);
     const head = ['順位','EntryCode','タイトル','応募者','部署','獲得いいね数','投稿概要','投稿URL'];
@@ -482,7 +521,7 @@ document.getElementById('btnXLS').onclick = exportXLSX;
 document.getElementById('btnPrint').onclick = () => window.print();
 document.getElementById('btnClear').onclick = () => {
   if(confirm(`「${COMP_META[COMP].jp}」の入力（順位固定・コメント）を消します。よろしいですか？`)){
-    stateByComp[COMP] = {pinned:{}, comments:{}};
+    stateByComp[COMP] = {pinned:{}, comments:{}, awarded:{}};
     autoRank(COMP); saveState(); render();
   }
 };

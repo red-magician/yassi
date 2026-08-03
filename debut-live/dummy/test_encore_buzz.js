@@ -85,6 +85,26 @@ const MASTER = path.resolve(__dirname, 'master_encore_buzz.xlsx');
   const newFirstCode = await p.evaluate(() => Object.keys(stateByComp.encore.pinned).find(k => stateByComp.encore.pinned[k] === 1));
   ok(newFirstCode === secondCode, '順位固定で1位が入れ替わる');
 
+  // 受賞済み（除外）フラグ：第2クール以降、過去クールの受賞者を自動選出の対象外にする機能
+  const beforeAward = await p.evaluate(() => winnersOf('encore').map(e => e.code));
+  const flaggedCode = beforeAward[0];
+  await p.locator('.acard').first().locator('.rankSel').selectOption('__awarded__');
+  await p.waitForTimeout(300);
+  ok((await p.evaluate((c) => !!stateByComp.encore.awarded[c], flaggedCode)), '受賞済みにした人が awarded フラグに記録される');
+  const afterAward = await p.evaluate(() => winnersOf('encore').map(e => e.code));
+  ok(!afterAward.includes(flaggedCode), '受賞済みにした人は受賞候補6枠から外れる');
+  ok(afterAward.length === 6 && new Set(afterAward).size === 6, '受賞済み除外後も6枠が別の候補で埋まる（繰り上げ）');
+  ok((await p.locator('#hAwarded').textContent()).includes('1'), 'ヘッダーの「受賞済み（除外中）」件数が1名になる');
+  ok((await p.locator('.awarded-item').count()) === 1, '受賞済みリストに1件表示される');
+
+  // 解除ボタンで受賞済みフラグを取り消すと、元の順位に戻る
+  await p.click('.unaward');
+  await p.waitForTimeout(300);
+  ok((await p.evaluate((c) => !stateByComp.encore.awarded[c], flaggedCode)), '解除ボタンで awarded フラグが消える');
+  const afterUnaward = await p.evaluate(() => winnersOf('encore').map(e => e.code));
+  ok(afterUnaward.includes(flaggedCode), '解除すると受賞候補6枠に戻る');
+  ok((await p.locator('#hAwarded').textContent()).includes('0'), '解除後はヘッダーの受賞済み件数が0名に戻る');
+
   // タブ切替：バズステージ
   await p.click('.tab[data-comp="buzz"]');
   await p.waitForTimeout(300);
