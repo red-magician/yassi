@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#e8571f" />
+<title>マンゴー等級判定（試作）</title>
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icons/icon-180.png" />
+<link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+<header class="app-header">
+  <h1>🥭 マンゴー等級判定</h1>
+  <span class="badge-experimental">試作 v1</span>
+</header>
+
+<main>
+  <section id="screen-home" class="screen">
+    <details class="caveat-box" open>
+      <summary>⚠ 判定精度についての注意（必読）</summary>
+      <ul>
+        <li>このモデルは<strong>2019年撮影の写真</strong>で較正されています。撮影環境（カメラ・照明・背景）が変わると精度が落ちる場合があります。</li>
+        <li><strong>表面の着色だけ</strong>を見ています。傷・ヤニによる格下げは判定できません。最終確認は人が行ってください。</li>
+        <li>学習データはA級中心（A100/B11/C3）で、<strong>特にC級の判定精度は未知数</strong>です。</li>
+        <li>「確信度」が低い判定は自動的に「要確認」と表示されます。</li>
+      </ul>
+    </details>
+
+    <p class="lead">無彩色の背景の上に果実を1個だけ置いて撮影してください。</p>
+
+    <div class="capture-buttons">
+      <label class="btn btn-primary">
+        📷 写真を撮る
+        <input id="camera-input" type="file" accept="image/*" capture="environment" hidden />
+      </label>
+      <label class="btn btn-secondary">
+        🖼 アルバムから選ぶ
+        <input id="gallery-input" type="file" accept="image/*" hidden />
+      </label>
+    </div>
+
+    <div class="settings-box">
+      <label class="switch-row">
+        <input id="send-logs-toggle" type="checkbox" />
+        判定結果をモデル改善のために送信する（画像は送信されません。数値と等級のみ）
+      </label>
+    </div>
+  </section>
+
+  <section id="screen-loading" class="screen hidden">
+    <div class="spinner"></div>
+    <p>判定中…</p>
+  </section>
+
+  <section id="screen-result" class="screen hidden">
+    <img id="result-preview" class="preview-img" alt="撮影した写真" />
+    <div class="result-card">
+      <div id="grade-badge" class="grade-badge">?</div>
+      <div id="grade-label" class="grade-label"></div>
+      <p class="confidence-row">確信度: <span id="confidence-value">-</span></p>
+      <p id="needs-review-banner" class="needs-review hidden"></p>
+      <p id="result-note" class="result-note hidden"></p>
+      <details class="feature-box">
+        <summary>詳細を見る</summary>
+        <dl id="feature-details"></dl>
+      </details>
+    </div>
+    <div class="action-row">
+      <button id="wrong-btn" class="btn btn-secondary">この判定は違う</button>
+      <button id="retake-btn" class="btn btn-primary">もう一度撮る</button>
+    </div>
+  </section>
+
+  <section id="screen-correct" class="screen hidden">
+    <h2>正しい等級を選んでください</h2>
+    <form id="correct-form">
+      <div class="radio-row">
+        <label><input type="radio" name="human_grade" value="A" required /> A（赤秀）</label>
+        <label><input type="radio" name="human_grade" value="B" /> B（黒秀）</label>
+        <label><input type="radio" name="human_grade" value="C" /> C（白箱）</label>
+      </div>
+      <label class="switch-row">
+        <input id="has-defect" type="checkbox" />
+        傷・ヤニなど色以外の理由で等級が下がっている
+      </label>
+      <div class="action-row">
+        <button type="button" id="correct-cancel-btn" class="btn btn-secondary">キャンセル</button>
+        <button type="submit" class="btn btn-primary">送信</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <p>色（表面等級）のみの試作判定です。最終等級は人の目で確認してください。</p>
+</footer>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
