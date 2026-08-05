@@ -95,6 +95,9 @@ mango-grader/
   再現手順は [`VALIDATION.md`](./VALIDATION.md) を参照してください。
   検証・比較用のスクリプトは `tools/dump_ground_truth.py` と `tools/compare.mjs` に
   同梱しているので、新しい写真が手に入るたびに再検証できます。
+- **較正モードのグリッドサーチ（`calibrate.js`）もPython版 `calibrate_thresholds()`
+  と突き合わせ済みです。** 同じ7枚・同じ340通りのグリッドで、最良の `a_thr`/`h_thr`
+  ・スコアとも浮動小数点誤差の範囲で完全一致しました（詳細は `VALIDATION.md`）。
 - **この検証で、JS移植とは別の、より重要な問題も見つかりました。** 検証に使った
   7枚の実写真では、A判定が1件も出ず6枚がB・1枚がCでした。目視では赤みの強い
   果実が複数含まれているにもかかわらず`vr_whole`が学習データの想定範囲を下回って
