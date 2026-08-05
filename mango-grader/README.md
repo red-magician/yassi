@@ -66,11 +66,19 @@ mango-grader/
 - ロジスティック回帰の係数（`model.js`）は `mango_grader_model.joblib` から抽出した
   実際の数値です。Node上でsklearnの`predict_proba`出力と突き合わせて一致することを
   確認済みです（複数のテスト特徴量ベクトルで完全一致）。
-- 一方、**画像処理パイプライン全体（HSV/Labの色変換の丸め誤差・リサイズのアルゴリズム
-  差）は実写真での検証をまだ行っていません。** 元データの画像ファイルが手元になく、
-  Python版とJS版を同じ写真で突き合わせるテストができていないためです。デプロイ後、
-  実際の写真で `python-reference/mango_grader.py` の出力とアプリの「詳細を見る」欄
-  （vr_whole / blob_largest_frac / blob_n）を突き合わせて検証することを推奨します。
+- **実写真7枚でPython版と突き合わせ済みです。** 等級判定は7/7枚で完全一致、
+  果実マスクの画素数(`n_px`)も7/7枚で完全一致、`vr_whole`も差0.06ポイント未満でした。
+  一方 `blob_largest_frac`/`blob_n`（連結成分まわりの特徴量）は2/7枚でややずれました
+  （原因はOpenCVのLab変換の内部近似との量子化誤差、詳細は下記）。数値・原因・
+  再現手順は [`VALIDATION.md`](./VALIDATION.md) を参照してください。
+  検証・比較用のスクリプトは `tools/dump_ground_truth.py` と `tools/compare.mjs` に
+  同梱しているので、新しい写真が手に入るたびに再検証できます。
+- **この検証で、JS移植とは別の、より重要な問題も見つかりました。** 検証に使った
+  7枚の実写真では、A判定が1件も出ず6枚がB・1枚がCでした。目視では赤みの強い
+  果実が複数含まれているにもかかわらず`vr_whole`が学習データの想定範囲を下回って
+  おり、モデルカードが警告している「撮影条件が変わるとA級が出なくなる」既知の
+  失敗パターンとみられます。**本番投入前に、実際の撮影条件で `calibrate_thresholds()`
+  による再較正を強く推奨します。** 詳細は [`VALIDATION.md`](./VALIDATION.md)。
 
 ## フィードバック・再学習の仕組み
 
@@ -121,8 +129,10 @@ npx wrangler pages dev public --d1=DB
 
 ## 既知の制約・今後やること
 
-- 画像処理をJSで手書き移植したため、**実写真でのPython版との突き合わせ検証が未実施**
-  （上記「JS移植の正確性について」参照）。
+- **本番投入前に撮影環境向けの再較正を推奨**（[`VALIDATION.md`](./VALIDATION.md) 参照）。
+  検証に使った実写真ではA判定が1件も出ませんでした。
+- `blob_largest_frac`/`blob_n` はOpenCVのLab変換の内部近似との量子化誤差により、
+  JS版とPython版で稀にずれることがあります（[`VALIDATION.md`](./VALIDATION.md)）。
 - `/api/log` `/api/correction` はオフライン時は静かに失敗します（再送キューは未実装）。
 - 撮影環境向けの閾値再較正（`calibrate_thresholds`）はまだPython版のみで、アプリ内
   UIからは行えません。
