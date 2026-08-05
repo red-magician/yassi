@@ -1,0 +1,15 @@
+{
+  "name": "マンゴー等級判定（試作）",
+  "short_name": "マンゴー判定",
+  "description": "マンゴーの表面等級（A/B/C）を写真から試作判定するアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff8f0",
+  "theme_color": "#e8571f",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

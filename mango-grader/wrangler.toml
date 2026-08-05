@@ -1,0 +1,8 @@
+name = "mango-grader"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mango_grader_db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
