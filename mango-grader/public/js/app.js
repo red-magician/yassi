@@ -1,3 +1,5 @@
+import { A_THR_DEFAULT, H_THR_DEFAULT } from './features.js';
+
 const $ = (sel) => document.querySelector(sel);
 
 const screens = {
@@ -5,6 +7,7 @@ const screens = {
   loading: $('#screen-loading'),
   result: $('#screen-result'),
   correct: $('#screen-correct'),
+  calibrate: $('#screen-calibrate'),
 };
 
 function showScreen(name) {
@@ -26,6 +29,36 @@ function sendEnabled() {
   return localStorage.getItem('mango_send_logs') !== 'off';
 }
 
+// ---- active color thresholds (a_thr/h_thr), overridable via in-app
+// calibration; falls back to the model's built-in defaults ----
+function getActiveThresholds() {
+  const a = localStorage.getItem('mango_a_thr');
+  const h = localStorage.getItem('mango_h_thr');
+  if (a !== null && h !== null) {
+    return { aThr: Number(a), hThr: Number(h), isCustom: true };
+  }
+  return { aThr: A_THR_DEFAULT, hThr: H_THR_DEFAULT, isCustom: false };
+}
+
+function setActiveThresholds(aThr, hThr) {
+  localStorage.setItem('mango_a_thr', String(aThr));
+  localStorage.setItem('mango_h_thr', String(hThr));
+  renderThresholdStatus();
+}
+
+function resetActiveThresholds() {
+  localStorage.removeItem('mango_a_thr');
+  localStorage.removeItem('mango_h_thr');
+  renderThresholdStatus();
+}
+
+function renderThresholdStatus() {
+  const { aThr, hThr, isCustom } = getActiveThresholds();
+  $('#threshold-status-text').textContent = isCustom
+    ? `カスタム (a=${aThr}, h=${hThr})`
+    : `既定 (a=${aThr}, h=${hThr})`;
+}
+
 // ---- worker plumbing ----
 const worker = new Worker('./js/worker.js', { type: 'module' });
 let nextRequestId = 1;
@@ -40,9 +73,10 @@ worker.onmessage = (e) => {
 
 function runPipeline(imageData) {
   const requestId = nextRequestId++;
+  const { aThr, hThr } = getActiveThresholds();
   return new Promise((resolve, reject) => {
     pending.set(requestId, { resolve, reject });
-    worker.postMessage({ imageData, requestId });
+    worker.postMessage({ imageData, requestId, aThr, hThr });
   });
 }
 
@@ -225,6 +259,136 @@ sendToggle.addEventListener('change', () => {
   localStorage.setItem('mango_send_logs', sendToggle.checked ? 'on' : 'off');
 });
 
+// ---- calibration mode ----
+const calibrateWorker = new Worker('./js/calibrate-worker.js', { type: 'module' });
+let calibrateRequestId = 1;
+let calibrationItems = []; // {id, previewUrl, imageData, grade}
+
+function renderCalibrateList() {
+  const list = $('#calibrate-list');
+  if (calibrationItems.length === 0) {
+    list.innerHTML = '<p class="calibrate-empty">まだサンプル写真がありません</p>';
+  } else {
+    list.innerHTML = calibrationItems
+      .map(
+        (item) => `
+        <div class="calibrate-item" data-id="${item.id}">
+          <img src="${item.previewUrl}" alt="" />
+          <select class="grade-select" data-id="${item.id}">
+            <option value="" ${item.grade === '' ? 'selected' : ''}>等級を選択</option>
+            <option value="A" ${item.grade === 'A' ? 'selected' : ''}>A（赤秀）</option>
+            <option value="B" ${item.grade === 'B' ? 'selected' : ''}>B（黒秀）</option>
+            <option value="C" ${item.grade === 'C' ? 'selected' : ''}>C（白箱）</option>
+          </select>
+          <button type="button" class="remove-btn" data-id="${item.id}">✕</button>
+        </div>`
+      )
+      .join('');
+  }
+  const graded = calibrationItems.filter((it) => it.grade);
+  $('#calibrate-run-btn').disabled = graded.length < 4;
+}
+
+$('#calibrate-input').addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files || []);
+  e.target.value = '';
+  for (const file of files) {
+    try {
+      const { imageData, previewUrl } = await loadFileToImageData(file, MAXPX);
+      calibrationItems.push({ id: crypto.randomUUID(), previewUrl, imageData, grade: '' });
+    } catch (err) {
+      console.warn('写真の読み込みに失敗', err);
+    }
+  }
+  renderCalibrateList();
+});
+
+$('#calibrate-list').addEventListener('change', (e) => {
+  if (!e.target.classList.contains('grade-select')) return;
+  const item = calibrationItems.find((it) => it.id === e.target.dataset.id);
+  if (item) item.grade = e.target.value;
+  renderCalibrateList();
+});
+
+$('#calibrate-list').addEventListener('click', (e) => {
+  if (!e.target.classList.contains('remove-btn')) return;
+  calibrationItems = calibrationItems.filter((it) => it.id !== e.target.dataset.id);
+  renderCalibrateList();
+});
+
+$('#open-calibrate-btn').addEventListener('click', () => {
+  $('#calibrate-result').classList.add('hidden');
+  $('#calibrate-progress').classList.add('hidden');
+  renderCalibrateList();
+  showScreen('calibrate');
+});
+
+$('#calibrate-back-btn').addEventListener('click', () => showScreen('home'));
+
+$('#calibrate-reset-btn').addEventListener('click', () => {
+  resetActiveThresholds();
+  alert('既定の判定基準に戻しました。');
+});
+
+$('#calibrate-run-btn').addEventListener('click', () => {
+  const graded = calibrationItems.filter((it) => it.grade);
+  if (graded.length < 4) return;
+
+  $('#calibrate-run-btn').disabled = true;
+  $('#calibrate-result').classList.add('hidden');
+  $('#calibrate-progress').classList.remove('hidden');
+  $('#calibrate-progress-text').textContent = '計算中…';
+
+  const requestId = calibrateRequestId++;
+  const { aThr, hThr } = getActiveThresholds();
+
+  const onMessage = (e) => {
+    const msg = e.data;
+    if (msg.requestId !== requestId) return;
+    if (msg.type === 'progress') {
+      $('#calibrate-progress-text').textContent = `計算中… (${msg.done}/${msg.total})`;
+      return;
+    }
+    calibrateWorker.removeEventListener('message', onMessage);
+    $('#calibrate-progress').classList.add('hidden');
+    $('#calibrate-run-btn').disabled = false;
+    if (msg.type === 'error') {
+      alert('較正に失敗しました: ' + msg.error);
+      return;
+    }
+    renderCalibrateResult(msg);
+  };
+  calibrateWorker.addEventListener('message', onMessage);
+
+  calibrateWorker.postMessage({
+    requestId,
+    items: graded.map((it) => ({ imageData: it.imageData, humanGrade: it.grade })),
+    currentAThr: aThr,
+    currentHThr: hThr,
+  });
+});
+
+function renderCalibrateResult(msg) {
+  const { best, currentScore, noFruitCount, nPhotos } = msg;
+  const { aThr: curA, hThr: curH } = getActiveThresholds();
+  const improved = best.score > currentScore + 1e-9;
+  const el = $('#calibrate-result');
+  el.classList.remove('hidden');
+  el.innerHTML = `
+    <p>${nPhotos}枚のサンプル（うち果実未検出 ${noFruitCount}枚）で較正しました。</p>
+    <p>現在の設定 (a=${curA}, h=${curH}) のスコア: ${currentScore.toFixed(3)}</p>
+    <p>見つかった最良の設定: <strong>a=${best.aThr}, h=${best.hThr}</strong>（スコア ${best.score.toFixed(3)}）</p>
+    <p class="${improved ? 'improved' : 'not-improved'}">
+      ${improved ? '✓ 現在の設定より改善しています。' : '△ 現在の設定と同等かそれ以下でした。サンプルを増やすと変わる可能性があります。'}
+    </p>
+    <button type="button" id="calibrate-apply-btn" class="btn btn-primary">この設定を適用する</button>
+  `;
+  $('#calibrate-apply-btn').addEventListener('click', () => {
+    setActiveThresholds(best.aThr, best.hThr);
+    alert(`設定を適用しました（a=${best.aThr}, h=${best.hThr}）。`);
+  });
+}
+
 // service worker (offline / installable)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -232,4 +396,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+renderThresholdStatus();
 showScreen('home');

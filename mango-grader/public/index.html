@@ -49,7 +49,38 @@
         <input id="send-logs-toggle" type="checkbox" />
         判定結果をモデル改善のために送信する（画像は送信されません。数値と等級のみ）
       </label>
+      <p class="threshold-status">現在の判定基準: <span id="threshold-status-text">-</span></p>
+      <button id="open-calibrate-btn" class="btn btn-link">⚙ 較正モード（スタッフ向け）</button>
     </div>
+  </section>
+
+  <section id="screen-calibrate" class="screen hidden">
+    <h2>撮影環境向けの較正</h2>
+    <p class="lead">
+      このモデルは撮影環境（カメラ・照明・背景）が変わると精度が落ちます。
+      実際の撮影環境で正解の等級が分かっているサンプル写真を集めると、
+      その環境向けに判定の色しきい値を選び直せます（各等級20枚程度が目安）。
+    </p>
+
+    <div id="calibrate-list" class="calibrate-list"></div>
+
+    <label class="btn btn-secondary">
+      ＋ サンプル写真を追加
+      <input id="calibrate-input" type="file" accept="image/*" multiple hidden />
+    </label>
+
+    <div id="calibrate-progress" class="calibrate-progress hidden">
+      <div class="spinner"></div>
+      <p id="calibrate-progress-text">計算中…</p>
+    </div>
+
+    <div id="calibrate-result" class="calibrate-result hidden"></div>
+
+    <div class="action-row">
+      <button id="calibrate-back-btn" class="btn btn-secondary">戻る</button>
+      <button id="calibrate-run-btn" class="btn btn-primary" disabled>較正を実行</button>
+    </div>
+    <button id="calibrate-reset-btn" class="btn btn-link">既定の設定に戻す</button>
   </section>
 
   <section id="screen-loading" class="screen hidden">

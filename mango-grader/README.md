@@ -23,8 +23,10 @@ mango-grader/
 │       ├── imaging.js       # HSV/Lab変換・二値の膨張収縮・連結成分（cv2互換の自前実装）
 │       ├── features.js      # mango_grader.py の extract_features() の移植
 │       ├── model.js         # joblibの中身（Imputer/Scaler/LogisticRegression係数）を直書き
-│       ├── worker.js         # 上記をWeb Workerで実行（UIスレッドを塞がない）
-│       └── app.js            # 画面制御・カメラ入力・API呼び出し
+│       ├── calibrate.js      # mango_grader.py の calibrate_thresholds() の移植
+│       ├── worker.js         # 通常の判定をWeb Workerで実行（UIスレッドを塞がない）
+│       ├── calibrate-worker.js # 較正の総当たり計算をWeb Workerで実行
+│       └── app.js            # 画面制御・カメラ入力・較正モードUI・API呼び出し
 ├── functions/api/
 │   ├── log.js                # POST 判定ログの保存（画像は送らない。数値のみ）
 │   ├── correction.js         # POST 人による訂正の保存
@@ -53,6 +55,26 @@ mango-grader/
 - 確信度が低い判定は自動的に「要確認」と表示されます（`confidence_threshold=0.55`）。
 
 アプリのUI冒頭にもこれらの注意を警告バナーとして表示しています。
+
+## アプリ内較正モード
+
+上記のとおりA判定が出にくい傾向が確認されたため、`calibrate_thresholds()`
+（撮影環境向けに色のしきい値 `a_thr`/`h_thr` を選び直す機能）を**アプリ内でも
+実行できるように移植しました**。設定 → 「⚙ 較正モード（スタッフ向け）」から：
+
+1. 実際の撮影環境で撮った、正解の等級が分かっているサンプル写真を追加する
+   （各写真ごとにA/B/Cを選択。目安は各等級20枚程度、最低4枚から実行可）
+2. 「較正を実行」→ ブラウザ内でグリッドサーチ（`a_thr`は12〜44、`h_thr`は20〜58を
+   2刻み、元のPython版と同じ範囲・同じJA単純ルールでスコアリング）を行い、
+   現在の設定との比較（macro-F1スコア）を表示する
+3. 「この設定を適用する」で、以降の判定にその `a_thr`/`h_thr` が使われる
+   （端末のlocalStorageに保存。「既定の設定に戻す」でいつでも元に戻せる）
+
+**注意**: これは色のしきい値だけを選び直す機能で、ロジスティック回帰自体の
+再学習ではありません（そちらは元の設計どおり `retrain.py` をオフラインで実行）。
+また `calibrate_thresholds()` はグリッドの全組み合わせ×全サンプルで連結成分の
+計算をやり直すため、サンプル枚数が多いとブラウザ内での計算に時間がかかります
+（進捗バーを表示します）。
 
 ## JS移植の正確性について
 
@@ -130,9 +152,10 @@ npx wrangler pages dev public --d1=DB
 ## 既知の制約・今後やること
 
 - **本番投入前に撮影環境向けの再較正を推奨**（[`VALIDATION.md`](./VALIDATION.md) 参照）。
-  検証に使った実写真ではA判定が1件も出ませんでした。
+  検証に使った実写真ではA判定が1件も出ませんでした。「較正モード」でアプリ内から
+  再較正できます（上記「アプリ内較正モード」参照）。
 - `blob_largest_frac`/`blob_n` はOpenCVのLab変換の内部近似との量子化誤差により、
   JS版とPython版で稀にずれることがあります（[`VALIDATION.md`](./VALIDATION.md)）。
 - `/api/log` `/api/correction` はオフライン時は静かに失敗します（再送キューは未実装）。
-- 撮影環境向けの閾値再較正（`calibrate_thresholds`）はまだPython版のみで、アプリ内
-  UIからは行えません。
+- アプリ内較正モードは色のしきい値（`a_thr`/`h_thr`）だけを選び直します。
+  ロジスティック回帰自体の再学習は引き続き `retrain.py` をオフラインで実行してください。

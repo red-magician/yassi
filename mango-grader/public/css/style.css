@@ -85,6 +85,7 @@ main { flex: 1; padding: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
 }
 .btn-primary { background: var(--mango-red); color: white; }
 .btn-secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .settings-box { margin-top: 24px; }
 .switch-row {
@@ -191,3 +192,80 @@ h2 { font-size: 1.1rem; }
   color: #9a8c78;
   padding: 14px;
 }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--mango-red);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.threshold-status {
+  font-size: 0.8rem;
+  color: #5a5044;
+  margin: 14px 0 4px;
+}
+
+.calibrate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.calibrate-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+}
+.calibrate-item img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.calibrate-item select {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+.calibrate-item .remove-btn {
+  background: none;
+  border: none;
+  color: #a11;
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.calibrate-empty {
+  color: #9a8c78;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.calibrate-progress { text-align: center; margin: 16px 0; }
+.calibrate-progress .spinner { margin: 0 auto 10px; width: 32px; height: 32px; }
+
+.calibrate-result {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.calibrate-result .improved { color: #0a7a2f; font-weight: 700; }
+.calibrate-result .not-improved { color: #a11; font-weight: 700; }

@@ -1,4 +1,10 @@
-// features.js — direct port of mango_grader.py's _fruit_mask() + extract_features()
+// features.js — direct port of mango_grader.py's _fruit_mask() + extract_features().
+//
+// Split into two stages so calibrate.js can re-run the cheap, threshold-
+// dependent part (vividFeaturesFromCore) many times over a grid of
+// (a_thr, h_thr) without repeating the expensive, threshold-independent
+// part (extractCore: fruit-mask detection, morphology, Lab conversion) for
+// every grid point.
 import { computeInitialMask, computeLabAB, erode, dilate, connectedComponents } from './imaging.js';
 
 export const MAXPX = 1200;
@@ -37,13 +43,14 @@ function fruitMask(imageData, w, h) {
 
 /**
  * imageData: ImageData-like {data:Uint8ClampedArray(RGBA), width, height}
- * already downscaled so max(width,height) <= MAXPX (caller's job, matching
- * the PIL resize the Python version does before extract_features()).
+ * already downscaled so max(width,height) <= MAXPX.
  *
- * Returns {vr_whole, blob_largest_frac, blob_n, n_px} or null if no fruit
- * region could be found (mirrors extract_features() returning None).
+ * Returns the threshold-independent groundwork (fruit mask -> core region
+ * + Lab a/b for every pixel), or null if no fruit region could be found
+ * (mirrors extract_features() returning None before it even looks at
+ * a_thr/h_thr).
  */
-export function extractFeatures(imageData, aThr = A_THR_DEFAULT, hThr = H_THR_DEFAULT) {
+export function extractCore(imageData) {
   const w = imageData.width, h = imageData.height;
   const mask = fruitMask(imageData, w, h);
   if (mask === null) return null;
@@ -56,6 +63,16 @@ export function extractFeatures(imageData, aThr = A_THR_DEFAULT, hThr = H_THR_DE
   const nCore = sum(core);
 
   const { aArr, bArr } = computeLabAB(imageData);
+  return { core, nCore, aArr, bArr, w, h };
+}
+
+/**
+ * The cheap, threshold-dependent half of extract_features(): given the
+ * core region + Lab arrays from extractCore(), classify vivid-red pixels
+ * for a specific (aThr, hThr) and derive the 3 model features.
+ */
+export function vividFeaturesFromCore(coreData, aThr = A_THR_DEFAULT, hThr = H_THR_DEFAULT) {
+  const { core, nCore, aArr, bArr, w, h } = coreData;
   const vivid = new Uint8Array(w * h);
   let vividCount = 0;
   const RAD2DEG = 180 / Math.PI;
@@ -81,4 +98,14 @@ export function extractFeatures(imageData, aThr = A_THR_DEFAULT, hThr = H_THR_DE
   }
 
   return { vr_whole: vrWhole, blob_largest_frac: blobLargestFrac, blob_n: blobN, n_px: nCore };
+}
+
+/**
+ * Returns {vr_whole, blob_largest_frac, blob_n, n_px} or null if no fruit
+ * region could be found (mirrors extract_features() returning None).
+ */
+export function extractFeatures(imageData, aThr = A_THR_DEFAULT, hThr = H_THR_DEFAULT) {
+  const coreData = extractCore(imageData);
+  if (coreData === null) return null;
+  return vividFeaturesFromCore(coreData, aThr, hThr);
 }

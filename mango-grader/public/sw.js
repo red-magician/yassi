@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mango-grader-v1';
+const CACHE_NAME = 'mango-grader-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,8 +6,10 @@ const APP_SHELL = [
   './css/style.css',
   './js/app.js',
   './js/worker.js',
+  './js/calibrate-worker.js',
   './js/features.js',
   './js/model.js',
+  './js/calibrate.js',
   './js/imaging.js',
   './icons/icon.svg',
   './icons/icon-192.png',
