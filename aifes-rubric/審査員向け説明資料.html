@@ -1,0 +1,553 @@
+<title>AIFES 2026 グランドフィナーレ AI予備審査ルーブリック</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
+  --line:#D7DEE9; --line2:#E9EEF5;
+  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F3EBD7;
+  --ok:#2C6B4F; --warn:#9A5B12; --bad:#8E3838;
+  --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px -12px rgba(20,31,51,.18);
+  --disp:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP","Songti SC",serif;
+  --body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Meiryo",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0D1421; --card:#151F31; --ink:#E7ECF4; --ink2:#B7C3D6; --mute:#8595AE;
+  --line:#28344A; --line2:#1E2A3D;
+  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2C2515;
+  --ok:#6FBF95; --warn:#D9A05B; --bad:#D98080;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --paper:#0D1421; --card:#151F31; --ink:#E7ECF4; --ink2:#B7C3D6; --mute:#8595AE;
+  --line:#28344A; --line2:#1E2A3D;
+  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2C2515;
+  --ok:#6FBF95; --warn:#D9A05B; --bad:#D98080;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px -14px rgba(0,0,0,.7);
+}
+:root[data-theme="light"]{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
+  --line:#D7DEE9; --line2:#E9EEF5;
+  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F3EBD7;
+  --ok:#2C6B4F; --warn:#9A5B12; --bad:#8E3838;
+  --shadow:0 1px 2px rgba(20,31,51,.06),0 8px 24px -12px rgba(20,31,51,.18);
+}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+  font-size:15px;line-height:1.85;-webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 96px}
+section{margin-top:72px}
+h2{font-family:var(--disp);font-size:26px;line-height:1.4;margin:0 0 6px;
+  letter-spacing:.02em;text-wrap:balance;font-weight:600}
+.sec-h{display:flex;align-items:baseline;gap:14px;padding-bottom:12px;
+  border-bottom:2px solid var(--navy);margin-bottom:28px;flex-wrap:wrap}
+.sec-n{font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.16em;
+  font-weight:700;flex:none}
+.sec-s{color:var(--mute);font-size:13px;margin:0;flex:1 1 260px;line-height:1.7}
+.lede{font-size:16px;color:var(--ink2);max-width:66ch;line-height:2}
+
+/* hero */
+header.hero{background:var(--navy);color:#fff;padding:0;margin-bottom:0;
+  border-bottom:4px solid var(--gold)}
+:root[data-theme="dark"] header.hero,
+:root:not([data-theme="light"]) header.hero{background:linear-gradient(180deg,#16243E,#101A2C)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) header.hero{background:#1F3864}}
+:root[data-theme="light"] header.hero{background:#1F3864}
+.hero-in{max-width:980px;margin:0 auto;padding:52px 24px 44px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  color:#D9BE79;margin:0 0 18px;font-weight:700}
+.hero h1{font-family:var(--disp);font-size:clamp(28px,4.6vw,42px);line-height:1.35;
+  margin:0 0 18px;font-weight:600;letter-spacing:.01em;text-wrap:balance;color:#fff}
+.hero p{margin:0;max-width:62ch;color:#C4D2E8;font-size:15px;line-height:2}
+.flow{display:flex;align-items:center;gap:14px;margin-top:32px;flex-wrap:wrap}
+.flow .b{border:1px solid rgba(255,255,255,.28);border-radius:2px;padding:10px 16px;
+  text-align:center;min-width:112px}
+.flow .b b{display:block;font-family:var(--mono);font-size:22px;color:#E8C87C;line-height:1.3}
+.flow .b span{font-size:11px;color:#AFC1DC;letter-spacing:.06em}
+.flow .ar{color:#7C93B8;font-size:18px}
+.flow .b.hi{border-color:var(--gold);background:rgba(216,178,90,.1)}
+
+/* 観点カード */
+.crit{background:var(--card);border:1px solid var(--line);border-radius:3px;
+  margin-bottom:20px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:20px}
+.crit-h{display:flex;align-items:flex-start;gap:16px;padding:20px 24px 12px}
+.crit-id{font-family:var(--mono);font-weight:700;font-size:13px;color:#fff;
+  background:var(--navy);padding:4px 9px;border-radius:2px;flex:none;margin-top:4px;
+  letter-spacing:.04em}
+:root[data-theme="dark"] .crit-id{color:#0D1421}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .crit-id{color:#0D1421}}
+.crit-t{flex:1 1 auto;min-width:0}
+.crit-t h3{font-family:var(--disp);font-size:20px;margin:0;font-weight:600;line-height:1.45}
+.q{margin:4px 0 0;color:var(--gold);font-size:13.5px;line-height:1.7}
+.crit-w{flex:none;text-align:right;line-height:1}
+.wn{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--navy);
+  font-variant-numeric:tabular-nums}
+.wu{font-size:12px;color:var(--mute);margin-left:2px}
+.wbar{height:3px;background:var(--line2);margin:0 24px}
+.wbar i{display:block;height:3px;background:var(--gold)}
+.crit-def{margin:14px 24px 0;color:var(--ink2);font-size:13.5px;line-height:1.9}
+.crit-body{display:grid;grid-template-columns:1.35fr 1fr;gap:0;margin-top:18px;
+  border-top:1px solid var(--line2)}
+.crit-body>div{padding:18px 24px 22px}
+.src-wrap{border-left:1px solid var(--line2);background:var(--line2)}
+h4{font-size:11px;letter-spacing:.14em;color:var(--mute);margin:0 0 12px;
+  font-weight:700;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.cnt{font-family:var(--mono);color:var(--gold);letter-spacing:.04em}
+ol.lv{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ol.lv li{display:flex;gap:11px;align-items:flex-start}
+.lvn{font-family:var(--mono);font-weight:700;font-size:11px;flex:none;width:22px;height:22px;
+  display:grid;place-items:center;border-radius:50%;margin-top:3px;
+  background:var(--line2);color:var(--ink2);border:1px solid var(--line)}
+ol.lv li:first-child .lvn{background:var(--gold);color:#fff;border-color:var(--gold)}
+:root[data-theme="dark"] ol.lv li:first-child .lvn{color:#0D1421}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) ol.lv li:first-child .lvn{color:#0D1421}}
+.lvt{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+ol.lv li:first-child .lvt{color:var(--ink)}
+ul.src{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ul.src li{display:grid;grid-template-columns:16px 1fr;column-gap:8px;row-gap:1px;
+  font-size:12px;line-height:1.65}
+.mk{font-size:12px;line-height:1.6;font-weight:700}
+.m-d .mk{color:var(--gold)}
+.m-o .mk{color:var(--mute)}
+.jn{font-weight:700;color:var(--ink)}
+.jq{grid-column:2;color:var(--mute);font-size:11.5px;line-height:1.6}
+.m-o .jn{font-weight:400;color:var(--ink2)}
+
+/* 対応表 */
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:3px;background:var(--card);
+  box-shadow:var(--shadow)}
+table.mx{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+table.mx th,table.mx td{border-bottom:1px solid var(--line2);padding:0}
+table.mx thead th{background:var(--navy);padding:10px 6px;vertical-align:bottom;
+  border-bottom:none;text-align:center}
+table.mx thead th:first-child{text-align:left;padding-left:16px}
+table.mx thead th a{text-decoration:none;display:block}
+.mid{display:block;font-family:var(--mono);font-size:10px;color:#D9BE79;letter-spacing:.1em}
+.msh{display:block;font-size:12px;color:#fff;font-weight:700;line-height:1.4;margin:2px 0}
+.mwt{display:block;font-family:var(--mono);font-size:10px;color:#9DB3D4}
+table.mx tbody th{text-align:left;padding:0}
+table.mx tbody th a{display:block;padding:9px 16px;text-decoration:none;color:inherit}
+table.mx tbody th a:hover{background:var(--line2)}
+table.mx tbody th b{display:block;font-size:13px;font-weight:700;color:var(--ink)}
+table.mx tbody th i{display:block;font-style:normal;font-size:10.5px;color:var(--mute);
+  line-height:1.5}
+table.mx td{text-align:center;font-size:15px;font-weight:700}
+table.mx td.d{color:var(--gold);background:var(--gold-s)}
+table.mx td.o{color:var(--mute)}
+table.mx tbody tr:hover td{background:var(--line2)}
+table.mx tbody tr:hover td.d{background:var(--gold-s)}
+table.mx tfoot td,table.mx tfoot th{background:var(--line2);font-family:var(--mono);
+  font-weight:700;padding:9px 6px;text-align:center;color:var(--navy);font-size:14px}
+table.mx tfoot th{text-align:right;padding-right:14px;font-family:var(--body);
+  font-size:11px;color:var(--mute);letter-spacing:.08em}
+.legend{display:flex;gap:22px;margin-top:14px;font-size:12px;color:var(--mute);flex-wrap:wrap}
+.legend b{color:var(--gold);font-size:14px;margin-right:4px}
+.legend .om{color:var(--ink2);font-size:14px;margin-right:4px;font-weight:700}
+
+/* 審査員カード */
+.jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.jc{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:18px 20px 16px;
+  box-shadow:var(--shadow);scroll-margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.jc-h h3{font-family:var(--disp);font-size:17px;margin:0;font-weight:600}
+.jc-h p{margin:1px 0 0;font-size:11px;color:var(--mute);line-height:1.5}
+.jc blockquote{margin:0;padding:0 0 0 14px;border-left:2px solid var(--gold);
+  font-size:12.5px;line-height:1.85;color:var(--ink2);flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;text-decoration:none;
+  padding:3px 9px;border-radius:2px;border:1px solid var(--line);color:var(--ink2);
+  font-family:var(--mono);letter-spacing:.02em}
+.chip .mk{font-size:11px}
+.c-d{border-color:var(--gold);background:var(--gold-s);color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+
+/* 導出テーブル */
+table.dv,table.bd{border-collapse:collapse;width:100%;background:var(--card);
+  border:1px solid var(--line);font-size:13px;box-shadow:var(--shadow)}
+table.dv th,table.dv td,table.bd th,table.bd td{border-bottom:1px solid var(--line2);
+  padding:9px 14px;text-align:left}
+table.dv thead th,table.bd thead th{background:var(--line2);font-size:11px;
+  letter-spacing:.08em;color:var(--mute);font-weight:700}
+table.dv tbody th{font-weight:700}
+.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+table.dv thead th.num,table.dv tfoot td.num{text-align:right}
+.strong{color:var(--gold);font-weight:700;font-size:15px}
+table.dv tfoot td,table.dv tfoot th{background:var(--line2);font-weight:700}
+.formula{font-family:var(--mono);font-size:12.5px;background:var(--card);
+  border:1px solid var(--line);border-left:3px solid var(--gold);padding:12px 16px;
+  margin:0 0 18px;color:var(--ink2);overflow-x:auto;line-height:1.9}
+
+/* フラグ */
+.flag{display:grid;grid-template-columns:56px 1fr;background:var(--card);
+  border:1px solid var(--line);border-radius:3px;margin-bottom:12px;box-shadow:var(--shadow)}
+.fid{background:var(--navy);color:#fff;font-family:var(--mono);font-weight:700;
+  display:grid;place-items:center;font-size:14px}
+:root[data-theme="dark"] .fid{color:#0D1421}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fid{color:#0D1421}}
+.fbody{padding:14px 18px}
+.fbody h3{margin:0 0 8px;font-size:15px;font-family:var(--disp);font-weight:600}
+.fbody p{margin:0 0 6px;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.fbody p b{display:inline-block;min-width:74px;font-size:10.5px;letter-spacing:.08em;
+  color:var(--mute)}
+.fc{color:var(--warn)!important;font-weight:700}
+.fb{color:var(--mute)!important;font-size:11.5px!important;border-top:1px dashed var(--line);
+  padding-top:8px;margin-top:10px!important}
+
+/* 判定 */
+.bl{font-family:var(--mono);font-weight:700;font-size:17px;width:56px;text-align:center}
+.b-S{color:var(--gold)} .b-A{color:var(--ok)} .b-B{color:var(--warn)} .b-C{color:var(--mute)}
+ol.tb{margin:16px 0 0;padding-left:20px;font-size:13px;color:var(--ink2);line-height:2}
+ol.tb li::marker{color:var(--gold);font-family:var(--mono);font-weight:700}
+
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--navy);
+  padding:16px 20px;font-size:13px;color:var(--ink2);line-height:1.9;margin-top:24px}
+.note b{color:var(--ink)}
+footer{margin-top:80px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--mute);line-height:1.9}
+a{color:var(--navy2)}
+a:focus-visible,.chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media (max-width:760px){
+  .crit-body{grid-template-columns:1fr}
+  .src-wrap{border-left:none;border-top:1px solid var(--line2)}
+  .crit-h{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<header class="hero">
+  <div class="hero-in">
+    <p class="eyebrow">AIFES 2026 ／ GRAND FINALE ／ 予備審査</p>
+    <h1>審査員12名の言葉を、<br>6つの観点にまとめました。</h1>
+    <p>グランドフィナーレの予備審査を、審査員のみなさまに12回ご負担いただくことなくAIで一次実施するための共通ルーブリックです。
+       12名それぞれのコメントを6観点に集約しているため、1回の採点で全員の観点が反映されます。
+       本資料は、<b style="color:#E8C87C">ご自身のコメントがどの観点のどこに入っているか</b>をご確認いただくためのものです。</p>
+    <div class="flow">
+      <div class="b"><b>12</b><span>審査員コメント</span></div>
+      <span class="ar">→</span>
+      <div class="b hi"><b>6</b><span>評価観点</span></div>
+      <span class="ar">→</span>
+      <div class="b"><b>100</b><span>点満点</span></div>
+      <span class="ar">→</span>
+      <div class="b"><b>S / A / B / C</b><span>予備審査判定</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <div class="sec-h"><span class="sec-n">01</span><h2>この資料の読み方</h2><p class="sec-s">1分で全体像、5分でご自身のコメントの反映先まで確認できます。</p></div>
+  <p class="lede">
+    集約の元にしたのは、審査員コメント一覧の<b>「グランドフィナーレコメント」</b>です。これを主（◎）として観点の骨格をつくり、
+    各ステージ向けの「審査コメント」を従（○）として補助的に織り込んでいます。
+    配点は担当者が決め打ちしたものではなく、<b>各観点に何名の審査員が言及したかを数えて機械的に算出</b>しています。
+    どの発言がどの観点の何点分になっているかは、すべて追える形で本資料に記載しています。
+  </p>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">02</span><h2>6つの評価観点と配点</h2><p class="sec-s">レベル5が満点相当。加重得点 ＝ レベル ÷ 5 × 配点。</p></div>
+  
+<article class="crit" id="C1">
+  <header class="crit-h">
+    <div class="crit-id">C1</div>
+    <div class="crit-t">
+      <h3>業務そのものの再設計と「やめる」判断</h3>
+      <p class="q">AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</p>
+    </div>
+    <div class="crit-w"><span class="wn">18</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:81.8%"></i></div>
+  <p class="crit-def">AIを既存業務に付加したのではなく、業務の必要性を問い直し、廃止・統合・作り直しの判断まで踏み込めているか。「AIありき」ではなく「業務の全体像を見たうえで必要な箇所にAIを置く」という思考の順序になっているかを見る。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">「これはもうやらなくていい」と廃止・縮小した業務を具体名で挙げられ、AFTERの業務フロー全体が再設計されている。AIは再設計の結果として配置されており、順序が明確に「業務 → AI」になっている。</span></li><li><span class="lvn">4</span><span class="lvt">業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。ただし業務フロー全体の再設計までは至っていない。</span></li><li><span class="lvn">3</span><span class="lvt">既存業務の必要性を問い直した形跡はあるが、実行は既存フローへのAI組み込みにとどまっている。</span></li><li><span class="lvn">2</span><span class="lvt">既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。</span></li><li><span class="lvn">1</span><span class="lvt">ツール導入やPoCの報告にとどまり、業務そのものは何も変わっていない。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎2 ／ ○4</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">前田 憲仁</span><span class="jq">既存業務を見直し、やめる判断ができているか。業務プロセス自体を見直せているか</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">中村 智之</span><span class="jq">業務の必要性を問い直す視点</span></li><li class="m-o"><span class="mk">○</span><span class="jn">伊藤 英啓</span><span class="jq">AIありきでなく、業務の全体像を見たうえで必要な箇所に組み込む思考の順序</span></li><li class="m-o"><span class="mk">○</span><span class="jn">安田 博一</span><span class="jq">0から100までの一連の流れを俯瞰し、個別最適ではなく全体最適で組み立てる</span></li><li class="m-o"><span class="mk">○</span><span class="jn">小杉 智</span><span class="jq">フルスタックの姿勢で全体を見渡せているか。「使う側」に立てているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">松尾 邦孝</span><span class="jq">業務の延長でAIを使うのではなく、AIがいる前提で業務そのものを組み立て直す</span></li></ul>
+    </div>
+  </div>
+</article>
+<article class="crit" id="C2">
+  <header class="crit-h">
+    <div class="crit-id">C2</div>
+    <div class="crit-t">
+      <h3>組織への浸透と参加の広がり</h3>
+      <p class="q">部門の何割が、当たり前のこととして使っているか。主役は誰か。</p>
+    </div>
+    <div class="crit-w"><span class="wn">20</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:90.9%"></i></div>
+  <p class="crit-def">優れたアイデア単体ではなく、部門全体の参加率と広がりを見る。「AIを使うのが当たり前だよね」と部員全員が自然に思える文化になっているか。実際に手を動かしている人、とりわけ若手や普段前に出る機会が少ないメンバーが主役を担えているか。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">部門のほぼ全員が日常的に使い、「AIを使うのが当たり前」と語られる状態。参加率が数値で示されている。若手や普段前に出ないメンバーが主役として登場し、これまで評価されにくかった立場の人が新たな価値を発揮している。</span></li><li><span class="lvn">4</span><span class="lvt">部門の過半が継続的に使用している。複数のチームに広がり、推進役も複数名いる。参加者の顔ぶれに広がりがある。</span></li><li><span class="lvn">3</span><span class="lvt">一部チームには広がっているが、使う人と使わない人の差が大きい。主役は依然として一部のメンバーに偏っている。</span></li><li><span class="lvn">2</span><span class="lvt">推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。</span></li><li><span class="lvn">1</span><span class="lvt">特定個人1名の取り組み。部門への広がりが確認できない。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎4 ／ ○1</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">伊藤 裕一</span><span class="jq">優れたアイデアよりも部門全体の参加率と広がり。チーム全員を巻き込む</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">中山 高史</span><span class="jq">「AIを使うのが当たり前だよね」と部員全員が自然に思える組織・文化の醸成</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">松尾 邦孝</span><span class="jq">部門全員が当たり前のようにAIを使っている状態を実現できているか</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">上坂 貴志</span><span class="jq">実際に手を動かしている人、特に若手や普段前に出る機会が少ないメンバーが主役</span></li><li class="m-o"><span class="mk">○</span><span class="jn">櫻田 浩</span><span class="jq">これまで評価されにくかった立場や役割のメンバーが新たな価値を発揮している</span></li></ul>
+    </div>
+  </div>
+</article>
+<article class="crit" id="C3">
+  <header class="crit-h">
+    <div class="crit-id">C3</div>
+    <div class="crit-t">
+      <h3>仕組み化と会社のプロセス資産化</h3>
+      <p class="q">担当者が抜けても回るか。他部門が実際に再利用しているか。</p>
+    </div>
+    <div class="crit-w"><span class="wn">11</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:50.0%"></i></div>
+  <p class="crit-def">個人の熱意に依存しているのか、組織として自律的に回っているのか。仕組み化のプロセスが明確に示されているか。つくったものが「会社のプロセス資産」として再利用されるサイクルになっているか、誰でも実行できる再現性があるかを見る。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">属人性を排した仕組み（手順・テンプレート・エージェント・基盤）として整備され、担当者が変わっても回る。成果物が全社のプロセス資産として登録・再利用され、他部門が実際に使った実績がある。</span></li><li><span class="lvn">4</span><span class="lvt">仕組み化され部門内で自律的に回っている。再利用可能な形で共有されているが、他部門での利用実績はまだない。</span></li><li><span class="lvn">3</span><span class="lvt">手順やナレッジは残っているが、運用は推進者の関与に依存している。再現性は限定的。</span></li><li><span class="lvn">2</span><span class="lvt">個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。</span></li><li><span class="lvn">1</span><span class="lvt">単発の取り組みで、再現の手立てがない。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎2 ／ ○1</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">松尾 邦孝</span><span class="jq">個人の熱意依存か、組織として自律的に回っているか。仕組み化のプロセスを明確に示す</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">小杉 智</span><span class="jq">部門でつくったものが「会社のプロセス資産」になり、再利用されるサイクルが形成されているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">中村 智之</span><span class="jq">誰でも実行できる再現性</span></li></ul>
+    </div>
+  </div>
+</article>
+<article class="crit" id="C4">
+  <header class="crit-h">
+    <div class="crit-id">C4</div>
+    <div class="crit-t">
+      <h3>波及範囲と経営視座</h3>
+      <p class="q">自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</p>
+    </div>
+    <div class="crit-w"><span class="wn">22</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:100.0%"></i></div>
+  <p class="crit-def">単なる部門最適ではなく、会社全体を「面」で引き上げる観点と具体的な取り組みがあるか。人の感覚に依存していた部門間連携をAIとデータで「当たり前」に成立させているか。データ基盤など経営視点での課題提起があるか。さらに、ITリテラシーや体制が十分でない顧客を一歩先のステージへ引き上げる伴走まで射程に入っているかを見る。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">全社を「面」で引き上げる取り組みになっており、社外・顧客（とりわけ情シス体制やITリテラシーが十分でない顧客）を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。</span></li><li><span class="lvn">4</span><span class="lvt">部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。</span></li><li><span class="lvn">3</span><span class="lvt">他部門への共有・展開の動きはあるが、まだ点の連携にとどまる。経営視点の提起は弱い。</span></li><li><span class="lvn">2</span><span class="lvt">自部門内での最適化にとどまる。外への波及が語られていない。</span></li><li><span class="lvn">1</span><span class="lvt">個別業務の最適化にとどまり、部門外への視点がない。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎4 ／ ○2</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">安田 博一</span><span class="jq">単なる部門最適ではなく、会社全体を「面」で引き上げる観点と具体的な取り組み</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">中村 智之</span><span class="jq">自部門に閉じず、他部門・全社への貢献と、データ基盤など経営視点での課題提起</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">勝田 耕平</span><span class="jq">人の感覚に依存していた部門間連携を、AIとデータで「当たり前」に成立させる</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">櫻田 浩</span><span class="jq">体制やITリテラシーが十分でないお客さまを一歩先のステージへ引き上げ、伴走できるリーダー</span></li><li class="m-o"><span class="mk">○</span><span class="jn">中村 智之</span><span class="jq">社外・グローバルにも展開できる普遍性</span></li><li class="m-o"><span class="mk">○</span><span class="jn">牧田 幸弘</span><span class="jq">成果の大きさだけでなく、その効果の広がり</span></li></ul>
+    </div>
+  </div>
+</article>
+<article class="crit" id="C5">
+  <header class="crit-h">
+    <div class="crit-id">C5</div>
+    <div class="crit-t">
+      <h3>創出した価値と、その再投資先</h3>
+      <p class="q">浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</p>
+    </div>
+    <div class="crit-w"><span class="wn">9</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:40.9%"></i></div>
+  <p class="crit-def">AIで創出した時間・リソースを何に使ったのかが前面に出ているか。効率化して終わりではなく、考える仕事、現場の把握、人と話す時間といった再投資先が語られているか。二段・三段先のゴールに向かって、いま手元のものを変えている構造で説明できているか。業務や事業がどれだけ変わったかというビジネスインパクトも併せて見る。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">創出した時間・リソースの再投資先が具体的に語られ（考える仕事、現場把握、人と話す時間、次の打ち手）、二段・三段先のゴールに向けていま手元を変えている構造が説明されている。ビジネスインパクトも定量で示されている。</span></li><li><span class="lvn">4</span><span class="lvt">効果が定量で示され、再投資先も述べられている。ただし先のゴールとの接続はやや弱い。</span></li><li><span class="lvn">3</span><span class="lvt">効果は示されているが、浮いた時間の行き先が語られていない。</span></li><li><span class="lvn">2</span><span class="lvt">効果が定性的・体感的な記述にとどまる。</span></li><li><span class="lvn">1</span><span class="lvt">効果の記述がない、または「時短できた」で完結している。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎1 ／ ○2</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">伊藤 英啓</span><span class="jq">AIで創出した時間を何に使ったのか。二段・三段先のゴールに向かって手元を変えている構造</span></li><li class="m-o"><span class="mk">○</span><span class="jn">伊藤 裕一</span><span class="jq">創出された時間を考える仕事へ。現場の把握や、人と話す時間を増やすことに使えているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">中村 智之</span><span class="jq">業務や事業がどれだけ変わったかというビジネスインパクト</span></li></ul>
+    </div>
+  </div>
+</article>
+<article class="crit" id="C6">
+  <header class="crit-h">
+    <div class="crit-id">C6</div>
+    <div class="crit-t">
+      <h3>語りの当事者性と熱量</h3>
+      <p class="q">本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</p>
+    </div>
+    <div class="crit-w"><span class="wn">20</span><span class="wu">点</span></div>
+  </header>
+  <div class="wbar"><i style="width:90.9%"></i></div>
+  <p class="crit-def">取り組みを自分の言葉で語れる人が前に立っているか。成果の大小にかかわらず、「これは良かった」と自ら共有したくなる熱量があるか。自分なりの工夫を言語化し、周囲に伝播させられているか。聞き手が思わず引き込まれる面白さ・驚き・ワクワク感があるか。</p>
+  <div class="crit-body">
+    <div class="lv-wrap">
+      <h4>レベルの目安</h4>
+      <ol class="lv"><li><span class="lvn">5</span><span class="lvt">部門長本人が自分の言葉で語り、工夫や判断の理由を言語化できている。共有したくなる熱量があり、聞き手を引き込む面白さ・驚きがある。手を動かした当事者が前に立っている。</span></li><li><span class="lvn">4</span><span class="lvt">自分の言葉で語れており、熱量が伝わる。言語化も概ねできている。</span></li><li><span class="lvn">3</span><span class="lvt">内容は整理されているが借り物の言葉が混じり、熱量が読み取りにくい。</span></li><li><span class="lvn">2</span><span class="lvt">報告調で、当事者の顔が見えない。</span></li><li><span class="lvn">1</span><span class="lvt">代理や資料の引き写しで、本人の言葉がまったくない。</span></li></ol>
+    </div>
+    <div class="src-wrap">
+      <h4>この観点の出所 <span class="cnt">◎2 ／ ○5</span></h4>
+      <ul class="src"><li class="m-d"><span class="mk">◎</span><span class="jn">上坂 貴志</span><span class="jq">取り組みを自分の言葉で語れる人が前に立っているか</span></li><li class="m-d"><span class="mk">◎</span><span class="jn">牧田 幸弘</span><span class="jq">成果の大きさだけでなく、その熱量。両面を体現できているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">牧田 幸弘</span><span class="jq">自分自身の言葉で価値を語れるか。自ら共有したくなる熱量</span></li><li class="m-o"><span class="mk">○</span><span class="jn">上坂 貴志</span><span class="jq">聞き手が思わず引き込まれる可能性、面白さ、ワクワク感、驚き</span></li><li class="m-o"><span class="mk">○</span><span class="jn">中山 高史</span><span class="jq">自分なりの工夫を言語化できているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">前田 憲仁</span><span class="jq">体験を言語化して、周囲に伝播させているレベルに到達しているか</span></li><li class="m-o"><span class="mk">○</span><span class="jn">勝田 耕平</span><span class="jq">本人が楽しみながら新しいことに踏み出しているか</span></li></ul>
+    </div>
+  </div>
+</article>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">03</span><h2>審査員 × 観点 対応表</h2><p class="sec-s">◎＝グランドフィナーレコメントが直接この観点の根拠。○＝審査コメントを補助的に反映。12名全員が最低1観点に◎で入っています。</p></div>
+  <div class="tscroll">
+    <table class="mx">
+      <thead><tr><th>審査員</th><th><a href="#C1"><span class="mid">C1</span><span class="msh">業務再設計</span><span class="mwt">18点</span></a></th><th><a href="#C2"><span class="mid">C2</span><span class="msh">組織浸透</span><span class="mwt">20点</span></a></th><th><a href="#C3"><span class="mid">C3</span><span class="msh">仕組み化・資産化</span><span class="mwt">11点</span></a></th><th><a href="#C4"><span class="mid">C4</span><span class="msh">波及と視座</span><span class="mwt">22点</span></a></th><th><a href="#C5"><span class="mid">C5</span><span class="msh">価値と再投資</span><span class="mwt">9点</span></a></th><th><a href="#C6"><span class="mid">C6</span><span class="msh">当事者性と熱量</span><span class="mwt">20点</span></a></th></tr></thead>
+      <tbody><tr><th scope="row"><a href="#j1"><b>上坂 貴志</b><i>取締役専務執行役員</i></a></th><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="e"></td><td class="d"><span>◎</span></td></tr><tr><th scope="row"><a href="#j2"><b>中山 高史</b><i>執行役員 / AIexe 代表取締役社長</i></a></th><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="e"></td><td class="o"><span>○</span></td></tr><tr><th scope="row"><a href="#j3"><b>中村 智之</b><i>執行役員</i></a></th><td class="d"><span>◎</span></td><td class="e"></td><td class="o"><span>○</span></td><td class="d"><span>◎</span></td><td class="o"><span>○</span></td><td class="e"></td></tr><tr><th scope="row"><a href="#j4"><b>伊藤 英啓</b><i>執行役員</i></a></th><td class="o"><span>○</span></td><td class="e"></td><td class="e"></td><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td></tr><tr><th scope="row"><a href="#j5"><b>伊藤 裕一</b><i>執行役員</i></a></th><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="o"><span>○</span></td><td class="e"></td></tr><tr><th scope="row"><a href="#j6"><b>前田 憲仁</b><i>執行役員</i></a></th><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="e"></td><td class="e"></td><td class="o"><span>○</span></td></tr><tr><th scope="row"><a href="#j7"><b>勝田 耕平</b><i>取締役常務執行役員</i></a></th><td class="e"></td><td class="e"></td><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="o"><span>○</span></td></tr><tr><th scope="row"><a href="#j8"><b>安田 博一</b><i>常務執行役員</i></a></th><td class="o"><span>○</span></td><td class="e"></td><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td></tr><tr><th scope="row"><a href="#j9"><b>小杉 智</b><i>執行役員 / ネクストスケープ 代表取締役社長</i></a></th><td class="o"><span>○</span></td><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="e"></td></tr><tr><th scope="row"><a href="#j10"><b>松尾 邦孝</b><i>AIトランスフォーメーション事業本部長</i></a></th><td class="o"><span>○</span></td><td class="d"><span>◎</span></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td><td class="e"></td></tr><tr><th scope="row"><a href="#j11"><b>櫻田 浩</b><i>執行役員 / SureBizCloud 代表取締役社長</i></a></th><td class="e"></td><td class="o"><span>○</span></td><td class="e"></td><td class="d"><span>◎</span></td><td class="e"></td><td class="e"></td></tr><tr><th scope="row"><a href="#j12"><b>牧田 幸弘</b><i>代表取締役社長</i></a></th><td class="e"></td><td class="e"></td><td class="e"></td><td class="o"><span>○</span></td><td class="e"></td><td class="d"><span>◎</span></td></tr></tbody>
+      <tfoot><tr><th>配点</th><td class="tw">18</td><td class="tw">20</td><td class="tw">11</td><td class="tw">22</td><td class="tw">9</td><td class="tw">20</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="legend">
+    <span><b>◎</b>グランドフィナーレコメントが直接の根拠（重み 1.0）</span>
+    <span><span class="om">○</span>審査コメントを補助的に反映（重み 0.5）</span>
+    <span>審査員名・観点名はクリックで該当箇所へ移動します</span>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">04</span><h2>あなたのコメントが入った観点</h2><p class="sec-s">グランドフィナーレコメントの原文と、そこから導かれた観点です。</p></div>
+  <div class="jgrid">
+<article class="jc" id="j1">
+  <div class="jc-h"><h3>上坂 貴志</h3><p>取締役専務執行役員</p></div>
+  <blockquote>取り組みを自分の言葉で語れる人が前に立っているかを見てください。実際に手を動かしている人、特に若手や普段前に出る機会が少ないメンバーが主役を担っている状態を高く評価してください。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C2"><span class="mk">◎</span>C2 組織浸透</a><a class="chip c-d" href="#C6"><span class="mk">◎</span>C6 当事者性と熱量</a></div>
+</article>
+<article class="jc" id="j2">
+  <div class="jc-h"><h3>中山 高史</h3><p>執行役員 / AIexe 代表取締役社長</p></div>
+  <blockquote>何をAIで実現したかよりも、部門の中にどのような文化を醸成できたかを最も重視します。「AIを使うのが当たり前だよね」と部員全員が自然に思える組織を築き上げられたかを見せてください。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C2"><span class="mk">◎</span>C2 組織浸透</a><a class="chip c-o" href="#C6"><span class="mk">○</span>C6 当事者性と熱量</a></div>
+</article>
+<article class="jc" id="j3">
+  <div class="jc-h"><h3>中村 智之</h3><p>執行役員</p></div>
+  <blockquote>業務の必要性を問い直す視点と、視座の高さを大切にしたい。自部門に閉じず、他部門・全社への貢献と、データ基盤など経営視点での課題提起ができているかを重視します。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C1"><span class="mk">◎</span>C1 業務再設計</a><a class="chip c-o" href="#C3"><span class="mk">○</span>C3 仕組み化・資産化</a><a class="chip c-d" href="#C4"><span class="mk">◎</span>C4 波及と視座</a><a class="chip c-o" href="#C5"><span class="mk">○</span>C5 価値と再投資</a></div>
+</article>
+<article class="jc" id="j4">
+  <div class="jc-h"><h3>伊藤 英啓</h3><p>執行役員</p></div>
+  <blockquote>AIで創出した時間を何に使ったのかを前面に出してほしいです。二段・三段先のゴールに向かって、いま手元のものを変えている構造で語れる部門長こそ、グランドフィナーレに相応しいリーダーだと考えています。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C1"><span class="mk">○</span>C1 業務再設計</a><a class="chip c-d" href="#C5"><span class="mk">◎</span>C5 価値と再投資</a></div>
+</article>
+<article class="jc" id="j5">
+  <div class="jc-h"><h3>伊藤 裕一</h3><p>執行役員</p></div>
+  <blockquote>優れたアイデアよりも部門全体の参加率と広がりを重視してください。特定の誰かに頼るのではなく、チーム全員を巻き込んで、部門としてAIが根づいている状態を語れる部門長を高く評価してください。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C2"><span class="mk">◎</span>C2 組織浸透</a><a class="chip c-o" href="#C5"><span class="mk">○</span>C5 価値と再投資</a></div>
+</article>
+<article class="jc" id="j6">
+  <div class="jc-h"><h3>前田 憲仁</h3><p>執行役員</p></div>
+  <blockquote>既存業務を見直し、やめる判断ができているかを重視したい。AIを付加的に活用するのではなく、業務プロセス自体を見直せているか。「これはもうやらなくていい」と言い切れたら、それは相当のリーダーシップです。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C1"><span class="mk">◎</span>C1 業務再設計</a><a class="chip c-o" href="#C6"><span class="mk">○</span>C6 当事者性と熱量</a></div>
+</article>
+<article class="jc" id="j7">
+  <div class="jc-h"><h3>勝田 耕平</h3><p>取締役常務執行役員</p></div>
+  <blockquote>AIを使って部門間連携を自然に生み出せていたら理想的です。これまで人の感覚に依存していた部門間連携を、AIとデータで「当たり前」に成立させる取り組みを見せてほしいと考えています。</blockquote>
+  <div class="chips"><a class="chip c-d" href="#C4"><span class="mk">◎</span>C4 波及と視座</a><a class="chip c-o" href="#C6"><span class="mk">○</span>C6 当事者性と熱量</a></div>
+</article>
+<article class="jc" id="j8">
+  <div class="jc-h"><h3>安田 博一</h3><p>常務執行役員</p></div>
+  <blockquote>単なる部門最適ではなく、会社全体を「面」で引き上げる観点を持ち、その実現に向けた具体的な取り組みを示せているかが重要です。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C1"><span class="mk">○</span>C1 業務再設計</a><a class="chip c-d" href="#C4"><span class="mk">◎</span>C4 波及と視座</a></div>
+</article>
+<article class="jc" id="j9">
+  <div class="jc-h"><h3>小杉 智</h3><p>執行役員 / ネクストスケープ 代表取締役社長</p></div>
+  <blockquote>部門でつくったものが、きちんと「会社のプロセス資産」になっているかどうかを見たい。アウトプットして、それが再利用されるサイクルが組織として形成されているかが重要です。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C1"><span class="mk">○</span>C1 業務再設計</a><a class="chip c-d" href="#C3"><span class="mk">◎</span>C3 仕組み化・資産化</a></div>
+</article>
+<article class="jc" id="j10">
+  <div class="jc-h"><h3>松尾 邦孝</h3><p>AIトランスフォーメーション事業本部長</p></div>
+  <blockquote>個人の熱意に依存しているのか、組織として自律的に回っているのかが重要です。仕組み化のプロセスを明確に示し、部門全員が当たり前のようにAIを使っている状態を実現できているかを評価します。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C1"><span class="mk">○</span>C1 業務再設計</a><a class="chip c-d" href="#C2"><span class="mk">◎</span>C2 組織浸透</a><a class="chip c-d" href="#C3"><span class="mk">◎</span>C3 仕組み化・資産化</a></div>
+</article>
+<article class="jc" id="j11">
+  <div class="jc-h"><h3>櫻田 浩</h3><p>執行役員 / SureBizCloud 代表取締役社長</p></div>
+  <blockquote>Sureが担当しているお客さまの中には、規模が比較的小さく、情報システム部門の体制やITリテラシーが十分でない企業も少なくありません。そうしたお客さまを一歩先のステージへと引き上げていく意識を持ち、伴走できるリーダーを評価したいと考えています。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C2"><span class="mk">○</span>C2 組織浸透</a><a class="chip c-d" href="#C4"><span class="mk">◎</span>C4 波及と視座</a></div>
+</article>
+<article class="jc" id="j12">
+  <div class="jc-h"><h3>牧田 幸弘</h3><p>代表取締役社長</p></div>
+  <blockquote>成果の大きさだけでなく、その効果の広がりと熱量。その両面を体現できている部門長を評価してください。</blockquote>
+  <div class="chips"><a class="chip c-o" href="#C4"><span class="mk">○</span>C4 波及と視座</a><a class="chip c-d" href="#C6"><span class="mk">◎</span>C6 当事者性と熱量</a></div>
+</article></div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">05</span><h2>配点の決め方</h2><p class="sec-s">恣意的な重み付けをしていないことを確認いただくための計算過程です。</p></div>
+  <p class="formula">言及重み ＝ ◎の数 × 1.0 ＋ ○の数 × 0.5<br>
+     配点 ＝ 言及重み ÷ 22.5（全観点の合計）× 100　→　合計が100になるよう最大剰余法で整数化</p>
+  <table class="dv">
+    <thead><tr><th>観点</th><th>◎</th><th>○</th><th class="num">言及重み</th>
+      <th class="num">正規化</th><th class="num">配点</th></tr></thead>
+    <tbody><tr><th scope="row">C1 業務再設計</th><td>2</td><td>4</td><td class="num">4.0</td><td class="num">17.8%</td><td class="num strong">18</td></tr><tr><th scope="row">C2 組織浸透</th><td>4</td><td>1</td><td class="num">4.5</td><td class="num">20.0%</td><td class="num strong">20</td></tr><tr><th scope="row">C3 仕組み化・資産化</th><td>2</td><td>1</td><td class="num">2.5</td><td class="num">11.1%</td><td class="num strong">11</td></tr><tr><th scope="row">C4 波及と視座</th><td>4</td><td>2</td><td class="num">5.0</td><td class="num">22.2%</td><td class="num strong">22</td></tr><tr><th scope="row">C5 価値と再投資</th><td>1</td><td>2</td><td class="num">2.0</td><td class="num">8.9%</td><td class="num strong">9</td></tr><tr><th scope="row">C6 当事者性と熱量</th><td>2</td><td>5</td><td class="num">4.5</td><td class="num">20.0%</td><td class="num strong">20</td></tr></tbody>
+    <tfoot><tr><th>合計</th>
+      <td>15</td>
+      <td>15</td>
+      <td class="num">22.5</td><td class="num">100.0%</td>
+      <td class="num strong">100</td></tr></tfoot>
+  </table>
+  <div class="note">
+    <b>この設計で意図的に外していること。</b>
+    役職による重み付けは行っていません。社長・取締役のコメントも執行役員のコメントも、言及として同じ1件として数えています。
+    予備審査は足切りと順位づけのための一次スクリーニングであり、最終的な意思決定は審査員のみなさまによる人手審査で行うためです。
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">06</span><h2>前提フラグ</h2><p class="sec-s">加点材料ではなく、該当した観点にレベルの上限をかける仕組みです。</p></div>
+  <p class="lede" style="margin-bottom:24px">
+    「生産性向上は企業として取り組むべき前提」（櫻田）、「何をAIで実現したかよりも文化」（中山）といった、
+    <b>それ単体では評価に値しない</b>という趣旨のコメントは、加点ではなく天井として実装しています。
+    該当した応募は、その観点で一定レベル以上をつけられません。
+  </p>
+  
+<article class="flag">
+  <div class="fid">F1</div>
+  <div class="fbody">
+    <h3>生産性向上の数値のみ</h3>
+    <p class="fd"><b>見分け方</b>時短・削減の数値は並ぶが、文化・浸透・参加率に関する記述がない。</p>
+    <p class="fc"><b>かかる上限</b>C2 組織浸透 はレベル3以下</p>
+    <p class="fb">櫻田 浩：生産性向上につながる活用は重要だが、それは企業として取り組むべき前提。／ 中山 高史：何をAIで実現したかよりも、部門にどのような文化を醸成できたか。</p>
+  </div>
+</article>
+<article class="flag">
+  <div class="fid">F2</div>
+  <div class="fbody">
+    <h3>特定個人1名の成果</h3>
+    <p class="fd"><b>見分け方</b>登場する実行者が実質1名で、部門への広がりも仕組みも語られていない。</p>
+    <p class="fc"><b>かかる上限</b>C2 組織浸透 はレベル2以下／C3 仕組み化・資産化 はレベル2以下</p>
+    <p class="fb">伊藤 裕一：特定の誰かに頼るのではなく、チーム全員を巻き込んで。／ 松尾 邦孝：個人の熱意に依存しているのか、組織として自律的に回っているのか。</p>
+  </div>
+</article>
+<article class="flag">
+  <div class="fid">F3</div>
+  <div class="fbody">
+    <h3>ツール導入・PoC止まり</h3>
+    <p class="fd"><b>見分け方</b>導入した／試したという報告で終わり、業務そのものの変化が示されていない。</p>
+    <p class="fc"><b>かかる上限</b>C1 業務再設計 はレベル2以下</p>
+    <p class="fb">前田 憲仁：AIを付加的に活用するのではなく、業務プロセス自体を見直せているか。／ 中村 智之：AIを使ったこと自体ではなく、その結果として業務や事業がどれだけ変わったか。</p>
+  </div>
+</article>
+<article class="flag">
+  <div class="fid">F4</div>
+  <div class="fbody">
+    <h3>本人の言葉でない</h3>
+    <p class="fd"><b>見分け方</b>部門長本人の一人称の語りがなく、事務局資料や代理者の説明の引き写しになっている。</p>
+    <p class="fc"><b>かかる上限</b>C6 当事者性と熱量 はレベル2以下</p>
+    <p class="fb">上坂 貴志：取り組みを自分の言葉で語れる人が前に立っているか。／ 牧田 幸弘：自分自身の言葉で価値を語れるかどうか。</p>
+  </div>
+</article>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">07</span><h2>判定と運用</h2><p class="sec-s">予備審査の結果をどう扱うか。</p></div>
+  <table class="bd">
+    <thead><tr><th>判定</th><th class="num">総合点</th><th>予備審査での扱い</th></tr></thead>
+    <tbody><tr><td class="bl b-S">S</td><td class="num">80点以上</td><td>グランドフィナーレ最有力。6観点のいずれにも穴がない。</td></tr><tr><td class="bl b-A">A</td><td class="num">65点以上</td><td>通過候補。人手審査へ回す。</td></tr><tr><td class="bl b-B">B</td><td class="num">50点以上</td><td>要議論。強い観点があれば人手審査で拾い上げる。</td></tr><tr><td class="bl b-C">C</td><td class="num">50点未満</td><td>予備審査で見送り。</td></tr></tbody>
+  </table>
+  <h4 style="margin-top:28px">同点時のタイブレーク順</h4>
+  <ol class="tb"><li>C2 組織浸透 のレベルが高いほうを上位</li><li>C4 波及と視座 のレベルが高いほうを上位</li><li>C1 業務再設計 のレベルが高いほうを上位</li><li>C6 当事者性と熱量 のレベルが高いほうを上位</li></ol>
+  <div class="note">
+    <b>予備審査の位置づけ。</b>
+    S・A判定は人手審査へ自動送付、B判定は事務局が拾い上げを検討、C判定は見送りを基本とします。
+    AIは応募資料に書かれていることだけで採点し、書かれていない良さを推測して加点しません。
+    情報不足でレベルを下げた観点は出力に記録されるため、資料の書き方が原因で沈んだ応募は事務局が確認できます。
+  </div>
+</section>
+
+<footer>
+  AIFES 2026 グランドフィナーレ AI予備審査ルーブリック　／　作成日 2026-08-06<br>
+  元データ：審査員コメント一覧（aifes-judges_skills_提出物反映版.zip / AIFES審査員インタビュー.docx）<br>
+  本資料・ルーブリック・採点シート・AI審査プロンプトは、いずれも同一の定義ファイルから自動生成しています。観点や配点を変更した場合は、4つすべてに同時に反映されます。
+</footer>
+
+</div>
