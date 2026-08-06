@@ -5,4 +5,4 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "mango_grader_db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "21c60ca0-ca7a-4ffb-905b-3e9ac7961a56"
