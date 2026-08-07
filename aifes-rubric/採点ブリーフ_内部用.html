@@ -2,254 +2,309 @@
 <style>
 *{box-sizing:border-box}
 :root{
-  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
-  --line:#D7DEE9; --line2:#E9EEF5; --sunk:#EDF1F6;
-  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F6EFDD;
-  --ok:#2C6B4F; --ok-s:#E3F0E8; --warn:#9A5B12; --warn-s:#FBEEDC; --bad:#8E3838;
-  --shadow:0 1px 2px rgba(20,31,51,.05),0 6px 20px -12px rgba(20,31,51,.2);
-  --disp:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
+  --line:#DFE3EF; --line2:#EDEFF6;
+  --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
+  --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
+  --ok:#07756B; --ok-s:#E1F4F1;
+  --h1:#C13A22; --h1s:#FCEAE6;
+  --h2:#07756B; --h2s:#E1F4F1;
+  --h3:#6244C9; --h3s:#EDE9FB;
+  --h4:#A15900; --h4s:#FBEEDC;
+  --h5:#B93077; --h5s:#FBE9F2;
+  --h6:#155FAF; --h6s:#E4EFFB;
+  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
+  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
+  --r:12px; --r2:8px;
+  --disp:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Hiragino Sans",
+    "Yu Gothic","Noto Sans JP",sans-serif;
   --body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Meiryo",sans-serif;
-  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --mono:ui-rounded,"SF Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root{
-  --paper:#0C1320; --card:#141E2F; --ink:#E7ECF4; --ink2:#B5C1D4; --mute:#8494AD;
-  --line:#28344A; --line2:#1D2839; --sunk:#101A29;
-  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2B2416;
-  --ok:#6FBF95; --ok-s:#16281F; --warn:#D9A05B; --warn-s:#2B2013; --bad:#D98080;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px -14px rgba(0,0,0,.75);
+  --bg:#12141F; --card:#1B1E2E; --sunk:#161A28;
+  --ink:#EDEFF7; --ink2:#C2C8DA; --mute:#9098B0;
+  --line:#2C3145; --line2:#232838;
+  --pri:#9EA0FF; --pri-s:#242545; --onc:#12141F;
+  --warn:#F7B54D; --warn-s:#33280F; --bad:#FF8A7A; --bad-s:#331E1C;
+  --ok:#3FD6C2; --ok-s:#12332F;
+  --h1:#FF8F79; --h1s:#33211D;
+  --h2:#3FD6C2; --h2s:#12332F;
+  --h3:#AD97FF; --h3s:#241E3C;
+  --h4:#F7B54D; --h4s:#33280F;
+  --h5:#FB93C6; --h5s:#331C29;
+  --h6:#74B8F5; --h6s:#152738;
+  --sh:0 1px 2px rgba(0,0,0,.4),0 8px 22px -14px rgba(0,0,0,.8);
+  --sh2:0 2px 6px rgba(0,0,0,.45),0 16px 34px -18px rgba(0,0,0,.9);
 }}
 :root[data-theme="dark"]{
-  --paper:#0C1320; --card:#141E2F; --ink:#E7ECF4; --ink2:#B5C1D4; --mute:#8494AD;
-  --line:#28344A; --line2:#1D2839; --sunk:#101A29;
-  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2B2416;
-  --ok:#6FBF95; --ok-s:#16281F; --warn:#D9A05B; --warn-s:#2B2013; --bad:#D98080;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px -14px rgba(0,0,0,.75);
+  --bg:#12141F; --card:#1B1E2E; --sunk:#161A28;
+  --ink:#EDEFF7; --ink2:#C2C8DA; --mute:#9098B0;
+  --line:#2C3145; --line2:#232838;
+  --pri:#9EA0FF; --pri-s:#242545; --onc:#12141F;
+  --warn:#F7B54D; --warn-s:#33280F; --bad:#FF8A7A; --bad-s:#331E1C;
+  --ok:#3FD6C2; --ok-s:#12332F;
+  --h1:#FF8F79; --h1s:#33211D;
+  --h2:#3FD6C2; --h2s:#12332F;
+  --h3:#AD97FF; --h3s:#241E3C;
+  --h4:#F7B54D; --h4s:#33280F;
+  --h5:#FB93C6; --h5s:#331C29;
+  --h6:#74B8F5; --h6s:#152738;
+  --sh:0 1px 2px rgba(0,0,0,.4),0 8px 22px -14px rgba(0,0,0,.8);
+  --sh2:0 2px 6px rgba(0,0,0,.45),0 16px 34px -18px rgba(0,0,0,.9);
 }
 :root[data-theme="light"]{
-  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
-  --line:#D7DEE9; --line2:#E9EEF5; --sunk:#EDF1F6;
-  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F6EFDD;
-  --ok:#2C6B4F; --ok-s:#E3F0E8; --warn:#9A5B12; --warn-s:#FBEEDC; --bad:#8E3838;
-  --shadow:0 1px 2px rgba(20,31,51,.05),0 6px 20px -12px rgba(20,31,51,.2);
+  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
+  --line:#DFE3EF; --line2:#EDEFF6;
+  --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
+  --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
+  --ok:#07756B; --ok-s:#E1F4F1;
+  --h1:#C13A22; --h1s:#FCEAE6;
+  --h2:#07756B; --h2s:#E1F4F1;
+  --h3:#6244C9; --h3s:#EDE9FB;
+  --h4:#A15900; --h4s:#FBEEDC;
+  --h5:#B93077; --h5s:#FBE9F2;
+  --h6:#155FAF; --h6s:#E4EFFB;
+  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
+  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
 }
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+/* 観点ごとの色。--c＝地色に載る色、--cs＝淡色地 */
+.c1{--c:var(--h1);--cs:var(--h1s)} .c2{--c:var(--h2);--cs:var(--h2s)}
+.c3{--c:var(--h3);--cs:var(--h3s)} .c4{--c:var(--h4);--cs:var(--h4s)}
+.c5{--c:var(--h5);--cs:var(--h5s)} .c6{--c:var(--h6);--cs:var(--h6s)}
+
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);
   font-size:14px;line-height:1.8;-webkit-font-smoothing:antialiased;
   font-feature-settings:"palt" 1}
-.wrap{max-width:900px;margin:0 auto;padding:0 22px 88px}
-section{margin-top:56px}
-h2{font-family:var(--disp);font-size:22px;margin:0;font-weight:600;line-height:1.4;
-  letter-spacing:.02em;text-wrap:balance}
-.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
-  border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:22px}
-.sn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);
-  letter-spacing:.16em;flex:none}
-.ss{margin:0;font-size:12.5px;color:var(--mute);flex:1 1 240px;line-height:1.7}
-code{font-family:var(--mono);font-size:.9em;background:var(--sunk);padding:1px 5px;
-  border-radius:2px;border:1px solid var(--line2)}
+.wrap{max-width:920px;margin:0 auto;padding:0 22px 96px}
+section{margin-top:60px}
+h2{font-family:var(--disp);font-size:23px;margin:0;font-weight:700;line-height:1.4;
+  letter-spacing:.01em;text-wrap:balance}
+.sh{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:22px}
+.sn{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--onc);
+  background:var(--pri);border-radius:999px;padding:3px 12px;flex:none;letter-spacing:.06em}
+.ss{margin:0;font-size:12.5px;color:var(--mute);flex:1 1 100%;line-height:1.7}
+code{font-family:var(--mono);font-size:.9em;background:var(--pri-s);padding:1px 6px;
+  border-radius:5px;color:var(--pri);font-weight:700}
 
 /* hero */
-.hero{background:#1B3054;border-bottom:3px solid var(--gold)}
-:root[data-theme="dark"] .hero{background:#111B2C}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:#111B2C}}
-:root[data-theme="light"] .hero{background:#1B3054}
-.hin{max-width:900px;margin:0 auto;padding:38px 22px 30px}
-.eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:#D6BB7A;
-  margin:0 0 12px;font-weight:700}
-.hero h1 em{font-style:normal;font-family:var(--body);font-size:14px;font-weight:400;
-  color:#B9C9E2;margin-left:12px;letter-spacing:.04em;white-space:nowrap}
-.hero h1{font-family:var(--disp);font-size:clamp(24px,3.6vw,32px);margin:0 0 12px;
-  color:#fff;font-weight:600;line-height:1.4;text-wrap:balance}
-.hero p{margin:0;color:#B9C9E2;font-size:13.5px;max-width:62ch;line-height:1.95}
-.kpi{display:flex;gap:26px;margin-top:24px;flex-wrap:wrap}
-.kpi div{line-height:1.3}
-.kpi b{display:block;font-family:var(--mono);font-size:24px;color:#E8C87C;
-  font-variant-numeric:tabular-nums}
-.kpi span{font-size:10.5px;color:#9FB4D2;letter-spacing:.06em}
+.hero{background:var(--pri);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-90px;width:290px;height:290px;
+  border-radius:50%;background:rgba(255,255,255,.09)}
+.hero::before{content:"";position:absolute;right:110px;bottom:-130px;width:190px;height:190px;
+  border-radius:50%;background:rgba(255,255,255,.07)}
+.hin{max-width:920px;margin:0 auto;padding:38px 22px 32px;position:relative;z-index:1}
+.eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:rgba(255,255,255,.82);
+  margin:0 0 12px;font-weight:800}
+.hero h1{font-family:var(--disp);font-size:clamp(26px,3.8vw,34px);margin:0 0 12px;
+  color:#fff;font-weight:800;line-height:1.35;text-wrap:balance;letter-spacing:.01em}
+.hero h1 em{font-style:normal;font-family:var(--body);font-size:13px;font-weight:700;
+  color:#fff;background:rgba(255,255,255,.2);border-radius:999px;padding:3px 12px;
+  margin-left:12px;letter-spacing:.04em;white-space:nowrap;vertical-align:middle}
+.hero p{margin:0;color:rgba(255,255,255,.9);font-size:13.5px;max-width:62ch;line-height:1.95}
+.kpi{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.kpi div{background:rgba(255,255,255,.16);border-radius:var(--r2);padding:8px 16px;
+  line-height:1.3;text-align:center}
+.kpi b{display:block;font-family:var(--mono);font-size:22px;color:#fff;font-weight:800}
+.kpi span{font-size:10px;color:rgba(255,255,255,.85);letter-spacing:.04em}
+.ribbon{display:flex;height:7px}
+.ribbon i{background:var(--c)}
 
 /* sticky 観点バー */
 .bar{position:sticky;top:0;z-index:20;background:var(--card);
-  border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
-.bin{max-width:900px;margin:0 auto;padding:8px 22px;display:flex;gap:6px;
+  border-bottom:1px solid var(--line);box-shadow:var(--sh)}
+.bin{max-width:920px;margin:0 auto;padding:9px 22px;display:flex;gap:6px;
   overflow-x:auto;scrollbar-width:thin}
 .sx{flex:1 0 auto;min-width:104px;display:grid;grid-template-columns:auto 1fr auto;
-  align-items:center;gap:6px;text-decoration:none;padding:6px 9px;border-radius:2px;
-  border:1px solid var(--line2);background:var(--sunk)}
-.sx:hover{border-color:var(--gold)}
-.sx b{font-family:var(--mono);font-size:10px;color:var(--gold);font-weight:700}
+  align-items:center;gap:6px;text-decoration:none;padding:6px 11px;border-radius:999px;
+  background:var(--cs);border:1.5px solid transparent;transition:border-color .15s}
+.sx:hover{border-color:var(--c)}
+.sx b{font-family:var(--mono);font-size:10px;color:var(--c);font-weight:800}
 .sx span{font-size:11.5px;color:var(--ink);font-weight:700;white-space:nowrap}
-.sx i{font-family:var(--mono);font-style:normal;font-size:13px;font-weight:700;
-  color:var(--navy);font-variant-numeric:tabular-nums}
+.sx i{font-family:var(--mono);font-style:normal;font-size:13px;font-weight:800;color:var(--c)}
 
 /* テーブル共通 */
-table{border-collapse:collapse;width:100%;background:var(--card);font-size:13px;
-  border:1px solid var(--line);box-shadow:var(--shadow)}
-th,td{border-bottom:1px solid var(--line2);padding:8px 12px;text-align:left;
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  font-size:13px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--sh)}
+th,td{border-bottom:1px solid var(--line2);padding:9px 13px;text-align:left;
   vertical-align:top}
-thead th{background:var(--sunk);font-size:10.5px;letter-spacing:.08em;color:var(--mute);
-  font-weight:700;white-space:nowrap}
+thead th{background:var(--sunk);font-size:10.5px;letter-spacing:.06em;color:var(--mute);
+  font-weight:800;white-space:nowrap}
 tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+tfoot td,tfoot th{border-bottom:none}
 .num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
-.tsc{overflow-x:auto}
+.tsc{overflow-x:auto;border-radius:var(--r)}
 
 /* 観点サマリ */
-table.sum td.cid a{font-family:var(--mono);font-weight:700;color:var(--gold);
-  text-decoration:none;font-size:12px}
+table.sum td.cid{width:44px}
+table.sum td.cid a{font-family:var(--mono);font-weight:800;color:var(--onc);
+  background:var(--c);text-decoration:none;font-size:11px;padding:3px 8px;
+  border-radius:999px;display:inline-block;line-height:1.5}
 table.sum th[scope="row"]{font-weight:700;white-space:nowrap}
 table.sum .qq{color:var(--mute);font-size:12px;line-height:1.7}
-table.sum .wt{font-family:var(--mono);font-weight:700;font-size:17px;text-align:right;
-  color:var(--navy);white-space:nowrap;font-variant-numeric:tabular-nums}
-table.sum tfoot td{background:var(--sunk);font-weight:700}
+table.sum .wt{font-family:var(--mono);font-weight:800;font-size:19px;text-align:right;
+  color:var(--c);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.sum tbody tr:hover td,table.sum tbody tr:hover th{background:var(--cs)}
+table.sum tfoot td,table.sum tfoot th{background:var(--sunk);font-weight:800}
+table.sum tfoot .wt{color:var(--ink)}
 
 /* 手順 */
-ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-ol.steps li{display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--card);
-  border:1px solid var(--line);border-bottom:none;padding:14px 18px 14px 14px}
-ol.steps li:first-child{border-radius:3px 3px 0 0}
-ol.steps li:last-child{border-bottom:1px solid var(--line);border-radius:0 0 3px 3px}
-.stn{font-family:var(--mono);font-weight:700;font-size:15px;color:#fff;background:var(--navy);
-  width:30px;height:30px;display:grid;place-items:center;border-radius:50%;margin-top:2px}
-:root[data-theme="dark"] .stn{color:#0C1320}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stn{color:#0C1320}}
-.stb h3{margin:0 0 3px;font-size:14.5px;font-weight:700}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+ol.steps li{display:grid;grid-template-columns:38px 1fr;gap:13px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--r);padding:14px 18px 14px 14px;
+  box-shadow:var(--sh)}
+.stn{font-family:var(--mono);font-weight:800;font-size:14px;color:var(--onc);
+  background:var(--pri);width:28px;height:28px;display:grid;place-items:center;
+  border-radius:50%;margin-top:2px}
+.stb h3{margin:0 0 3px;font-family:var(--disp);font-size:15px;font-weight:700}
 .stb p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.8}
 
 /* 観点リファレンス */
-.ref{background:var(--card);border:1px solid var(--line);border-radius:3px;
-  margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:64px;overflow:hidden}
-.ref>header{display:flex;align-items:center;gap:12px;padding:13px 18px;
-  background:var(--sunk);border-bottom:1px solid var(--line)}
-.rid{font-family:var(--mono);font-weight:700;font-size:12px;color:#fff;background:var(--navy);
-  padding:3px 8px;border-radius:2px;flex:none}
-:root[data-theme="dark"] .rid{color:#0C1320}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rid{color:#0C1320}}
+.ref{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  margin-bottom:15px;box-shadow:var(--sh);scroll-margin-top:66px;overflow:hidden;
+  border-top:4px solid var(--c)}
+.ref>header{display:flex;align-items:center;gap:12px;padding:14px 18px 12px;
+  background:var(--cs)}
+.rid{font-family:var(--mono);font-weight:800;font-size:12px;color:var(--onc);
+  background:var(--c);padding:4px 10px;border-radius:999px;flex:none}
 .rt{flex:1 1 auto;min-width:0}
-.rt h3{margin:0;font-family:var(--disp);font-size:17px;font-weight:600;line-height:1.4}
-.rt p{margin:1px 0 0;font-size:12px;color:var(--gold);line-height:1.6}
-.rw{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--navy);flex:none;
+.rt h3{margin:0;font-family:var(--disp);font-size:17px;font-weight:700;line-height:1.4}
+.rt p{margin:1px 0 0;font-size:12px;color:var(--c);line-height:1.6;font-weight:700}
+.rw{font-family:var(--mono);font-size:26px;font-weight:800;color:var(--c);flex:none;
   font-variant-numeric:tabular-nums}
 .rw i{font-style:normal;font-size:11px;color:var(--mute);margin-left:1px}
-.rbody{padding:0}
-table.lvt{border:none;box-shadow:none}
-table.lvt thead th{background:transparent;border-bottom:1px solid var(--line2);
-  padding:7px 14px}
-table.lvt thead th:last-child,table.lvt td.lvp{text-align:right}
-table.lvt td{padding:9px 14px}
-td.lv{font-family:var(--mono);font-weight:700;width:34px;text-align:center;
-  color:var(--mute);font-size:12px}
-tr.top td.lv{color:var(--gold)}
-td.lvd{font-size:12.5px;line-height:1.75;color:var(--ink2)}
-tr.top td.lvd{color:var(--ink)}
-td.lvp{font-family:var(--mono);width:52px;color:var(--navy);font-weight:700;
-  font-variant-numeric:tabular-nums}
-.capbox{background:var(--warn-s);border-top:1px solid var(--line2);padding:10px 14px}
-.capbox h5{margin:0 0 4px;font-size:10.5px;letter-spacing:.08em;color:var(--warn);
-  font-weight:700}
-.capbox ul{margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:var(--ink2)}
-.capbox b{font-family:var(--mono);color:var(--warn)}
-.capbox em{font-style:normal;font-weight:700;color:var(--warn)}
-
-/* 観点カード内「この観点を重視する審査員」 */
 .rwho{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:9px 18px;
   background:var(--card);border-bottom:1px solid var(--line2)}
-.wl{font-size:10px;letter-spacing:.1em;color:var(--mute);font-weight:700;margin-right:3px}
-.jt{font-size:11.5px;text-decoration:none;padding:2px 8px;border-radius:2px;
-  border:1px solid var(--line);white-space:nowrap}
-.jd{background:var(--gold-s);border-color:var(--gold);color:var(--ink);font-weight:700}
-.jo{color:var(--mute)}
-.jt:hover{border-color:var(--navy2)}
+.wl{font-size:10px;letter-spacing:.1em;color:var(--mute);font-weight:800;margin-right:3px}
+.jt{font-size:11.5px;text-decoration:none;padding:2px 10px;border-radius:999px;
+  white-space:nowrap;border:1.5px solid transparent}
+.jd{background:var(--cs);color:var(--c);font-weight:800}
+.jo{color:var(--mute);background:var(--sunk)}
+.jt:hover{border-color:var(--c)}
+table.lvt{border:none;box-shadow:none;border-radius:0}
+table.lvt thead th{background:transparent;padding:8px 14px 6px}
+table.lvt thead th:last-child{text-align:right}
+table.lvt td{padding:10px 14px}
+td.lv{width:40px;text-align:center;padding-left:14px}
+td.lv span{font-family:var(--mono);font-weight:800;font-size:12px;width:24px;height:24px;
+  display:inline-grid;place-items:center;border-radius:50%;color:var(--mute);
+  background:var(--sunk)}
+tr.top td.lv span{background:var(--c);color:var(--onc)}
+tr.top{background:var(--cs)}
+td.lvd{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+tr.top td.lvd{color:var(--ink);font-weight:500}
+td.lvp{font-family:var(--mono);width:56px;text-align:right;color:var(--c);font-weight:800;
+  font-variant-numeric:tabular-nums;font-size:14px}
+.capbox{background:var(--warn-s);padding:10px 16px}
+.capbox h5{margin:0 0 4px;font-size:10.5px;letter-spacing:.08em;color:var(--warn);
+  font-weight:800}
+.capbox ul{margin:0;padding-left:17px;font-size:12px;line-height:1.85;color:var(--ink2)}
+.capbox b{font-family:var(--mono);color:var(--warn)}
+.capbox em{font-style:normal;font-weight:800;color:var(--warn)}
 
 /* 審査員別 重視観点マトリクス */
 table.mx{min-width:700px}
-table.mx thead th{background:var(--navy);border-bottom:none;padding:8px 6px;
-  text-align:center;vertical-align:bottom}
-table.mx thead th:first-child,table.mx thead th:last-child{text-align:left}
-table.mx thead th a{text-decoration:none;display:block}
-table.mx thead th a b{display:block;font-family:var(--mono);font-size:9.5px;color:#D6BB7A;
-  letter-spacing:.08em}
-table.mx thead th a span{display:block;font-size:11.5px;color:#fff;font-weight:700;
+table.mx thead th{background:var(--sunk);border-bottom:none;padding:0;text-align:center;
+  vertical-align:bottom}
+table.mx thead th:first-child{text-align:left;padding:10px 13px;vertical-align:bottom}
+table.mx thead th a{text-decoration:none;display:block;background:var(--c);padding:8px 6px}
+table.mx thead th a b{display:block;font-family:var(--mono);font-size:9.5px;
+  color:var(--onc);opacity:.8;letter-spacing:.06em;font-weight:800}
+table.mx thead th a span{display:block;font-size:11.5px;color:var(--onc);font-weight:800;
   line-height:1.35;margin:1px 0;white-space:nowrap}
-table.mx thead th a i{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;
-  color:#9DB3D4}
-table.mx tbody th{white-space:nowrap;padding:8px 12px}
+table.mx thead th a i{display:block;font-style:normal;font-family:var(--mono);
+  font-size:9.5px;color:var(--onc);opacity:.8;font-weight:700}
+table.mx tbody th{white-space:nowrap;padding:9px 13px;vertical-align:middle}
 table.mx tbody th b{display:block;font-size:13px;font-weight:700}
 table.mx tbody th i{display:block;font-style:normal;font-size:10px;color:var(--mute);
   line-height:1.45}
-table.mx td{text-align:center;font-size:14px;font-weight:700;vertical-align:middle;padding:8px 4px}
-table.mx td.d{color:var(--gold);background:var(--gold-s)}
-table.mx td.o{color:var(--mute)}
-table.mx td.pt{text-align:left;font-size:11.5px;line-height:1.65;color:var(--ink2);
-  padding:8px 12px;min-width:280px}
-table.mx tbody tr:hover td:not(.d){background:var(--sunk)}
-table.mx tfoot td,table.mx tfoot th{background:var(--sunk);padding:7px 4px;text-align:center}
+table.mx td{text-align:center;vertical-align:middle;padding:8px 4px}
+table.mx td span{display:inline-grid;place-items:center;width:26px;height:26px;
+  border-radius:50%;font-size:13px;font-weight:800;line-height:1}
+table.mx td.d span{background:var(--c);color:var(--onc)}
+table.mx td.o span{color:var(--c);background:var(--cs)}
+table.mx tbody tr:hover td,table.mx tbody tr:hover th{background:var(--sunk)}
+table.mx tfoot td,table.mx tfoot th{background:var(--sunk);padding:8px 4px;text-align:center}
 table.mx tfoot th{text-align:right;padding-right:12px;font-size:10.5px;color:var(--mute);
-  letter-spacing:.06em;white-space:nowrap}
-table.mx tfoot td b{font-family:var(--mono);font-size:15px;color:var(--navy)}
+  letter-spacing:.06em;white-space:nowrap;font-weight:800}
+table.mx tfoot td b{font-family:var(--mono);font-size:16px;color:var(--c);font-weight:800}
 table.mx tfoot td span{font-size:9.5px;color:var(--mute);margin-left:1px}
-.mxlg{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--mute)}
-.mxlg b{color:var(--gold);font-size:13px;margin-right:3px}
-.mxlg em{font-style:normal;color:var(--ink2);font-size:13px;font-weight:700;margin-right:3px}
+.mxlg{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;
+  color:var(--mute);align-items:center}
+.mxlg i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;
+  border-radius:50%;font-size:12px;font-weight:800;margin-right:5px;vertical-align:middle}
+.lgd{background:var(--pri);color:var(--onc)}
+.lgo{background:var(--pri-s);color:var(--pri)}
 
 /* 本人の言葉 */
-.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px;
-  margin-top:20px}
-.qt{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:13px 15px;
-  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px}
-.qh h3{margin:0;font-size:14px;font-weight:700}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px;
+  margin-top:18px}
+.qt{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:9px}
+.qh h3{margin:0;font-family:var(--disp);font-size:15px;font-weight:700}
 .qh p{margin:0;font-size:10px;color:var(--mute);line-height:1.5}
-.qt blockquote{margin:0;padding-left:11px;border-left:2px solid var(--gold);flex:1;
-  font-size:11.5px;line-height:1.8;color:var(--ink2)}
+.qt blockquote{margin:0;padding-left:12px;border-left:3px solid var(--pri-s);flex:1;
+  font-size:11.5px;line-height:1.85;color:var(--ink2)}
 .qc{display:flex;flex-wrap:wrap;gap:5px}
-.qchip{font-family:var(--mono);font-size:10px;text-decoration:none;padding:2px 7px;
-  border-radius:2px;background:var(--gold-s);border:1px solid var(--gold);color:var(--ink);
+.qchip{font-family:var(--mono);font-size:10px;text-decoration:none;padding:3px 9px;
+  border-radius:999px;background:var(--cs);color:var(--c);font-weight:800;
   letter-spacing:.02em}
 
 /* フラグ */
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-.fg{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);
-  border-radius:3px;padding:14px 16px;box-shadow:var(--shadow)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:13px}
+.fg{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--warn);
+  border-radius:var(--r);padding:14px 17px;box-shadow:var(--sh)}
 .fgh{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.fgid{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--warn);
-  background:var(--warn-s);padding:2px 7px;border-radius:2px}
-.fg h3{margin:0;font-size:14px;font-weight:700}
-.fgd{margin:0 0 8px;font-size:12.5px;color:var(--ink2);line-height:1.75}
-.fgc{margin:0;font-size:12px;color:var(--warn);font-weight:700;line-height:1.7;
-  border-top:1px dashed var(--line);padding-top:7px}
+.fgid{font-family:var(--mono);font-weight:800;font-size:11px;color:var(--onc);
+  background:var(--warn);padding:3px 10px;border-radius:999px}
+.fg h3{margin:0;font-family:var(--disp);font-size:14.5px;font-weight:700}
+.fgd{margin:0 0 9px;font-size:12.5px;color:var(--ink2);line-height:1.75}
+.fgc{margin:0;font-size:12px;color:var(--warn);font-weight:800;line-height:1.7;
+  background:var(--warn-s);border-radius:var(--r2);padding:7px 11px}
 .fgc b{font-family:var(--mono)}
 
 /* 判定 */
-.bl{font-family:var(--mono);font-weight:700;font-size:16px;width:48px;text-align:center}
-.b-S{color:var(--gold)} .b-A{color:var(--ok)} .b-B{color:var(--warn)} .b-C{color:var(--mute)}
+.bl{width:56px;text-align:center;vertical-align:middle}
+.bl span{font-family:var(--mono);font-weight:800;font-size:15px;width:30px;height:30px;
+  display:inline-grid;place-items:center;border-radius:50%;color:var(--onc)}
+.b-S span{background:var(--h5)} .b-A span{background:var(--h2)}
+.b-B span{background:var(--h4)} .b-C span{background:var(--mute)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-/* min-width:auto だとテーブルの最小幅がトラックを押し広げ、.tsc の横スクロールが効かない */
 .two>div{min-width:0}
-h4{font-size:11px;letter-spacing:.1em;color:var(--mute);margin:0 0 9px;font-weight:700}
+h4{font-family:var(--disp);font-size:13px;color:var(--ink);margin:0 0 10px;font-weight:700}
+table.qk th,table.qk td{padding:9px 10px}
 table.qk th[scope="row"]{white-space:nowrap;font-weight:700;font-size:12.5px}
-table.qk th,table.qk td{padding:8px 9px}
 table.qk th[scope="row"] span{display:block;font-family:var(--mono);font-size:10px;
   color:var(--mute);font-weight:400;letter-spacing:.04em}
-table.qk td{font-size:14px;font-weight:700;color:var(--navy)}
-table.cb .big{font-size:17px;font-weight:700;color:var(--navy)}
-ol.tie{margin:10px 0 0;padding-left:19px;font-size:12.5px;color:var(--ink2);line-height:1.95}
-ol.tie li::marker{color:var(--gold);font-family:var(--mono);font-weight:700}
+table.qk td{font-size:14px;font-weight:800;color:var(--pri)}
+table.cb .big{font-size:18px;font-weight:800;color:var(--pri)}
+ol.tie{margin:10px 0 0;padding-left:20px;font-size:12.5px;color:var(--ink2);line-height:2}
+ol.tie li::marker{color:var(--pri);font-family:var(--mono);font-weight:800}
 
 /* やってはいけない */
 ul.dont{list-style:none;margin:0;padding:0;display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
-ul.dont li{background:var(--card);border:1px solid var(--line);border-radius:3px;
-  padding:13px 16px;box-shadow:var(--shadow);position:relative;padding-left:38px}
-ul.dont li::before{content:"×";position:absolute;left:15px;top:12px;font-family:var(--mono);
-  font-weight:700;color:var(--bad);font-size:14px}
-ul.dont li:last-child::before,ul.dont li:nth-last-child(2)::before{content:"！";color:var(--gold)}
-ul.dont h3{margin:0 0 4px;font-size:13.5px;font-weight:700;line-height:1.5}
+  grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:13px}
+ul.dont li{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px 14px 44px;box-shadow:var(--sh);position:relative}
+ul.dont li::before{position:absolute;left:14px;top:14px;font-family:var(--mono);
+  font-weight:800;font-size:12px;width:22px;height:22px;display:grid;place-items:center;
+  border-radius:50%}
+ul.dont li.no::before{content:"×";background:var(--bad-s);color:var(--bad)}
+ul.dont li.warn::before{content:"!";background:var(--pri-s);color:var(--pri)}
+ul.dont h3{margin:0 0 4px;font-family:var(--disp);font-size:13.5px;font-weight:700;
+  line-height:1.5}
 ul.dont p{margin:0;font-size:12px;color:var(--ink2);line-height:1.75}
 
-.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--navy);
-  padding:14px 18px;font-size:12.5px;color:var(--ink2);line-height:1.85;margin-top:18px}
+.note{background:var(--pri-s);border-radius:var(--r);padding:14px 18px;font-size:12.5px;
+  color:var(--ink2);line-height:1.85;margin-top:18px}
 .note b{color:var(--ink)}
-footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
+footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);
   font-size:11px;color:var(--mute);line-height:1.85}
-a{color:var(--navy2)}
-a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+a{color:var(--pri)}
+a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 @media (max-width:720px){
   .two{grid-template-columns:1fr}
   .bar{position:static}
@@ -259,9 +314,9 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media print{
   .bar{display:none}
   body{background:#fff;font-size:10.5pt}
-  .ref,.fg,ol.steps li,ul.dont li,table{box-shadow:none;break-inside:avoid}
-  section{margin-top:26px}
-  .hero{background:#1B3054!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ref,.fg,ol.steps li,ul.dont li,table,.qt{box-shadow:none;break-inside:avoid}
+  section{margin-top:24px}
+  .hero,.ribbon{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 <div class="hero">
@@ -280,17 +335,19 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     </div>
   </div>
 </div>
+<div class="ribbon"><i class="c1" style="flex:20" title="C1 業務再設計 20点"></i><i class="c2" style="flex:20" title="C2 組織浸透 20点"></i><i class="c3" style="flex:10" title="C3 仕組み化・資産化 10点"></i><i class="c4" style="flex:20" title="C4 波及と視座 20点"></i><i class="c5" style="flex:10" title="C5 価値と再投資 10点"></i><i class="c6" style="flex:20" title="C6 当事者性と熱量 20点"></i></div>
 
-<nav class="bar"><div class="bin"><a href="#C1" class="sx"><b>C1</b><span>業務再設計</span><i>20</i></a><a href="#C2" class="sx"><b>C2</b><span>組織浸透</span><i>20</i></a><a href="#C3" class="sx"><b>C3</b><span>仕組み化・資産化</span><i>10</i></a><a href="#C4" class="sx"><b>C4</b><span>波及と視座</span><i>20</i></a><a href="#C5" class="sx"><b>C5</b><span>価値と再投資</span><i>10</i></a><a href="#C6" class="sx"><b>C6</b><span>当事者性と熱量</span><i>20</i></a></div></nav>
+<nav class="bar"><div class="bin"><a href="#C1" class="sx c1"><b>C1</b><span>業務再設計</span><i>20</i></a><a href="#C2" class="sx c2"><b>C2</b><span>組織浸透</span><i>20</i></a><a href="#C3" class="sx c3"><b>C3</b><span>仕組み化・資産化</span><i>10</i></a><a href="#C4" class="sx c4"><b>C4</b><span>波及と視座</span><i>20</i></a><a href="#C5" class="sx c5"><b>C5</b><span>価値と再投資</span><i>10</i></a><a href="#C6" class="sx c6"><b>C6</b><span>当事者性と熱量</span><i>20</i></a></div></nav>
 
 <div class="wrap">
 
 <section>
   <div class="sh"><span class="sn">01</span><h2>採点する6つの観点</h2>
-    <p class="ss">配点は10点刻み・合計100点。各観点をレベル1〜5でつけ、レベル ÷ 5 × 配点 が得点になります。</p></div>
+    <p class="ss">配点は10点刻み・合計100点。各観点をレベル1〜5でつけ、レベル ÷ 5 × 配点 が得点になります。
+    観点ごとの色は、この資料のどこでも同じものを使っています。</p></div>
   <div class="tsc"><table class="sum">
     <thead><tr><th>ID</th><th>観点</th><th>何を見るか</th><th style="text-align:right">配点</th></tr></thead>
-    <tbody><tr><td class="cid"><a href="#C1">C1</a></td><th scope="row">業務そのものの再設計と「やめる」判断</th><td class="qq">AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C2">C2</a></td><th scope="row">組織への浸透と参加の広がり</th><td class="qq">部門の何割が、当たり前のこととして使っているか。主役は誰か。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C3">C3</a></td><th scope="row">仕組み化と会社のプロセス資産化</th><td class="qq">担当者が抜けても回るか。他部門が実際に再利用しているか。</td><td class="wt">10</td></tr><tr><td class="cid"><a href="#C4">C4</a></td><th scope="row">波及範囲と経営視座</th><td class="qq">自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C5">C5</a></td><th scope="row">創出した価値と、その再投資先</th><td class="qq">浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</td><td class="wt">10</td></tr><tr><td class="cid"><a href="#C6">C6</a></td><th scope="row">語りの当事者性と熱量</th><td class="qq">本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</td><td class="wt">20</td></tr></tbody>
+    <tbody><tr class="c1"><td class="cid"><a href="#C1">C1</a></td><th scope="row">業務そのものの再設計と「やめる」判断</th><td class="qq">AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</td><td class="wt">20</td></tr><tr class="c2"><td class="cid"><a href="#C2">C2</a></td><th scope="row">組織への浸透と参加の広がり</th><td class="qq">部門の何割が、当たり前のこととして使っているか。主役は誰か。</td><td class="wt">20</td></tr><tr class="c3"><td class="cid"><a href="#C3">C3</a></td><th scope="row">仕組み化と会社のプロセス資産化</th><td class="qq">担当者が抜けても回るか。他部門が実際に再利用しているか。</td><td class="wt">10</td></tr><tr class="c4"><td class="cid"><a href="#C4">C4</a></td><th scope="row">波及範囲と経営視座</th><td class="qq">自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</td><td class="wt">20</td></tr><tr class="c5"><td class="cid"><a href="#C5">C5</a></td><th scope="row">創出した価値と、その再投資先</th><td class="qq">浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</td><td class="wt">10</td></tr><tr class="c6"><td class="cid"><a href="#C6">C6</a></td><th scope="row">語りの当事者性と熱量</th><td class="qq">本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</td><td class="wt">20</td></tr></tbody>
     <tfoot><tr><td></td><td>合計</td><td></td><td class="wt">100</td></tr></tfoot>
   </table></div>
   <div class="note">
@@ -304,14 +361,14 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="sh"><span class="sn">02</span><h2>どの役員がどの観点を重視しているか</h2>
     <p class="ss">◎＝グランドフィナーレコメントで直接この観点を挙げている（＝重視）。○＝各ステージ向けの審査コメントから補助的に反映。</p></div>
   <div class="tsc"><table class="mx">
-    <thead><tr><th>審査員</th><th><a href="#C1"><b>C1</b><span>業務再設計</span><i>20点</i></a></th><th><a href="#C2"><b>C2</b><span>組織浸透</span><i>20点</i></a></th><th><a href="#C3"><b>C3</b><span>仕組み化・資産化</span><i>10点</i></a></th><th><a href="#C4"><b>C4</b><span>波及と視座</span><i>20点</i></a></th><th><a href="#C5"><b>C5</b><span>価値と再投資</span><i>10点</i></a></th><th><a href="#C6"><b>C6</b><span>当事者性と熱量</span><i>20点</i></a></th></tr></thead>
-    <tbody><tr><th scope="row"><b>上坂 貴志</b><i>取締役専務執行役員</i></th><td></td><td class="d">◎</td><td></td><td></td><td></td><td class="d">◎</td></tr><tr><th scope="row"><b>中山 高史</b><i>執行役員 / AIexe 代表取締役社長</i></th><td></td><td class="d">◎</td><td></td><td></td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>中村 智之</b><i>執行役員</i></th><td class="d">◎</td><td></td><td class="o">○</td><td class="d">◎</td><td class="o">○</td><td></td></tr><tr><th scope="row"><b>伊藤 英啓</b><i>執行役員</i></th><td class="o">○</td><td></td><td></td><td></td><td class="d">◎</td><td></td></tr><tr><th scope="row"><b>伊藤 裕一</b><i>執行役員</i></th><td></td><td class="d">◎</td><td></td><td></td><td class="o">○</td><td></td></tr><tr><th scope="row"><b>前田 憲仁</b><i>執行役員</i></th><td class="d">◎</td><td></td><td></td><td></td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>勝田 耕平</b><i>取締役常務執行役員</i></th><td></td><td></td><td></td><td class="d">◎</td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>安田 博一</b><i>常務執行役員</i></th><td class="o">○</td><td></td><td></td><td class="d">◎</td><td></td><td></td></tr><tr><th scope="row"><b>小杉 智</b><i>執行役員 / ネクストスケープ 代表取締役社長</i></th><td class="o">○</td><td></td><td class="d">◎</td><td></td><td></td><td></td></tr><tr><th scope="row"><b>松尾 邦孝</b><i>AIトランスフォーメーション事業本部長</i></th><td class="o">○</td><td class="d">◎</td><td class="d">◎</td><td></td><td></td><td></td></tr><tr><th scope="row"><b>櫻田 浩</b><i>執行役員 / SureBizCloud 代表取締役社長</i></th><td></td><td class="o">○</td><td></td><td class="d">◎</td><td></td><td></td></tr><tr><th scope="row"><b>牧田 幸弘</b><i>代表取締役社長</i></th><td></td><td></td><td></td><td class="o">○</td><td></td><td class="d">◎</td></tr></tbody>
-    <tfoot><tr><th>◎ の審査員数</th><td class="tw"><b>2</b><span>名</span></td><td class="tw"><b>4</b><span>名</span></td><td class="tw"><b>2</b><span>名</span></td><td class="tw"><b>4</b><span>名</span></td><td class="tw"><b>1</b><span>名</span></td><td class="tw"><b>2</b><span>名</span></td></tr></tfoot>
+    <thead><tr><th>審査員</th><th class="c1"><a href="#C1"><b>C1</b><span>業務再設計</span><i>20点</i></a></th><th class="c2"><a href="#C2"><b>C2</b><span>組織浸透</span><i>20点</i></a></th><th class="c3"><a href="#C3"><b>C3</b><span>仕組み化・資産化</span><i>10点</i></a></th><th class="c4"><a href="#C4"><b>C4</b><span>波及と視座</span><i>20点</i></a></th><th class="c5"><a href="#C5"><b>C5</b><span>価値と再投資</span><i>10点</i></a></th><th class="c6"><a href="#C6"><b>C6</b><span>当事者性と熱量</span><i>20点</i></a></th></tr></thead>
+    <tbody><tr><th scope="row"><b>上坂 貴志</b><i>取締役専務執行役員</i></th><td></td><td class="d c2"><span>◎</span></td><td></td><td></td><td></td><td class="d c6"><span>◎</span></td></tr><tr><th scope="row"><b>中山 高史</b><i>執行役員 / AIexe 代表取締役社長</i></th><td></td><td class="d c2"><span>◎</span></td><td></td><td></td><td></td><td class="o c6"><span>○</span></td></tr><tr><th scope="row"><b>中村 智之</b><i>執行役員</i></th><td class="d c1"><span>◎</span></td><td></td><td class="o c3"><span>○</span></td><td class="d c4"><span>◎</span></td><td class="o c5"><span>○</span></td><td></td></tr><tr><th scope="row"><b>伊藤 英啓</b><i>執行役員</i></th><td class="o c1"><span>○</span></td><td></td><td></td><td></td><td class="d c5"><span>◎</span></td><td></td></tr><tr><th scope="row"><b>伊藤 裕一</b><i>執行役員</i></th><td></td><td class="d c2"><span>◎</span></td><td></td><td></td><td class="o c5"><span>○</span></td><td></td></tr><tr><th scope="row"><b>前田 憲仁</b><i>執行役員</i></th><td class="d c1"><span>◎</span></td><td></td><td></td><td></td><td></td><td class="o c6"><span>○</span></td></tr><tr><th scope="row"><b>勝田 耕平</b><i>取締役常務執行役員</i></th><td></td><td></td><td></td><td class="d c4"><span>◎</span></td><td></td><td class="o c6"><span>○</span></td></tr><tr><th scope="row"><b>安田 博一</b><i>常務執行役員</i></th><td class="o c1"><span>○</span></td><td></td><td></td><td class="d c4"><span>◎</span></td><td></td><td></td></tr><tr><th scope="row"><b>小杉 智</b><i>執行役員 / ネクストスケープ 代表取締役社長</i></th><td class="o c1"><span>○</span></td><td></td><td class="d c3"><span>◎</span></td><td></td><td></td><td></td></tr><tr><th scope="row"><b>松尾 邦孝</b><i>AIトランスフォーメーション事業本部長</i></th><td class="o c1"><span>○</span></td><td class="d c2"><span>◎</span></td><td class="d c3"><span>◎</span></td><td></td><td></td><td></td></tr><tr><th scope="row"><b>櫻田 浩</b><i>執行役員 / SureBizCloud 代表取締役社長</i></th><td></td><td class="o c2"><span>○</span></td><td></td><td class="d c4"><span>◎</span></td><td></td><td></td></tr><tr><th scope="row"><b>牧田 幸弘</b><i>代表取締役社長</i></th><td></td><td></td><td></td><td class="o c4"><span>○</span></td><td></td><td class="d c6"><span>◎</span></td></tr></tbody>
+    <tfoot><tr><th>◎ の審査員数</th><td class="tw c1"><b>2</b><span>名</span></td><td class="tw c2"><b>4</b><span>名</span></td><td class="tw c3"><b>2</b><span>名</span></td><td class="tw c4"><b>4</b><span>名</span></td><td class="tw c5"><b>1</b><span>名</span></td><td class="tw c6"><b>2</b><span>名</span></td></tr></tfoot>
   </table></div>
   <div class="mxlg">
-    <span><b>◎</b>この観点を直接挙げている（重視）</span>
-    <span><em>○</em>審査コメントから補助的に反映</span>
-    <span>観点名・審査員名はクリックで移動します</span>
+    <span><i class="lgd">◎</i>この観点を直接挙げている（重視）</span>
+    <span><i class="lgo">○</i>審査コメントから補助的に反映</span>
+    <span>観点名はクリックで移動します</span>
   </div>
   <div class="note">
     <b>配点はこの表から決まっています。</b>
@@ -320,67 +377,67 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     採点結果を報告する際は、この表を使って「どの役員の観点でどう評価されたか」を説明できます。
   </div>
 
-  <h4 style="margin-top:30px">グランドフィナーレに向けた本人の言葉</h4>
+  <h4 style="margin-top:28px">グランドフィナーレに向けた本人の言葉</h4>
   <div class="qgrid">
 <article class="qt">
   <div class="qh"><h3>上坂 貴志</h3><p>取締役専務執行役員</p></div>
   <blockquote>取り組みを自分の言葉で語れる人が前に立っているかを見てください。実際に手を動かしている人、特に若手や普段前に出る機会が少ないメンバーが主役を担っている状態を高く評価してください。</blockquote>
-  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a><a href="#C6" class="qchip">C6 当事者性と熱量</a></div>
+  <div class="qc"><a href="#C2" class="qchip c2">C2 組織浸透</a><a href="#C6" class="qchip c6">C6 当事者性と熱量</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>中山 高史</h3><p>執行役員 / AIexe 代表取締役社長</p></div>
   <blockquote>何をAIで実現したかよりも、部門の中にどのような文化を醸成できたかを最も重視します。「AIを使うのが当たり前だよね」と部員全員が自然に思える組織を築き上げられたかを見せてください。</blockquote>
-  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a></div>
+  <div class="qc"><a href="#C2" class="qchip c2">C2 組織浸透</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>中村 智之</h3><p>執行役員</p></div>
   <blockquote>業務の必要性を問い直す視点と、視座の高さを大切にしたい。自部門に閉じず、他部門・全社への貢献と、データ基盤など経営視点での課題提起ができているかを重視します。</blockquote>
-  <div class="qc"><a href="#C1" class="qchip">C1 業務再設計</a><a href="#C4" class="qchip">C4 波及と視座</a></div>
+  <div class="qc"><a href="#C1" class="qchip c1">C1 業務再設計</a><a href="#C4" class="qchip c4">C4 波及と視座</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>伊藤 英啓</h3><p>執行役員</p></div>
   <blockquote>AIで創出した時間を何に使ったのかを前面に出してほしいです。二段・三段先のゴールに向かって、いま手元のものを変えている構造で語れる部門長こそ、グランドフィナーレに相応しいリーダーだと考えています。</blockquote>
-  <div class="qc"><a href="#C5" class="qchip">C5 価値と再投資</a></div>
+  <div class="qc"><a href="#C5" class="qchip c5">C5 価値と再投資</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>伊藤 裕一</h3><p>執行役員</p></div>
   <blockquote>優れたアイデアよりも部門全体の参加率と広がりを重視してください。特定の誰かに頼るのではなく、チーム全員を巻き込んで、部門としてAIが根づいている状態を語れる部門長を高く評価してください。</blockquote>
-  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a></div>
+  <div class="qc"><a href="#C2" class="qchip c2">C2 組織浸透</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>前田 憲仁</h3><p>執行役員</p></div>
   <blockquote>既存業務を見直し、やめる判断ができているかを重視したい。AIを付加的に活用するのではなく、業務プロセス自体を見直せているか。「これはもうやらなくていい」と言い切れたら、それは相当のリーダーシップです。</blockquote>
-  <div class="qc"><a href="#C1" class="qchip">C1 業務再設計</a></div>
+  <div class="qc"><a href="#C1" class="qchip c1">C1 業務再設計</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>勝田 耕平</h3><p>取締役常務執行役員</p></div>
   <blockquote>AIを使って部門間連携を自然に生み出せていたら理想的です。これまで人の感覚に依存していた部門間連携を、AIとデータで「当たり前」に成立させる取り組みを見せてほしいと考えています。</blockquote>
-  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+  <div class="qc"><a href="#C4" class="qchip c4">C4 波及と視座</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>安田 博一</h3><p>常務執行役員</p></div>
   <blockquote>単なる部門最適ではなく、会社全体を「面」で引き上げる観点を持ち、その実現に向けた具体的な取り組みを示せているかが重要です。</blockquote>
-  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+  <div class="qc"><a href="#C4" class="qchip c4">C4 波及と視座</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>小杉 智</h3><p>執行役員 / ネクストスケープ 代表取締役社長</p></div>
   <blockquote>部門でつくったものが、きちんと「会社のプロセス資産」になっているかどうかを見たい。アウトプットして、それが再利用されるサイクルが組織として形成されているかが重要です。</blockquote>
-  <div class="qc"><a href="#C3" class="qchip">C3 仕組み化・資産化</a></div>
+  <div class="qc"><a href="#C3" class="qchip c3">C3 仕組み化・資産化</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>松尾 邦孝</h3><p>AIトランスフォーメーション事業本部長</p></div>
   <blockquote>個人の熱意に依存しているのか、組織として自律的に回っているのかが重要です。仕組み化のプロセスを明確に示し、部門全員が当たり前のようにAIを使っている状態を実現できているかを評価します。</blockquote>
-  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a><a href="#C3" class="qchip">C3 仕組み化・資産化</a></div>
+  <div class="qc"><a href="#C2" class="qchip c2">C2 組織浸透</a><a href="#C3" class="qchip c3">C3 仕組み化・資産化</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>櫻田 浩</h3><p>執行役員 / SureBizCloud 代表取締役社長</p></div>
   <blockquote>Sureが担当しているお客さまの中には、規模が比較的小さく、情報システム部門の体制やITリテラシーが十分でない企業も少なくありません。そうしたお客さまを一歩先のステージへと引き上げていく意識を持ち、伴走できるリーダーを評価したいと考えています。</blockquote>
-  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+  <div class="qc"><a href="#C4" class="qchip c4">C4 波及と視座</a></div>
 </article>
 <article class="qt">
   <div class="qh"><h3>牧田 幸弘</h3><p>代表取締役社長</p></div>
   <blockquote>成果の大きさだけでなく、その効果の広がりと熱量。その両面を体現できている部門長を評価してください。</blockquote>
-  <div class="qc"><a href="#C6" class="qchip">C6 当事者性と熱量</a></div>
+  <div class="qc"><a href="#C6" class="qchip c6">C6 当事者性と熱量</a></div>
 </article></div>
 </section>
 
@@ -399,7 +456,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="sh"><span class="sn">04</span><h2>観点別 採点リファレンス</h2>
     <p class="ss">レベルは上から5〜1。右端はその観点で入る得点です。迷ったら低いほうをつけてください。</p></div>
   
-<article class="ref" id="C1">
+<article class="ref c1" id="C1">
   <header>
     <span class="rid">C1</span>
     <div class="rt"><h3>業務そのものの再設計と「やめる」判断</h3><p>AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</p></div>
@@ -409,12 +466,12 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">「これはもうやらなくていい」と廃止・縮小した業務を具体名で挙げられ、AFTERの業務フロー全体が再設計されている。AIは再設計の結果として配置されており、順序が明確に「業務 → AI」になっている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。ただし業務フロー全体の再設計までは至っていない。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">既存業務の必要性を問い直した形跡はあるが、実行は既存フローへのAI組み込みにとどまっている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">ツール導入やPoCの報告にとどまり、業務そのものは何も変わっていない。</td><td class="lvp">4</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">「これはもうやらなくていい」と廃止・縮小した業務を具体名で挙げられ、AFTERの業務フロー全体が再設計されている。AIは再設計の結果として配置されており、順序が明確に「業務 → AI」になっている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。ただし業務フロー全体の再設計までは至っていない。</td><td class="lvp">16</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">既存業務の必要性を問い直した形跡はあるが、実行は既存フローへのAI組み込みにとどまっている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">ツール導入やPoCの報告にとどまり、業務そのものは何も変わっていない。</td><td class="lvp">4</td></tr></tbody>
     </table>
     <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F3</b> ツール導入・PoC止まり に該当 → <em>レベル2以下</em></li></ul></div>
   </div>
 </article>
-<article class="ref" id="C2">
+<article class="ref c2" id="C2">
   <header>
     <span class="rid">C2</span>
     <div class="rt"><h3>組織への浸透と参加の広がり</h3><p>部門の何割が、当たり前のこととして使っているか。主役は誰か。</p></div>
@@ -424,12 +481,12 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">部門のほぼ全員が日常的に使い、「AIを使うのが当たり前」と語られる状態。参加率が数値で示されている。若手や普段前に出ないメンバーが主役として登場し、これまで評価されにくかった立場の人が新たな価値を発揮している。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">部門の過半が継続的に使用している。複数のチームに広がり、推進役も複数名いる。参加者の顔ぶれに広がりがある。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">一部チームには広がっているが、使う人と使わない人の差が大きい。主役は依然として一部のメンバーに偏っている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">特定個人1名の取り組み。部門への広がりが確認できない。</td><td class="lvp">4</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">部門のほぼ全員が日常的に使い、「AIを使うのが当たり前」と語られる状態。参加率が数値で示されている。若手や普段前に出ないメンバーが主役として登場し、これまで評価されにくかった立場の人が新たな価値を発揮している。</td><td class="lvp">20</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">部門の過半が継続的に使用している。複数のチームに広がり、推進役も複数名いる。参加者の顔ぶれに広がりがある。</td><td class="lvp">16</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">一部チームには広がっているが、使う人と使わない人の差が大きい。主役は依然として一部のメンバーに偏っている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">特定個人1名の取り組み。部門への広がりが確認できない。</td><td class="lvp">4</td></tr></tbody>
     </table>
     <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F1</b> 生産性向上の数値のみ に該当 → <em>レベル3以下</em></li><li><b>F2</b> 特定個人1名の成果 に該当 → <em>レベル2以下</em></li></ul></div>
   </div>
 </article>
-<article class="ref" id="C3">
+<article class="ref c3" id="C3">
   <header>
     <span class="rid">C3</span>
     <div class="rt"><h3>仕組み化と会社のプロセス資産化</h3><p>担当者が抜けても回るか。他部門が実際に再利用しているか。</p></div>
@@ -439,12 +496,12 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">属人性を排した仕組み（手順・テンプレート・エージェント・基盤）として整備され、担当者が変わっても回る。成果物が全社のプロセス資産として登録・再利用され、他部門が実際に使った実績がある。</td><td class="lvp">10</td></tr><tr class=""><td class="lv">4</td><td class="lvd">仕組み化され部門内で自律的に回っている。再利用可能な形で共有されているが、他部門での利用実績はまだない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">3</td><td class="lvd">手順やナレッジは残っているが、運用は推進者の関与に依存している。再現性は限定的。</td><td class="lvp">6</td></tr><tr class=""><td class="lv">2</td><td class="lvd">個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。</td><td class="lvp">4</td></tr><tr class=""><td class="lv">1</td><td class="lvd">単発の取り組みで、再現の手立てがない。</td><td class="lvp">2</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">属人性を排した仕組み（手順・テンプレート・エージェント・基盤）として整備され、担当者が変わっても回る。成果物が全社のプロセス資産として登録・再利用され、他部門が実際に使った実績がある。</td><td class="lvp">10</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">仕組み化され部門内で自律的に回っている。再利用可能な形で共有されているが、他部門での利用実績はまだない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">手順やナレッジは残っているが、運用は推進者の関与に依存している。再現性は限定的。</td><td class="lvp">6</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。</td><td class="lvp">4</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">単発の取り組みで、再現の手立てがない。</td><td class="lvp">2</td></tr></tbody>
     </table>
     <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F2</b> 特定個人1名の成果 に該当 → <em>レベル2以下</em></li></ul></div>
   </div>
 </article>
-<article class="ref" id="C4">
+<article class="ref c4" id="C4">
   <header>
     <span class="rid">C4</span>
     <div class="rt"><h3>波及範囲と経営視座</h3><p>自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</p></div>
@@ -454,12 +511,12 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">全社を「面」で引き上げる取り組みになっており、社外・顧客（とりわけ情シス体制やITリテラシーが十分でない顧客）を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">他部門への共有・展開の動きはあるが、まだ点の連携にとどまる。経営視点の提起は弱い。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">自部門内での最適化にとどまる。外への波及が語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">個別業務の最適化にとどまり、部門外への視点がない。</td><td class="lvp">4</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">全社を「面」で引き上げる取り組みになっており、社外・顧客（とりわけ情シス体制やITリテラシーが十分でない顧客）を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。</td><td class="lvp">20</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">他部門への共有・展開の動きはあるが、まだ点の連携にとどまる。経営視点の提起は弱い。</td><td class="lvp">12</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">自部門内での最適化にとどまる。外への波及が語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">個別業務の最適化にとどまり、部門外への視点がない。</td><td class="lvp">4</td></tr></tbody>
     </table>
     
   </div>
 </article>
-<article class="ref" id="C5">
+<article class="ref c5" id="C5">
   <header>
     <span class="rid">C5</span>
     <div class="rt"><h3>創出した価値と、その再投資先</h3><p>浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</p></div>
@@ -469,12 +526,12 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">創出した時間・リソースの再投資先が具体的に語られ（考える仕事、現場把握、人と話す時間、次の打ち手）、二段・三段先のゴールに向けていま手元を変えている構造が説明されている。ビジネスインパクトも定量で示されている。</td><td class="lvp">10</td></tr><tr class=""><td class="lv">4</td><td class="lvd">効果が定量で示され、再投資先も述べられている。ただし先のゴールとの接続はやや弱い。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">3</td><td class="lvd">効果は示されているが、浮いた時間の行き先が語られていない。</td><td class="lvp">6</td></tr><tr class=""><td class="lv">2</td><td class="lvd">効果が定性的・体感的な記述にとどまる。</td><td class="lvp">4</td></tr><tr class=""><td class="lv">1</td><td class="lvd">効果の記述がない、または「時短できた」で完結している。</td><td class="lvp">2</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">創出した時間・リソースの再投資先が具体的に語られ（考える仕事、現場把握、人と話す時間、次の打ち手）、二段・三段先のゴールに向けていま手元を変えている構造が説明されている。ビジネスインパクトも定量で示されている。</td><td class="lvp">10</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">効果が定量で示され、再投資先も述べられている。ただし先のゴールとの接続はやや弱い。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">効果は示されているが、浮いた時間の行き先が語られていない。</td><td class="lvp">6</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">効果が定性的・体感的な記述にとどまる。</td><td class="lvp">4</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">効果の記述がない、または「時短できた」で完結している。</td><td class="lvp">2</td></tr></tbody>
     </table>
     
   </div>
 </article>
-<article class="ref" id="C6">
+<article class="ref c6" id="C6">
   <header>
     <span class="rid">C6</span>
     <div class="rt"><h3>語りの当事者性と熱量</h3><p>本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</p></div>
@@ -484,7 +541,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
-      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">部門長本人が自分の言葉で語り、工夫や判断の理由を言語化できている。共有したくなる熱量があり、聞き手を引き込む面白さ・驚きがある。手を動かした当事者が前に立っている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">自分の言葉で語れており、熱量が伝わる。言語化も概ねできている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">内容は整理されているが借り物の言葉が混じり、熱量が読み取りにくい。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">報告調で、当事者の顔が見えない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">代理や資料の引き写しで、本人の言葉がまったくない。</td><td class="lvp">4</td></tr></tbody>
+      <tbody><tr class="top"><td class="lv"><span>5</span></td><td class="lvd">部門長本人が自分の言葉で語り、工夫や判断の理由を言語化できている。共有したくなる熱量があり、聞き手を引き込む面白さ・驚きがある。手を動かした当事者が前に立っている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv"><span>4</span></td><td class="lvd">自分の言葉で語れており、熱量が伝わる。言語化も概ねできている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv"><span>3</span></td><td class="lvd">内容は整理されているが借り物の言葉が混じり、熱量が読み取りにくい。</td><td class="lvp">12</td></tr><tr class=""><td class="lv"><span>2</span></td><td class="lvd">報告調で、当事者の顔が見えない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv"><span>1</span></td><td class="lvd">代理や資料の引き写しで、本人の言葉がまったくない。</td><td class="lvp">4</td></tr></tbody>
     </table>
     <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F4</b> 本人の言葉でない に該当 → <em>レベル2以下</em></li></ul></div>
   </div>
@@ -528,7 +585,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
   <div class="tsc"><table class="bd">
     <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
-    <tbody><tr><td class="bl b-S">S</td><td class="num">80〜</td><td>グランドフィナーレ最有力。6観点のいずれにも穴がない。</td></tr><tr><td class="bl b-A">A</td><td class="num">65〜</td><td>通過候補。人手審査へ回す。</td></tr><tr><td class="bl b-B">B</td><td class="num">50〜</td><td>要議論。強い観点があれば人手審査で拾い上げる。</td></tr><tr><td class="bl b-C">C</td><td class="num">〜49</td><td>予備審査で見送り。</td></tr></tbody>
+    <tbody><tr><td class="bl b-S"><span>S</span></td><td class="num">80〜</td><td>グランドフィナーレ最有力。6観点のいずれにも穴がない。</td></tr><tr><td class="bl b-A"><span>A</span></td><td class="num">65〜</td><td>通過候補。人手審査へ回す。</td></tr><tr><td class="bl b-B"><span>B</span></td><td class="num">50〜</td><td>要議論。強い観点があれば人手審査で拾い上げる。</td></tr><tr><td class="bl b-C"><span>C</span></td><td class="num">〜49</td><td>予備審査で見送り。</td></tr></tbody>
   </table></div>
 
   <div class="two" style="margin-top:22px">
@@ -543,7 +600,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
       <h4>総合点のキャリブレーション</h4>
       <div class="tsc"><table class="cb">
         <thead><tr><th>つけ方</th><th style="text-align:right">総合点</th><th>判定</th></tr></thead>
-        <tbody><tr><th scope="row">全観点をレベル5でつけた場合</th><td class="num big">100</td><td class="bl b-S">S</td></tr><tr><th scope="row">全観点をレベル4でつけた場合</th><td class="num big">80</td><td class="bl b-S">S</td></tr><tr><th scope="row">全観点をレベル3でつけた場合</th><td class="num big">60</td><td class="bl b-B">B</td></tr><tr><th scope="row">全観点をレベル2でつけた場合</th><td class="num big">40</td><td class="bl b-C">C</td></tr><tr><th scope="row">全観点をレベル1でつけた場合</th><td class="num big">20</td><td class="bl b-C">C</td></tr></tbody>
+        <tbody><tr><th scope="row">全観点をレベル5でつけた場合</th><td class="num big">100</td><td class="bl b-S"><span>S</span></td></tr><tr><th scope="row">全観点をレベル4でつけた場合</th><td class="num big">80</td><td class="bl b-S"><span>S</span></td></tr><tr><th scope="row">全観点をレベル3でつけた場合</th><td class="num big">60</td><td class="bl b-B"><span>B</span></td></tr><tr><th scope="row">全観点をレベル2でつけた場合</th><td class="num big">40</td><td class="bl b-C"><span>C</span></td></tr><tr><th scope="row">全観点をレベル1でつけた場合</th><td class="num big">20</td><td class="bl b-C"><span>C</span></td></tr></tbody>
       </table></div>
     </div>
   </div>
@@ -561,7 +618,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 <section>
   <div class="sh"><span class="sn">07</span><h2>採点で気をつけること</h2>
     <p class="ss">AIに渡すプロンプトにも同じ制約を入れていますが、転記・確認の段階で崩れやすいところです。</p></div>
-  <ul class="dont"><li><h3>資料に書いていない良さを補わない</h3><p>AIにも人にも共通。情報が足りない観点はレベルを下げ、記録に残す。推測で埋めると審査員に説明できなくなる。</p></li><li><h3>「AIを導入した」は加点材料ではない</h3><p>ツール名やPoCの実施そのものは評価しない。業務・組織・人がどう変わったかだけを見る。</p></li><li><h3>生産性の数値の大きさで決めない</h3><p>時短率や削減時間は前提であって差別化要因ではない。数字が大きいというだけで高いレベルをつけない。</p></li><li><h3>役職の高さを採点に持ち込まない</h3><p>採点対象は取り組みそのもの。配点も役職で重み付けしていないので、ここで持ち込むと設計が崩れる。</p></li><li><h3>迷ったら低いほうをつける</h3><p>上のレベルの記述を<b>すべて</b>満たしていなければ、そのレベルには到達していない。</p></li><li><h3>予備審査で決着させない</h3><p>これは足切りと順位づけの一次スクリーニング。最終決定は審査員12名による人手審査で行う。</p></li></ul>
+  <ul class="dont"><li class="no"><h3>資料に書いていない良さを補わない</h3><p>AIにも人にも共通。情報が足りない観点はレベルを下げ、記録に残す。推測で埋めると審査員に説明できなくなる。</p></li><li class="no"><h3>「AIを導入した」は加点材料ではない</h3><p>ツール名やPoCの実施そのものは評価しない。業務・組織・人がどう変わったかだけを見る。</p></li><li class="no"><h3>生産性の数値の大きさで決めない</h3><p>時短率や削減時間は前提であって差別化要因ではない。数字が大きいというだけで高いレベルをつけない。</p></li><li class="no"><h3>役職の高さを採点に持ち込まない</h3><p>採点対象は取り組みそのもの。配点も役職で重み付けしていないので、ここで持ち込むと設計が崩れる。</p></li><li class="no"><h3>迷ったら低いほうをつける</h3><p>上のレベルの記述を<b>すべて</b>満たしていなければ、そのレベルには到達していない。</p></li><li class="warn"><h3>予備審査で決着させない</h3><p>これは足切りと順位づけの一次スクリーニング。最終決定は審査員12名による人手審査で行う。</p></li></ul>
 </section>
 
 <footer>
