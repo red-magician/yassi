@@ -148,6 +148,61 @@ td.lvp{font-family:var(--mono);width:52px;color:var(--navy);font-weight:700;
 .capbox b{font-family:var(--mono);color:var(--warn)}
 .capbox em{font-style:normal;font-weight:700;color:var(--warn)}
 
+/* 観点カード内「この観点を重視する審査員」 */
+.rwho{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:9px 18px;
+  background:var(--card);border-bottom:1px solid var(--line2)}
+.wl{font-size:10px;letter-spacing:.1em;color:var(--mute);font-weight:700;margin-right:3px}
+.jt{font-size:11.5px;text-decoration:none;padding:2px 8px;border-radius:2px;
+  border:1px solid var(--line);white-space:nowrap}
+.jd{background:var(--gold-s);border-color:var(--gold);color:var(--ink);font-weight:700}
+.jo{color:var(--mute)}
+.jt:hover{border-color:var(--navy2)}
+
+/* 審査員別 重視観点マトリクス */
+table.mx{min-width:700px}
+table.mx thead th{background:var(--navy);border-bottom:none;padding:8px 6px;
+  text-align:center;vertical-align:bottom}
+table.mx thead th:first-child,table.mx thead th:last-child{text-align:left}
+table.mx thead th a{text-decoration:none;display:block}
+table.mx thead th a b{display:block;font-family:var(--mono);font-size:9.5px;color:#D6BB7A;
+  letter-spacing:.08em}
+table.mx thead th a span{display:block;font-size:11.5px;color:#fff;font-weight:700;
+  line-height:1.35;margin:1px 0;white-space:nowrap}
+table.mx thead th a i{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;
+  color:#9DB3D4}
+table.mx tbody th{white-space:nowrap;padding:8px 12px}
+table.mx tbody th b{display:block;font-size:13px;font-weight:700}
+table.mx tbody th i{display:block;font-style:normal;font-size:10px;color:var(--mute);
+  line-height:1.45}
+table.mx td{text-align:center;font-size:14px;font-weight:700;vertical-align:middle;padding:8px 4px}
+table.mx td.d{color:var(--gold);background:var(--gold-s)}
+table.mx td.o{color:var(--mute)}
+table.mx td.pt{text-align:left;font-size:11.5px;line-height:1.65;color:var(--ink2);
+  padding:8px 12px;min-width:280px}
+table.mx tbody tr:hover td:not(.d){background:var(--sunk)}
+table.mx tfoot td,table.mx tfoot th{background:var(--sunk);padding:7px 4px;text-align:center}
+table.mx tfoot th{text-align:right;padding-right:12px;font-size:10.5px;color:var(--mute);
+  letter-spacing:.06em;white-space:nowrap}
+table.mx tfoot td b{font-family:var(--mono);font-size:15px;color:var(--navy)}
+table.mx tfoot td span{font-size:9.5px;color:var(--mute);margin-left:1px}
+.mxlg{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--mute)}
+.mxlg b{color:var(--gold);font-size:13px;margin-right:3px}
+.mxlg em{font-style:normal;color:var(--ink2);font-size:13px;font-weight:700;margin-right:3px}
+
+/* 本人の言葉 */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px;
+  margin-top:20px}
+.qt{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:13px 15px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px}
+.qh h3{margin:0;font-size:14px;font-weight:700}
+.qh p{margin:0;font-size:10px;color:var(--mute);line-height:1.5}
+.qt blockquote{margin:0;padding-left:11px;border-left:2px solid var(--gold);flex:1;
+  font-size:11.5px;line-height:1.8;color:var(--ink2)}
+.qc{display:flex;flex-wrap:wrap;gap:5px}
+.qchip{font-family:var(--mono);font-size:10px;text-decoration:none;padding:2px 7px;
+  border-radius:2px;background:var(--gold-s);border:1px solid var(--gold);color:var(--ink);
+  letter-spacing:.02em}
+
 /* フラグ */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
 .fg{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);
@@ -245,8 +300,92 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   </div>
 </section>
 
+<section id="jm">
+  <div class="sh"><span class="sn">02</span><h2>どの役員がどの観点を重視しているか</h2>
+    <p class="ss">◎＝グランドフィナーレコメントで直接この観点を挙げている（＝重視）。○＝各ステージ向けの審査コメントから補助的に反映。</p></div>
+  <div class="tsc"><table class="mx">
+    <thead><tr><th>審査員</th><th><a href="#C1"><b>C1</b><span>業務再設計</span><i>20点</i></a></th><th><a href="#C2"><b>C2</b><span>組織浸透</span><i>20点</i></a></th><th><a href="#C3"><b>C3</b><span>仕組み化・資産化</span><i>10点</i></a></th><th><a href="#C4"><b>C4</b><span>波及と視座</span><i>20点</i></a></th><th><a href="#C5"><b>C5</b><span>価値と再投資</span><i>10点</i></a></th><th><a href="#C6"><b>C6</b><span>当事者性と熱量</span><i>20点</i></a></th></tr></thead>
+    <tbody><tr><th scope="row"><b>上坂 貴志</b><i>取締役専務執行役員</i></th><td></td><td class="d">◎</td><td></td><td></td><td></td><td class="d">◎</td></tr><tr><th scope="row"><b>中山 高史</b><i>執行役員 / AIexe 代表取締役社長</i></th><td></td><td class="d">◎</td><td></td><td></td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>中村 智之</b><i>執行役員</i></th><td class="d">◎</td><td></td><td class="o">○</td><td class="d">◎</td><td class="o">○</td><td></td></tr><tr><th scope="row"><b>伊藤 英啓</b><i>執行役員</i></th><td class="o">○</td><td></td><td></td><td></td><td class="d">◎</td><td></td></tr><tr><th scope="row"><b>伊藤 裕一</b><i>執行役員</i></th><td></td><td class="d">◎</td><td></td><td></td><td class="o">○</td><td></td></tr><tr><th scope="row"><b>前田 憲仁</b><i>執行役員</i></th><td class="d">◎</td><td></td><td></td><td></td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>勝田 耕平</b><i>取締役常務執行役員</i></th><td></td><td></td><td></td><td class="d">◎</td><td></td><td class="o">○</td></tr><tr><th scope="row"><b>安田 博一</b><i>常務執行役員</i></th><td class="o">○</td><td></td><td></td><td class="d">◎</td><td></td><td></td></tr><tr><th scope="row"><b>小杉 智</b><i>執行役員 / ネクストスケープ 代表取締役社長</i></th><td class="o">○</td><td></td><td class="d">◎</td><td></td><td></td><td></td></tr><tr><th scope="row"><b>松尾 邦孝</b><i>AIトランスフォーメーション事業本部長</i></th><td class="o">○</td><td class="d">◎</td><td class="d">◎</td><td></td><td></td><td></td></tr><tr><th scope="row"><b>櫻田 浩</b><i>執行役員 / SureBizCloud 代表取締役社長</i></th><td></td><td class="o">○</td><td></td><td class="d">◎</td><td></td><td></td></tr><tr><th scope="row"><b>牧田 幸弘</b><i>代表取締役社長</i></th><td></td><td></td><td></td><td class="o">○</td><td></td><td class="d">◎</td></tr></tbody>
+    <tfoot><tr><th>◎ の審査員数</th><td class="tw"><b>2</b><span>名</span></td><td class="tw"><b>4</b><span>名</span></td><td class="tw"><b>2</b><span>名</span></td><td class="tw"><b>4</b><span>名</span></td><td class="tw"><b>1</b><span>名</span></td><td class="tw"><b>2</b><span>名</span></td></tr></tfoot>
+  </table></div>
+  <div class="mxlg">
+    <span><b>◎</b>この観点を直接挙げている（重視）</span>
+    <span><em>○</em>審査コメントから補助的に反映</span>
+    <span>観点名・審査員名はクリックで移動します</span>
+  </div>
+  <div class="note">
+    <b>配点はこの表から決まっています。</b>
+    ◎を1.0、○を0.5として観点ごとに数え、100点に正規化したうえで10点刻みに丸めました。
+    「多くの役員が挙げた観点ほど配点が重い」という関係になっており、役職による重み付けは入れていません。
+    採点結果を報告する際は、この表を使って「どの役員の観点でどう評価されたか」を説明できます。
+  </div>
+
+  <h4 style="margin-top:30px">グランドフィナーレに向けた本人の言葉</h4>
+  <div class="qgrid">
+<article class="qt">
+  <div class="qh"><h3>上坂 貴志</h3><p>取締役専務執行役員</p></div>
+  <blockquote>取り組みを自分の言葉で語れる人が前に立っているかを見てください。実際に手を動かしている人、特に若手や普段前に出る機会が少ないメンバーが主役を担っている状態を高く評価してください。</blockquote>
+  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a><a href="#C6" class="qchip">C6 当事者性と熱量</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>中山 高史</h3><p>執行役員 / AIexe 代表取締役社長</p></div>
+  <blockquote>何をAIで実現したかよりも、部門の中にどのような文化を醸成できたかを最も重視します。「AIを使うのが当たり前だよね」と部員全員が自然に思える組織を築き上げられたかを見せてください。</blockquote>
+  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>中村 智之</h3><p>執行役員</p></div>
+  <blockquote>業務の必要性を問い直す視点と、視座の高さを大切にしたい。自部門に閉じず、他部門・全社への貢献と、データ基盤など経営視点での課題提起ができているかを重視します。</blockquote>
+  <div class="qc"><a href="#C1" class="qchip">C1 業務再設計</a><a href="#C4" class="qchip">C4 波及と視座</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>伊藤 英啓</h3><p>執行役員</p></div>
+  <blockquote>AIで創出した時間を何に使ったのかを前面に出してほしいです。二段・三段先のゴールに向かって、いま手元のものを変えている構造で語れる部門長こそ、グランドフィナーレに相応しいリーダーだと考えています。</blockquote>
+  <div class="qc"><a href="#C5" class="qchip">C5 価値と再投資</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>伊藤 裕一</h3><p>執行役員</p></div>
+  <blockquote>優れたアイデアよりも部門全体の参加率と広がりを重視してください。特定の誰かに頼るのではなく、チーム全員を巻き込んで、部門としてAIが根づいている状態を語れる部門長を高く評価してください。</blockquote>
+  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>前田 憲仁</h3><p>執行役員</p></div>
+  <blockquote>既存業務を見直し、やめる判断ができているかを重視したい。AIを付加的に活用するのではなく、業務プロセス自体を見直せているか。「これはもうやらなくていい」と言い切れたら、それは相当のリーダーシップです。</blockquote>
+  <div class="qc"><a href="#C1" class="qchip">C1 業務再設計</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>勝田 耕平</h3><p>取締役常務執行役員</p></div>
+  <blockquote>AIを使って部門間連携を自然に生み出せていたら理想的です。これまで人の感覚に依存していた部門間連携を、AIとデータで「当たり前」に成立させる取り組みを見せてほしいと考えています。</blockquote>
+  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>安田 博一</h3><p>常務執行役員</p></div>
+  <blockquote>単なる部門最適ではなく、会社全体を「面」で引き上げる観点を持ち、その実現に向けた具体的な取り組みを示せているかが重要です。</blockquote>
+  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>小杉 智</h3><p>執行役員 / ネクストスケープ 代表取締役社長</p></div>
+  <blockquote>部門でつくったものが、きちんと「会社のプロセス資産」になっているかどうかを見たい。アウトプットして、それが再利用されるサイクルが組織として形成されているかが重要です。</blockquote>
+  <div class="qc"><a href="#C3" class="qchip">C3 仕組み化・資産化</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>松尾 邦孝</h3><p>AIトランスフォーメーション事業本部長</p></div>
+  <blockquote>個人の熱意に依存しているのか、組織として自律的に回っているのかが重要です。仕組み化のプロセスを明確に示し、部門全員が当たり前のようにAIを使っている状態を実現できているかを評価します。</blockquote>
+  <div class="qc"><a href="#C2" class="qchip">C2 組織浸透</a><a href="#C3" class="qchip">C3 仕組み化・資産化</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>櫻田 浩</h3><p>執行役員 / SureBizCloud 代表取締役社長</p></div>
+  <blockquote>Sureが担当しているお客さまの中には、規模が比較的小さく、情報システム部門の体制やITリテラシーが十分でない企業も少なくありません。そうしたお客さまを一歩先のステージへと引き上げていく意識を持ち、伴走できるリーダーを評価したいと考えています。</blockquote>
+  <div class="qc"><a href="#C4" class="qchip">C4 波及と視座</a></div>
+</article>
+<article class="qt">
+  <div class="qh"><h3>牧田 幸弘</h3><p>代表取締役社長</p></div>
+  <blockquote>成果の大きさだけでなく、その効果の広がりと熱量。その両面を体現できている部門長を評価してください。</blockquote>
+  <div class="qc"><a href="#C6" class="qchip">C6 当事者性と熱量</a></div>
+</article></div>
+</section>
+
 <section>
-  <div class="sh"><span class="sn">02</span><h2>採点の手順</h2>
+  <div class="sh"><span class="sn">03</span><h2>採点の手順</h2>
     <p class="ss">1件あたりの流れ。ステップ4を飛ばすと前提フラグが効かないまま順位が出ます。</p></div>
   <ol class="steps">
 <li><div class="stn">1</div><div class="stb"><h3>応募資料を1件ずつAIに渡す</h3><p>プロンプトは <code>AI予備審査プロンプト.md</code>（Excelの 05 シートにも同じ本文あり）。件ごとに書き換える必要はない。応募資料だけを差し替える。</p></div></li>
@@ -257,7 +396,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </section>
 
 <section>
-  <div class="sh"><span class="sn">03</span><h2>観点別 採点リファレンス</h2>
+  <div class="sh"><span class="sn">04</span><h2>観点別 採点リファレンス</h2>
     <p class="ss">レベルは上から5〜1。右端はその観点で入る得点です。迷ったら低いほうをつけてください。</p></div>
   
 <article class="ref" id="C1">
@@ -266,6 +405,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>業務そのものの再設計と「やめる」判断</h3><p>AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</p></div>
     <span class="rw">20<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">前田 憲仁</a><a href="#jm" class="jt jd">中村 智之</a><a href="#jm" class="jt jo">伊藤 英啓</a><a href="#jm" class="jt jo">安田 博一</a><a href="#jm" class="jt jo">小杉 智</a><a href="#jm" class="jt jo">松尾 邦孝</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -280,6 +420,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>組織への浸透と参加の広がり</h3><p>部門の何割が、当たり前のこととして使っているか。主役は誰か。</p></div>
     <span class="rw">20<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">伊藤 裕一</a><a href="#jm" class="jt jd">中山 高史</a><a href="#jm" class="jt jd">松尾 邦孝</a><a href="#jm" class="jt jd">上坂 貴志</a><a href="#jm" class="jt jo">櫻田 浩</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -294,6 +435,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>仕組み化と会社のプロセス資産化</h3><p>担当者が抜けても回るか。他部門が実際に再利用しているか。</p></div>
     <span class="rw">10<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">松尾 邦孝</a><a href="#jm" class="jt jd">小杉 智</a><a href="#jm" class="jt jo">中村 智之</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -308,6 +450,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>波及範囲と経営視座</h3><p>自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</p></div>
     <span class="rw">20<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">安田 博一</a><a href="#jm" class="jt jd">中村 智之</a><a href="#jm" class="jt jd">勝田 耕平</a><a href="#jm" class="jt jd">櫻田 浩</a><a href="#jm" class="jt jo">牧田 幸弘</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -322,6 +465,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>創出した価値と、その再投資先</h3><p>浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</p></div>
     <span class="rw">10<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">伊藤 英啓</a><a href="#jm" class="jt jo">伊藤 裕一</a><a href="#jm" class="jt jo">中村 智之</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -336,6 +480,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div class="rt"><h3>語りの当事者性と熱量</h3><p>本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</p></div>
     <span class="rw">20<i>点</i></span>
   </header>
+  <div class="rwho"><span class="wl">重視</span><a href="#jm" class="jt jd">上坂 貴志</a><a href="#jm" class="jt jd">牧田 幸弘</a><a href="#jm" class="jt jo">中山 高史</a><a href="#jm" class="jt jo">前田 憲仁</a><a href="#jm" class="jt jo">勝田 耕平</a></div>
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -347,7 +492,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </section>
 
 <section>
-  <div class="sh"><span class="sn">04</span><h2>前提フラグ</h2>
+  <div class="sh"><span class="sn">05</span><h2>前提フラグ</h2>
     <p class="ss">加点ではなく上限です。該当したら、その観点は指定レベル以上をつけられません。</p></div>
   <div class="fgrid">
 <article class="fg">
@@ -379,7 +524,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </section>
 
 <section>
-  <div class="sh"><span class="sn">05</span><h2>判定と得点の目安</h2>
+  <div class="sh"><span class="sn">06</span><h2>判定と得点の目安</h2>
     <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
   <div class="tsc"><table class="bd">
     <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
@@ -414,7 +559,7 @@ a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </section>
 
 <section>
-  <div class="sh"><span class="sn">06</span><h2>採点で気をつけること</h2>
+  <div class="sh"><span class="sn">07</span><h2>採点で気をつけること</h2>
     <p class="ss">AIに渡すプロンプトにも同じ制約を入れていますが、転記・確認の段階で崩れやすいところです。</p></div>
   <ul class="dont"><li><h3>資料に書いていない良さを補わない</h3><p>AIにも人にも共通。情報が足りない観点はレベルを下げ、記録に残す。推測で埋めると審査員に説明できなくなる。</p></li><li><h3>「AIを導入した」は加点材料ではない</h3><p>ツール名やPoCの実施そのものは評価しない。業務・組織・人がどう変わったかだけを見る。</p></li><li><h3>生産性の数値の大きさで決めない</h3><p>時短率や削減時間は前提であって差別化要因ではない。数字が大きいというだけで高いレベルをつけない。</p></li><li><h3>役職の高さを採点に持ち込まない</h3><p>採点対象は取り組みそのもの。配点も役職で重み付けしていないので、ここで持ち込むと設計が崩れる。</p></li><li><h3>迷ったら低いほうをつける</h3><p>上のレベルの記述を<b>すべて</b>満たしていなければ、そのレベルには到達していない。</p></li><li><h3>予備審査で決着させない</h3><p>これは足切りと順位づけの一次スクリーニング。最終決定は審査員12名による人手審査で行う。</p></li></ul>
 </section>

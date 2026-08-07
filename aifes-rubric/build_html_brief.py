@@ -11,6 +11,29 @@ E = html.escape
 LEVELS = [5, 4, 3, 2, 1]
 TOTAL = sum(WEIGHTS)
 N_JUDGES = len(JUDGES)
+J = {j["no"]: j for j in JUDGES}
+
+
+def marks_of(judge_no, crit):
+    """その審査員がこの観点に寄与している印。◎＝グランドフィナーレコメント由来。"""
+    ms = [(m, n) for jn, m, n in crit["sources"] if jn == judge_no]
+    if not ms:
+        return None, []
+    return ("◎" if any(m == "◎" for m, _ in ms) else "○"), [n for _, n in ms]
+
+
+def emphasis_notes(judge_no):
+    """その審査員が◎で重視している観点の要点。"""
+    out = []
+    for c in CRITERIA:
+        for jn, m, n in c["sources"]:
+            if jn == judge_no and m == "◎":
+                out.append((c, n))
+    return out
+
+
+def judges_of(crit, mark="◎"):
+    return [J[jn] for jn, m, _ in crit["sources"] if m == mark]
 
 # 全観点を同じレベルでつけたときの総合点（キャリブレーション用）
 def flat(lv):
@@ -52,6 +75,13 @@ for c in CRITERIA:
         f'<td class="lvd">{E(t)}</td>'
         f'<td class="lvp">{int(n / 5 * c["weight"])}</td></tr>'
         for n, t in zip(LEVELS, c["levels"]))
+    emph = judges_of(c, "◎")
+    also = [j for j in judges_of(c, "○") if j not in emph]
+    who = ('<div class="rwho"><span class="wl">重視</span>'
+           + "".join(f'<a href="#jm" class="jt jd">{E(j["name"])}</a>' for j in emph)
+           + ("".join(f'<a href="#jm" class="jt jo">{E(j["name"])}</a>' for j in also)
+              if also else "")
+           + "</div>")
     refs.append(f"""
 <article class="ref" id="{c['id']}">
   <header>
@@ -59,6 +89,7 @@ for c in CRITERIA:
     <div class="rt"><h3>{E(c['name'])}</h3><p>{E(c['question'])}</p></div>
     <span class="rw">{c['weight']}<i>点</i></span>
   </header>
+  {who}
   <div class="rbody">
     <table class="lvt">
       <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
@@ -67,6 +98,35 @@ for c in CRITERIA:
     {cap_block}
   </div>
 </article>""")
+
+# ---------------------------------------------------------------- 審査員別 重視観点
+mxhead = "".join(
+    f'<th><a href="#{c["id"]}"><b>{c["id"]}</b><span>{E(c["short"])}</span>'
+    f'<i>{c["weight"]}点</i></a></th>' for c in CRITERIA)
+mxrows = []
+for j in JUDGES:
+    cells = ""
+    for c in CRITERIA:
+        mk, _ = marks_of(j["no"], c)
+        if mk == "◎":
+            cells += '<td class="d">◎</td>'
+        elif mk == "○":
+            cells += '<td class="o">○</td>'
+        else:
+            cells += "<td></td>"
+    mxrows.append(
+        f'<tr><th scope="row"><b>{E(j["name"])}</b><i>{E(j["title"])}</i></th>{cells}</tr>')
+mxfoot = "".join(
+    f'<td class="tw"><b>{len(judges_of(c, "◎"))}</b><span>名</span></td>' for c in CRITERIA)
+
+quotes = "".join(f"""
+<article class="qt">
+  <div class="qh"><h3>{E(j['name'])}</h3><p>{E(j['title'])}</p></div>
+  <blockquote>{E(j['gf'])}</blockquote>
+  <div class="qc">{"".join(
+      f'<a href="#{c["id"]}" class="qchip">{c["id"]} {E(c["short"])}</a>'
+      for c, _ in emphasis_notes(j['no']))}</div>
+</article>""" for j in JUDGES)
 
 # ---------------------------------------------------------------- フラグ
 flagcards = "".join(f"""
@@ -288,6 +348,61 @@ td.lvp{font-family:var(--mono);width:52px;color:var(--navy);font-weight:700;
 .capbox b{font-family:var(--mono);color:var(--warn)}
 .capbox em{font-style:normal;font-weight:700;color:var(--warn)}
 
+/* 観点カード内「この観点を重視する審査員」 */
+.rwho{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:9px 18px;
+  background:var(--card);border-bottom:1px solid var(--line2)}
+.wl{font-size:10px;letter-spacing:.1em;color:var(--mute);font-weight:700;margin-right:3px}
+.jt{font-size:11.5px;text-decoration:none;padding:2px 8px;border-radius:2px;
+  border:1px solid var(--line);white-space:nowrap}
+.jd{background:var(--gold-s);border-color:var(--gold);color:var(--ink);font-weight:700}
+.jo{color:var(--mute)}
+.jt:hover{border-color:var(--navy2)}
+
+/* 審査員別 重視観点マトリクス */
+table.mx{min-width:700px}
+table.mx thead th{background:var(--navy);border-bottom:none;padding:8px 6px;
+  text-align:center;vertical-align:bottom}
+table.mx thead th:first-child,table.mx thead th:last-child{text-align:left}
+table.mx thead th a{text-decoration:none;display:block}
+table.mx thead th a b{display:block;font-family:var(--mono);font-size:9.5px;color:#D6BB7A;
+  letter-spacing:.08em}
+table.mx thead th a span{display:block;font-size:11.5px;color:#fff;font-weight:700;
+  line-height:1.35;margin:1px 0;white-space:nowrap}
+table.mx thead th a i{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;
+  color:#9DB3D4}
+table.mx tbody th{white-space:nowrap;padding:8px 12px}
+table.mx tbody th b{display:block;font-size:13px;font-weight:700}
+table.mx tbody th i{display:block;font-style:normal;font-size:10px;color:var(--mute);
+  line-height:1.45}
+table.mx td{text-align:center;font-size:14px;font-weight:700;vertical-align:middle;padding:8px 4px}
+table.mx td.d{color:var(--gold);background:var(--gold-s)}
+table.mx td.o{color:var(--mute)}
+table.mx td.pt{text-align:left;font-size:11.5px;line-height:1.65;color:var(--ink2);
+  padding:8px 12px;min-width:280px}
+table.mx tbody tr:hover td:not(.d){background:var(--sunk)}
+table.mx tfoot td,table.mx tfoot th{background:var(--sunk);padding:7px 4px;text-align:center}
+table.mx tfoot th{text-align:right;padding-right:12px;font-size:10.5px;color:var(--mute);
+  letter-spacing:.06em;white-space:nowrap}
+table.mx tfoot td b{font-family:var(--mono);font-size:15px;color:var(--navy)}
+table.mx tfoot td span{font-size:9.5px;color:var(--mute);margin-left:1px}
+.mxlg{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--mute)}
+.mxlg b{color:var(--gold);font-size:13px;margin-right:3px}
+.mxlg em{font-style:normal;color:var(--ink2);font-size:13px;font-weight:700;margin-right:3px}
+
+/* 本人の言葉 */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px;
+  margin-top:20px}
+.qt{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:13px 15px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px}
+.qh h3{margin:0;font-size:14px;font-weight:700}
+.qh p{margin:0;font-size:10px;color:var(--mute);line-height:1.5}
+.qt blockquote{margin:0;padding-left:11px;border-left:2px solid var(--gold);flex:1;
+  font-size:11.5px;line-height:1.8;color:var(--ink2)}
+.qc{display:flex;flex-wrap:wrap;gap:5px}
+.qchip{font-family:var(--mono);font-size:10px;text-decoration:none;padding:2px 7px;
+  border-radius:2px;background:var(--gold-s);border:1px solid var(--gold);color:var(--ink);
+  letter-spacing:.02em}
+
 /* フラグ */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
 .fg{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);
@@ -388,20 +503,44 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
   </div>
 </section>
 
+<section id="jm">
+  <div class="sh"><span class="sn">02</span><h2>どの役員がどの観点を重視しているか</h2>
+    <p class="ss">◎＝グランドフィナーレコメントで直接この観点を挙げている（＝重視）。○＝各ステージ向けの審査コメントから補助的に反映。</p></div>
+  <div class="tsc"><table class="mx">
+    <thead><tr><th>審査員</th>{mxhead}</tr></thead>
+    <tbody>{"".join(mxrows)}</tbody>
+    <tfoot><tr><th>◎ の審査員数</th>{mxfoot}</tr></tfoot>
+  </table></div>
+  <div class="mxlg">
+    <span><b>◎</b>この観点を直接挙げている（重視）</span>
+    <span><em>○</em>審査コメントから補助的に反映</span>
+    <span>観点名・審査員名はクリックで移動します</span>
+  </div>
+  <div class="note">
+    <b>配点はこの表から決まっています。</b>
+    ◎を1.0、○を0.5として観点ごとに数え、100点に正規化したうえで{STEP}点刻みに丸めました。
+    「多くの役員が挙げた観点ほど配点が重い」という関係になっており、役職による重み付けは入れていません。
+    採点結果を報告する際は、この表を使って「どの役員の観点でどう評価されたか」を説明できます。
+  </div>
+
+  <h4 style="margin-top:30px">グランドフィナーレに向けた本人の言葉</h4>
+  <div class="qgrid">{quotes}</div>
+</section>
+
 <section>
-  <div class="sh"><span class="sn">02</span><h2>採点の手順</h2>
+  <div class="sh"><span class="sn">03</span><h2>採点の手順</h2>
     <p class="ss">1件あたりの流れ。ステップ4を飛ばすと前提フラグが効かないまま順位が出ます。</p></div>
   <ol class="steps">{steps}</ol>
 </section>
 
 <section>
-  <div class="sh"><span class="sn">03</span><h2>観点別 採点リファレンス</h2>
+  <div class="sh"><span class="sn">04</span><h2>観点別 採点リファレンス</h2>
     <p class="ss">レベルは上から5〜1。右端はその観点で入る得点です。迷ったら低いほうをつけてください。</p></div>
   {"".join(refs)}
 </section>
 
 <section>
-  <div class="sh"><span class="sn">04</span><h2>前提フラグ</h2>
+  <div class="sh"><span class="sn">05</span><h2>前提フラグ</h2>
     <p class="ss">加点ではなく上限です。該当したら、その観点は指定レベル以上をつけられません。</p></div>
   <div class="fgrid">{flagcards}</div>
   <div class="note">
@@ -413,7 +552,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
 </section>
 
 <section>
-  <div class="sh"><span class="sn">05</span><h2>判定と得点の目安</h2>
+  <div class="sh"><span class="sn">06</span><h2>判定と得点の目安</h2>
     <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
   <div class="tsc"><table class="bd">
     <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
@@ -448,7 +587,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
 </section>
 
 <section>
-  <div class="sh"><span class="sn">06</span><h2>採点で気をつけること</h2>
+  <div class="sh"><span class="sn">07</span><h2>採点で気をつけること</h2>
     <p class="ss">AIに渡すプロンプトにも同じ制約を入れていますが、転記・確認の段階で崩れやすいところです。</p></div>
   <ul class="dont">{donts}</ul>
 </section>
