@@ -1,0 +1,429 @@
+<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブリーフ（内部用）</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
+  --line:#D7DEE9; --line2:#E9EEF5; --sunk:#EDF1F6;
+  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F6EFDD;
+  --ok:#2C6B4F; --ok-s:#E3F0E8; --warn:#9A5B12; --warn-s:#FBEEDC; --bad:#8E3838;
+  --shadow:0 1px 2px rgba(20,31,51,.05),0 6px 20px -12px rgba(20,31,51,.2);
+  --disp:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+  --body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Meiryo",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0C1320; --card:#141E2F; --ink:#E7ECF4; --ink2:#B5C1D4; --mute:#8494AD;
+  --line:#28344A; --line2:#1D2839; --sunk:#101A29;
+  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2B2416;
+  --ok:#6FBF95; --ok-s:#16281F; --warn:#D9A05B; --warn-s:#2B2013; --bad:#D98080;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px -14px rgba(0,0,0,.75);
+}}
+:root[data-theme="dark"]{
+  --paper:#0C1320; --card:#141E2F; --ink:#E7ECF4; --ink2:#B5C1D4; --mute:#8494AD;
+  --line:#28344A; --line2:#1D2839; --sunk:#101A29;
+  --navy:#8FB0E6; --navy2:#A9C4F0; --gold:#D8B25A; --gold-s:#2B2416;
+  --ok:#6FBF95; --ok-s:#16281F; --warn:#D9A05B; --warn-s:#2B2013; --bad:#D98080;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px -14px rgba(0,0,0,.75);
+}
+:root[data-theme="light"]{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#141F33; --ink2:#3C4B66; --mute:#6C7C97;
+  --line:#D7DEE9; --line2:#E9EEF5; --sunk:#EDF1F6;
+  --navy:#1F3864; --navy2:#2E4E86; --gold:#9C7418; --gold-s:#F6EFDD;
+  --ok:#2C6B4F; --ok-s:#E3F0E8; --warn:#9A5B12; --warn-s:#FBEEDC; --bad:#8E3838;
+  --shadow:0 1px 2px rgba(20,31,51,.05),0 6px 20px -12px rgba(20,31,51,.2);
+}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+  font-size:14px;line-height:1.8;-webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1}
+.wrap{max-width:900px;margin:0 auto;padding:0 22px 88px}
+section{margin-top:56px}
+h2{font-family:var(--disp);font-size:22px;margin:0;font-weight:600;line-height:1.4;
+  letter-spacing:.02em;text-wrap:balance}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  border-bottom:2px solid var(--navy);padding-bottom:10px;margin-bottom:22px}
+.sn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);
+  letter-spacing:.16em;flex:none}
+.ss{margin:0;font-size:12.5px;color:var(--mute);flex:1 1 240px;line-height:1.7}
+code{font-family:var(--mono);font-size:.9em;background:var(--sunk);padding:1px 5px;
+  border-radius:2px;border:1px solid var(--line2)}
+
+/* hero */
+.hero{background:#1B3054;border-bottom:3px solid var(--gold)}
+:root[data-theme="dark"] .hero{background:#111B2C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:#111B2C}}
+:root[data-theme="light"] .hero{background:#1B3054}
+.hin{max-width:900px;margin:0 auto;padding:38px 22px 30px}
+.eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:#D6BB7A;
+  margin:0 0 12px;font-weight:700}
+.hero h1 em{font-style:normal;font-family:var(--body);font-size:14px;font-weight:400;
+  color:#B9C9E2;margin-left:12px;letter-spacing:.04em;white-space:nowrap}
+.hero h1{font-family:var(--disp);font-size:clamp(24px,3.6vw,32px);margin:0 0 12px;
+  color:#fff;font-weight:600;line-height:1.4;text-wrap:balance}
+.hero p{margin:0;color:#B9C9E2;font-size:13.5px;max-width:62ch;line-height:1.95}
+.kpi{display:flex;gap:26px;margin-top:24px;flex-wrap:wrap}
+.kpi div{line-height:1.3}
+.kpi b{display:block;font-family:var(--mono);font-size:24px;color:#E8C87C;
+  font-variant-numeric:tabular-nums}
+.kpi span{font-size:10.5px;color:#9FB4D2;letter-spacing:.06em}
+
+/* sticky 観点バー */
+.bar{position:sticky;top:0;z-index:20;background:var(--card);
+  border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.bin{max-width:900px;margin:0 auto;padding:8px 22px;display:flex;gap:6px;
+  overflow-x:auto;scrollbar-width:thin}
+.sx{flex:1 0 auto;min-width:104px;display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:6px;text-decoration:none;padding:6px 9px;border-radius:2px;
+  border:1px solid var(--line2);background:var(--sunk)}
+.sx:hover{border-color:var(--gold)}
+.sx b{font-family:var(--mono);font-size:10px;color:var(--gold);font-weight:700}
+.sx span{font-size:11.5px;color:var(--ink);font-weight:700;white-space:nowrap}
+.sx i{font-family:var(--mono);font-style:normal;font-size:13px;font-weight:700;
+  color:var(--navy);font-variant-numeric:tabular-nums}
+
+/* テーブル共通 */
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:13px;
+  border:1px solid var(--line);box-shadow:var(--shadow)}
+th,td{border-bottom:1px solid var(--line2);padding:8px 12px;text-align:left;
+  vertical-align:top}
+thead th{background:var(--sunk);font-size:10.5px;letter-spacing:.08em;color:var(--mute);
+  font-weight:700;white-space:nowrap}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.tsc{overflow-x:auto}
+
+/* 観点サマリ */
+table.sum td.cid a{font-family:var(--mono);font-weight:700;color:var(--gold);
+  text-decoration:none;font-size:12px}
+table.sum th[scope="row"]{font-weight:700;white-space:nowrap}
+table.sum .qq{color:var(--mute);font-size:12px;line-height:1.7}
+table.sum .wt{font-family:var(--mono);font-weight:700;font-size:17px;text-align:right;
+  color:var(--navy);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.sum tfoot td{background:var(--sunk);font-weight:700}
+
+/* 手順 */
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+ol.steps li{display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--card);
+  border:1px solid var(--line);border-bottom:none;padding:14px 18px 14px 14px}
+ol.steps li:first-child{border-radius:3px 3px 0 0}
+ol.steps li:last-child{border-bottom:1px solid var(--line);border-radius:0 0 3px 3px}
+.stn{font-family:var(--mono);font-weight:700;font-size:15px;color:#fff;background:var(--navy);
+  width:30px;height:30px;display:grid;place-items:center;border-radius:50%;margin-top:2px}
+:root[data-theme="dark"] .stn{color:#0C1320}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stn{color:#0C1320}}
+.stb h3{margin:0 0 3px;font-size:14.5px;font-weight:700}
+.stb p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.8}
+
+/* 観点リファレンス */
+.ref{background:var(--card);border:1px solid var(--line);border-radius:3px;
+  margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:64px;overflow:hidden}
+.ref>header{display:flex;align-items:center;gap:12px;padding:13px 18px;
+  background:var(--sunk);border-bottom:1px solid var(--line)}
+.rid{font-family:var(--mono);font-weight:700;font-size:12px;color:#fff;background:var(--navy);
+  padding:3px 8px;border-radius:2px;flex:none}
+:root[data-theme="dark"] .rid{color:#0C1320}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rid{color:#0C1320}}
+.rt{flex:1 1 auto;min-width:0}
+.rt h3{margin:0;font-family:var(--disp);font-size:17px;font-weight:600;line-height:1.4}
+.rt p{margin:1px 0 0;font-size:12px;color:var(--gold);line-height:1.6}
+.rw{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--navy);flex:none;
+  font-variant-numeric:tabular-nums}
+.rw i{font-style:normal;font-size:11px;color:var(--mute);margin-left:1px}
+.rbody{padding:0}
+table.lvt{border:none;box-shadow:none}
+table.lvt thead th{background:transparent;border-bottom:1px solid var(--line2);
+  padding:7px 14px}
+table.lvt thead th:last-child,table.lvt td.lvp{text-align:right}
+table.lvt td{padding:9px 14px}
+td.lv{font-family:var(--mono);font-weight:700;width:34px;text-align:center;
+  color:var(--mute);font-size:12px}
+tr.top td.lv{color:var(--gold)}
+td.lvd{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+tr.top td.lvd{color:var(--ink)}
+td.lvp{font-family:var(--mono);width:52px;color:var(--navy);font-weight:700;
+  font-variant-numeric:tabular-nums}
+.capbox{background:var(--warn-s);border-top:1px solid var(--line2);padding:10px 14px}
+.capbox h5{margin:0 0 4px;font-size:10.5px;letter-spacing:.08em;color:var(--warn);
+  font-weight:700}
+.capbox ul{margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:var(--ink2)}
+.capbox b{font-family:var(--mono);color:var(--warn)}
+.capbox em{font-style:normal;font-weight:700;color:var(--warn)}
+
+/* フラグ */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.fg{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:3px;padding:14px 16px;box-shadow:var(--shadow)}
+.fgh{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.fgid{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--warn);
+  background:var(--warn-s);padding:2px 7px;border-radius:2px}
+.fg h3{margin:0;font-size:14px;font-weight:700}
+.fgd{margin:0 0 8px;font-size:12.5px;color:var(--ink2);line-height:1.75}
+.fgc{margin:0;font-size:12px;color:var(--warn);font-weight:700;line-height:1.7;
+  border-top:1px dashed var(--line);padding-top:7px}
+.fgc b{font-family:var(--mono)}
+
+/* 判定 */
+.bl{font-family:var(--mono);font-weight:700;font-size:16px;width:48px;text-align:center}
+.b-S{color:var(--gold)} .b-A{color:var(--ok)} .b-B{color:var(--warn)} .b-C{color:var(--mute)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+/* min-width:auto だとテーブルの最小幅がトラックを押し広げ、.tsc の横スクロールが効かない */
+.two>div{min-width:0}
+h4{font-size:11px;letter-spacing:.1em;color:var(--mute);margin:0 0 9px;font-weight:700}
+table.qk th[scope="row"]{white-space:nowrap;font-weight:700;font-size:12.5px}
+table.qk th,table.qk td{padding:8px 9px}
+table.qk th[scope="row"] span{display:block;font-family:var(--mono);font-size:10px;
+  color:var(--mute);font-weight:400;letter-spacing:.04em}
+table.qk td{font-size:14px;font-weight:700;color:var(--navy)}
+table.cb .big{font-size:17px;font-weight:700;color:var(--navy)}
+ol.tie{margin:10px 0 0;padding-left:19px;font-size:12.5px;color:var(--ink2);line-height:1.95}
+ol.tie li::marker{color:var(--gold);font-family:var(--mono);font-weight:700}
+
+/* やってはいけない */
+ul.dont{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+ul.dont li{background:var(--card);border:1px solid var(--line);border-radius:3px;
+  padding:13px 16px;box-shadow:var(--shadow);position:relative;padding-left:38px}
+ul.dont li::before{content:"×";position:absolute;left:15px;top:12px;font-family:var(--mono);
+  font-weight:700;color:var(--bad);font-size:14px}
+ul.dont li:last-child::before,ul.dont li:nth-last-child(2)::before{content:"！";color:var(--gold)}
+ul.dont h3{margin:0 0 4px;font-size:13.5px;font-weight:700;line-height:1.5}
+ul.dont p{margin:0;font-size:12px;color:var(--ink2);line-height:1.75}
+
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--navy);
+  padding:14px 18px;font-size:12.5px;color:var(--ink2);line-height:1.85;margin-top:18px}
+.note b{color:var(--ink)}
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--mute);line-height:1.85}
+a{color:var(--navy2)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media (max-width:720px){
+  .two{grid-template-columns:1fr}
+  .bar{position:static}
+  .ref>header{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  .bar{display:none}
+  body{background:#fff;font-size:10.5pt}
+  .ref,.fg,ol.steps li,ul.dont li,table{box-shadow:none;break-inside:avoid}
+  section{margin-top:26px}
+  .hero{background:#1B3054!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<div class="hero">
+  <div class="hin">
+    <p class="eb">AIFES 2026 ／ GRAND FINALE ／ 予備審査</p>
+    <h1>採点ブリーフ<em>内部メンバー用</em></h1>
+    <p>審査員12名のコメントを6観点に集約したルーブリックで、グランドフィナーレの予備審査を行います。
+       この資料は、実際に採点を回すメンバーが手元に置くための早見表です。
+       ルーブリックの成り立ちや配点の根拠は、審査員向け説明資料のほうに載せています。</p>
+    <div class="kpi">
+      <div><b>12</b><span>審査員コメント</span></div>
+      <div><b>6</b><span>評価観点</span></div>
+      <div><b>100</b><span>点満点</span></div>
+      <div><b>4</b><span>前提フラグ</span></div>
+      <div><b>S / A / B / C</b><span>判定</span></div>
+    </div>
+  </div>
+</div>
+
+<nav class="bar"><div class="bin"><a href="#C1" class="sx"><b>C1</b><span>業務再設計</span><i>20</i></a><a href="#C2" class="sx"><b>C2</b><span>組織浸透</span><i>20</i></a><a href="#C3" class="sx"><b>C3</b><span>仕組み化・資産化</span><i>10</i></a><a href="#C4" class="sx"><b>C4</b><span>波及と視座</span><i>20</i></a><a href="#C5" class="sx"><b>C5</b><span>価値と再投資</span><i>10</i></a><a href="#C6" class="sx"><b>C6</b><span>当事者性と熱量</span><i>20</i></a></div></nav>
+
+<div class="wrap">
+
+<section>
+  <div class="sh"><span class="sn">01</span><h2>採点する6つの観点</h2>
+    <p class="ss">配点は10点刻み・合計100点。各観点をレベル1〜5でつけ、レベル ÷ 5 × 配点 が得点になります。</p></div>
+  <div class="tsc"><table class="sum">
+    <thead><tr><th>ID</th><th>観点</th><th>何を見るか</th><th style="text-align:right">配点</th></tr></thead>
+    <tbody><tr><td class="cid"><a href="#C1">C1</a></td><th scope="row">業務そのものの再設計と「やめる」判断</th><td class="qq">AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C2">C2</a></td><th scope="row">組織への浸透と参加の広がり</th><td class="qq">部門の何割が、当たり前のこととして使っているか。主役は誰か。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C3">C3</a></td><th scope="row">仕組み化と会社のプロセス資産化</th><td class="qq">担当者が抜けても回るか。他部門が実際に再利用しているか。</td><td class="wt">10</td></tr><tr><td class="cid"><a href="#C4">C4</a></td><th scope="row">波及範囲と経営視座</th><td class="qq">自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</td><td class="wt">20</td></tr><tr><td class="cid"><a href="#C5">C5</a></td><th scope="row">創出した価値と、その再投資先</th><td class="qq">浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</td><td class="wt">10</td></tr><tr><td class="cid"><a href="#C6">C6</a></td><th scope="row">語りの当事者性と熱量</th><td class="qq">本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</td><td class="wt">20</td></tr></tbody>
+    <tfoot><tr><td></td><td>合計</td><td></td><td class="wt">100</td></tr></tfoot>
+  </table></div>
+  <div class="note">
+    <b>この6観点で、審査員12名全員の観点がカバーされています。</b>
+    そのため、審査員ごとに採点をやり直す必要はありません。1件につき1回の採点で完了します。
+    配点は「何名がその観点に言及したか」から機械的に算出しており、役職による重み付けは行っていません。
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="sn">02</span><h2>採点の手順</h2>
+    <p class="ss">1件あたりの流れ。ステップ4を飛ばすと前提フラグが効かないまま順位が出ます。</p></div>
+  <ol class="steps">
+<li><div class="stn">1</div><div class="stb"><h3>応募資料を1件ずつAIに渡す</h3><p>プロンプトは <code>AI予備審査プロンプト.md</code>（Excelの 05 シートにも同じ本文あり）。件ごとに書き換える必要はない。応募資料だけを差し替える。</p></div></li>
+<li><div class="stn">2</div><div class="stb"><h3>AIがJSONで返す</h3><p>6観点のレベル・根拠の原文引用・そのレベルにした理由・前提フラグの該当・強み弱み・「人手審査で確認すべき点」「資料に情報が不足している観点」が入る。</p></div></li>
+<li><div class="stn">3</div><div class="stb"><h3>採点シート（03）に転記する</h3><p>青字のセルだけ埋める。観点レベル D〜I、前提フラグ S〜V、AI所見 X。加重得点・総合点・判定・順位は自動で出る。</p></div></li>
+<li><div class="stn">4</div><div class="stb"><h3>W列「上限チェック」を確認する</h3><p>「上限超過」と出たら、フラグと入力レベルが矛盾している。該当観点のレベルを上限まで下げる。ここを飛ばすと、前提フラグが効かないまま順位が出る。</p></div></li>
+<li><div class="stn">5</div><div class="stb"><h3>S・A判定を人手審査へ回す</h3><p>B判定は事務局で拾い上げを検討、C判定は見送りが基本。「資料に情報が不足している観点」が付いた応募は、実力ではなく書き方が原因で沈んでいないか必ず目視する。</p></div></li></ol>
+</section>
+
+<section>
+  <div class="sh"><span class="sn">03</span><h2>観点別 採点リファレンス</h2>
+    <p class="ss">レベルは上から5〜1。右端はその観点で入る得点です。迷ったら低いほうをつけてください。</p></div>
+  
+<article class="ref" id="C1">
+  <header>
+    <span class="rid">C1</span>
+    <div class="rt"><h3>業務そのものの再設計と「やめる」判断</h3><p>AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</p></div>
+    <span class="rw">20<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">「これはもうやらなくていい」と廃止・縮小した業務を具体名で挙げられ、AFTERの業務フロー全体が再設計されている。AIは再設計の結果として配置されており、順序が明確に「業務 → AI」になっている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。ただし業務フロー全体の再設計までは至っていない。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">既存業務の必要性を問い直した形跡はあるが、実行は既存フローへのAI組み込みにとどまっている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">ツール導入やPoCの報告にとどまり、業務そのものは何も変わっていない。</td><td class="lvp">4</td></tr></tbody>
+    </table>
+    <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F3</b> ツール導入・PoC止まり に該当 → <em>レベル2以下</em></li></ul></div>
+  </div>
+</article>
+<article class="ref" id="C2">
+  <header>
+    <span class="rid">C2</span>
+    <div class="rt"><h3>組織への浸透と参加の広がり</h3><p>部門の何割が、当たり前のこととして使っているか。主役は誰か。</p></div>
+    <span class="rw">20<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">部門のほぼ全員が日常的に使い、「AIを使うのが当たり前」と語られる状態。参加率が数値で示されている。若手や普段前に出ないメンバーが主役として登場し、これまで評価されにくかった立場の人が新たな価値を発揮している。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">部門の過半が継続的に使用している。複数のチームに広がり、推進役も複数名いる。参加者の顔ぶれに広がりがある。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">一部チームには広がっているが、使う人と使わない人の差が大きい。主役は依然として一部のメンバーに偏っている。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">特定個人1名の取り組み。部門への広がりが確認できない。</td><td class="lvp">4</td></tr></tbody>
+    </table>
+    <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F1</b> 生産性向上の数値のみ に該当 → <em>レベル3以下</em></li><li><b>F2</b> 特定個人1名の成果 に該当 → <em>レベル2以下</em></li></ul></div>
+  </div>
+</article>
+<article class="ref" id="C3">
+  <header>
+    <span class="rid">C3</span>
+    <div class="rt"><h3>仕組み化と会社のプロセス資産化</h3><p>担当者が抜けても回るか。他部門が実際に再利用しているか。</p></div>
+    <span class="rw">10<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">属人性を排した仕組み（手順・テンプレート・エージェント・基盤）として整備され、担当者が変わっても回る。成果物が全社のプロセス資産として登録・再利用され、他部門が実際に使った実績がある。</td><td class="lvp">10</td></tr><tr class=""><td class="lv">4</td><td class="lvd">仕組み化され部門内で自律的に回っている。再利用可能な形で共有されているが、他部門での利用実績はまだない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">3</td><td class="lvd">手順やナレッジは残っているが、運用は推進者の関与に依存している。再現性は限定的。</td><td class="lvp">6</td></tr><tr class=""><td class="lv">2</td><td class="lvd">個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。</td><td class="lvp">4</td></tr><tr class=""><td class="lv">1</td><td class="lvd">単発の取り組みで、再現の手立てがない。</td><td class="lvp">2</td></tr></tbody>
+    </table>
+    <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F2</b> 特定個人1名の成果 に該当 → <em>レベル2以下</em></li></ul></div>
+  </div>
+</article>
+<article class="ref" id="C4">
+  <header>
+    <span class="rid">C4</span>
+    <div class="rt"><h3>波及範囲と経営視座</h3><p>自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</p></div>
+    <span class="rw">20<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">全社を「面」で引き上げる取り組みになっており、社外・顧客（とりわけ情シス体制やITリテラシーが十分でない顧客）を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">他部門への共有・展開の動きはあるが、まだ点の連携にとどまる。経営視点の提起は弱い。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">自部門内での最適化にとどまる。外への波及が語られていない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">個別業務の最適化にとどまり、部門外への視点がない。</td><td class="lvp">4</td></tr></tbody>
+    </table>
+    
+  </div>
+</article>
+<article class="ref" id="C5">
+  <header>
+    <span class="rid">C5</span>
+    <div class="rt"><h3>創出した価値と、その再投資先</h3><p>浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</p></div>
+    <span class="rw">10<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">創出した時間・リソースの再投資先が具体的に語られ（考える仕事、現場把握、人と話す時間、次の打ち手）、二段・三段先のゴールに向けていま手元を変えている構造が説明されている。ビジネスインパクトも定量で示されている。</td><td class="lvp">10</td></tr><tr class=""><td class="lv">4</td><td class="lvd">効果が定量で示され、再投資先も述べられている。ただし先のゴールとの接続はやや弱い。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">3</td><td class="lvd">効果は示されているが、浮いた時間の行き先が語られていない。</td><td class="lvp">6</td></tr><tr class=""><td class="lv">2</td><td class="lvd">効果が定性的・体感的な記述にとどまる。</td><td class="lvp">4</td></tr><tr class=""><td class="lv">1</td><td class="lvd">効果の記述がない、または「時短できた」で完結している。</td><td class="lvp">2</td></tr></tbody>
+    </table>
+    
+  </div>
+</article>
+<article class="ref" id="C6">
+  <header>
+    <span class="rid">C6</span>
+    <div class="rt"><h3>語りの当事者性と熱量</h3><p>本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</p></div>
+    <span class="rw">20<i>点</i></span>
+  </header>
+  <div class="rbody">
+    <table class="lvt">
+      <thead><tr><th>Lv</th><th>この状態なら該当</th><th>得点</th></tr></thead>
+      <tbody><tr class="top"><td class="lv">5</td><td class="lvd">部門長本人が自分の言葉で語り、工夫や判断の理由を言語化できている。共有したくなる熱量があり、聞き手を引き込む面白さ・驚きがある。手を動かした当事者が前に立っている。</td><td class="lvp">20</td></tr><tr class=""><td class="lv">4</td><td class="lvd">自分の言葉で語れており、熱量が伝わる。言語化も概ねできている。</td><td class="lvp">16</td></tr><tr class=""><td class="lv">3</td><td class="lvd">内容は整理されているが借り物の言葉が混じり、熱量が読み取りにくい。</td><td class="lvp">12</td></tr><tr class=""><td class="lv">2</td><td class="lvd">報告調で、当事者の顔が見えない。</td><td class="lvp">8</td></tr><tr class=""><td class="lv">1</td><td class="lvd">代理や資料の引き写しで、本人の言葉がまったくない。</td><td class="lvp">4</td></tr></tbody>
+    </table>
+    <div class="capbox"><h5>この観点にかかる上限</h5><ul><li><b>F4</b> 本人の言葉でない に該当 → <em>レベル2以下</em></li></ul></div>
+  </div>
+</article>
+</section>
+
+<section>
+  <div class="sh"><span class="sn">04</span><h2>前提フラグ</h2>
+    <p class="ss">加点ではなく上限です。該当したら、その観点は指定レベル以上をつけられません。</p></div>
+  <div class="fgrid">
+<article class="fg">
+  <div class="fgh"><span class="fgid">F1</span><h3>生産性向上の数値のみ</h3></div>
+  <p class="fgd">時短・削減の数値は並ぶが、文化・浸透・参加率に関する記述がない。</p>
+  <p class="fgc">C2 を <b>レベル3以下</b>に</p>
+</article>
+<article class="fg">
+  <div class="fgh"><span class="fgid">F2</span><h3>特定個人1名の成果</h3></div>
+  <p class="fgd">登場する実行者が実質1名で、部門への広がりも仕組みも語られていない。</p>
+  <p class="fgc">C2 を <b>レベル2以下</b>に　C3 を <b>レベル2以下</b>に</p>
+</article>
+<article class="fg">
+  <div class="fgh"><span class="fgid">F3</span><h3>ツール導入・PoC止まり</h3></div>
+  <p class="fgd">導入した／試したという報告で終わり、業務そのものの変化が示されていない。</p>
+  <p class="fgc">C1 を <b>レベル2以下</b>に</p>
+</article>
+<article class="fg">
+  <div class="fgh"><span class="fgid">F4</span><h3>本人の言葉でない</h3></div>
+  <p class="fgd">部門長本人の一人称の語りがなく、事務局資料や代理者の説明の引き写しになっている。</p>
+  <p class="fgc">C6 を <b>レベル2以下</b>に</p>
+</article></div>
+  <div class="note">
+    <b>なぜ加点ではなく上限なのか。</b>
+    「生産性向上は企業として取り組むべき前提」「何をAIで実現したかよりも文化」というのが審査員の言葉でした。
+    これらを加点材料にすると、数値の大きい応募がそのまま上位に来てしまいます。
+    採点シートの <code>W列 上限チェック</code> が、フラグと入力レベルの矛盾を自動で検出します。
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="sn">05</span><h2>判定と得点の目安</h2>
+    <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
+  <div class="tsc"><table class="bd">
+    <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
+    <tbody><tr><td class="bl b-S">S</td><td class="num">80〜</td><td>グランドフィナーレ最有力。6観点のいずれにも穴がない。</td></tr><tr><td class="bl b-A">A</td><td class="num">65〜</td><td>通過候補。人手審査へ回す。</td></tr><tr><td class="bl b-B">B</td><td class="num">50〜</td><td>要議論。強い観点があれば人手審査で拾い上げる。</td></tr><tr><td class="bl b-C">C</td><td class="num">〜49</td><td>予備審査で見送り。</td></tr></tbody>
+  </table></div>
+
+  <div class="two" style="margin-top:22px">
+    <div>
+      <h4>レベル → 得点 早見表</h4>
+      <div class="tsc"><table class="qk">
+        <thead><tr><th>観点</th><th class="num">Lv5</th><th class="num">Lv4</th><th class="num">Lv3</th><th class="num">Lv2</th><th class="num">Lv1</th></tr></thead>
+        <tbody><tr><th scope="row">配点20点<span>C1 C2 C4 C6</span></th><td class="num">20</td><td class="num">16</td><td class="num">12</td><td class="num">8</td><td class="num">4</td></tr><tr><th scope="row">配点10点<span>C3 C5</span></th><td class="num">10</td><td class="num">8</td><td class="num">6</td><td class="num">4</td><td class="num">2</td></tr></tbody>
+      </table></div>
+    </div>
+    <div>
+      <h4>総合点のキャリブレーション</h4>
+      <div class="tsc"><table class="cb">
+        <thead><tr><th>つけ方</th><th style="text-align:right">総合点</th><th>判定</th></tr></thead>
+        <tbody><tr><th scope="row">全観点をレベル5でつけた場合</th><td class="num big">100</td><td class="bl b-S">S</td></tr><tr><th scope="row">全観点をレベル4でつけた場合</th><td class="num big">80</td><td class="bl b-S">S</td></tr><tr><th scope="row">全観点をレベル3でつけた場合</th><td class="num big">60</td><td class="bl b-B">B</td></tr><tr><th scope="row">全観点をレベル2でつけた場合</th><td class="num big">40</td><td class="bl b-C">C</td></tr><tr><th scope="row">全観点をレベル1でつけた場合</th><td class="num big">20</td><td class="bl b-C">C</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:26px">同点時のタイブレーク順</h4>
+  <ol class="tie"><li>C2 組織浸透</li><li>C4 波及と視座</li><li>C1 業務再設計</li><li>C6 当事者性と熱量</li></ol>
+  <div class="note">
+    <b>配点の大小では順位が決まりません。</b>
+    10点刻みに丸めた結果、C1・C2・C4・C6 が同じ20点で並びます。
+    同点が出た場合は、書面から実態を読み取りやすい観点を優先してください。
+    C6（当事者性と熱量）は当日のプレゼンで印象が変わりうるため、最後に置いています。
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="sn">06</span><h2>採点で気をつけること</h2>
+    <p class="ss">AIに渡すプロンプトにも同じ制約を入れていますが、転記・確認の段階で崩れやすいところです。</p></div>
+  <ul class="dont"><li><h3>資料に書いていない良さを補わない</h3><p>AIにも人にも共通。情報が足りない観点はレベルを下げ、記録に残す。推測で埋めると審査員に説明できなくなる。</p></li><li><h3>「AIを導入した」は加点材料ではない</h3><p>ツール名やPoCの実施そのものは評価しない。業務・組織・人がどう変わったかだけを見る。</p></li><li><h3>生産性の数値の大きさで決めない</h3><p>時短率や削減時間は前提であって差別化要因ではない。数字が大きいというだけで高いレベルをつけない。</p></li><li><h3>役職の高さを採点に持ち込まない</h3><p>採点対象は取り組みそのもの。配点も役職で重み付けしていないので、ここで持ち込むと設計が崩れる。</p></li><li><h3>迷ったら低いほうをつける</h3><p>上のレベルの記述を<b>すべて</b>満たしていなければ、そのレベルには到達していない。</p></li><li><h3>予備審査で決着させない</h3><p>これは足切りと順位づけの一次スクリーニング。最終決定は審査員12名による人手審査で行う。</p></li></ul>
+</section>
+
+<footer>
+  AIFES 2026 グランドフィナーレ AI予備審査ルーブリック　内部メンバー向け採点ブリーフ　／　作成日 2026-08-06<br>
+  関連ファイル：<code>AIFES2026_グランドフィナーレ_AI予備審査ルーブリック.xlsx</code>（ルーブリック・採点シート・元データ）、
+  <code>AI予備審査プロンプト.md</code>（AIに渡す本文）、審査員向け説明資料（配点の導出と審査員別の対応表）<br>
+  元データ：審査員コメント一覧（aifes-judges_skills_提出物反映版.zip / AIFES審査員インタビュー.docx）　／　本資料は他の成果物と同一の定義ファイルから自動生成しています。
+</footer>
+
+</div>
