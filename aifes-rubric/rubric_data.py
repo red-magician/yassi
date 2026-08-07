@@ -209,17 +209,27 @@ CRITERIA = [
 def _raw_weight(c):
     return sum(1.0 if s[1] == "◎" else 0.5 for s in c["sources"])
 
+STEP = 10  # 配点の刻み。審査員が扱いやすいよう10点単位に揃える。
+
+
 def compute_weights():
+    """言及重み → 100点に正規化 → STEP 刻みに丸める。合計は必ず100。"""
     raws = [_raw_weight(c) for c in CRITERIA]
     total = sum(raws)
     exact = [r / total * 100 for r in raws]
-    # 合計がちょうど100になるよう最大剰余法で整数化
-    floors = [int(e) for e in exact]
-    rest = 100 - sum(floors)
-    order = sorted(range(len(exact)), key=lambda i: exact[i] - floors[i], reverse=True)
-    for i in order[:rest]:
-        floors[i] += 1
-    return raws, exact, floors
+
+    rounded = [max(STEP, round(e / STEP) * STEP) for e in exact]
+
+    # 丸めで合計が100からずれた場合、正規化値との乖離が小さい観点から STEP 単位で調整する
+    while sum(rounded) != 100:
+        gap = 100 - sum(rounded)
+        d = STEP if gap > 0 else -STEP
+        cand = [i for i in range(len(rounded)) if rounded[i] + d >= STEP]
+        # 増やすなら「丸めで最も削られた」観点、減らすなら「最も盛られた」観点を選ぶ
+        i = max(cand, key=lambda i: (exact[i] - rounded[i]) * (1 if d > 0 else -1))
+        rounded[i] += d
+
+    return raws, exact, rounded
 
 RAW_WEIGHTS, EXACT_WEIGHTS, WEIGHTS = compute_weights()
 for _c, _w, _r, _e in zip(CRITERIA, WEIGHTS, RAW_WEIGHTS, EXACT_WEIGHTS):

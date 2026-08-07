@@ -404,10 +404,10 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ AI予備審査ルーブ
 <section>
   {sec("05", "配点の決め方", "恣意的な重み付けをしていないことを確認いただくための計算過程です。")}
   <p class="formula">言及重み ＝ ◎の数 × 1.0 ＋ ○の数 × 0.5<br>
-     配点 ＝ 言及重み ÷ {raw_total:.1f}（全観点の合計）× 100　→　合計が100になるよう最大剰余法で整数化</p>
+     配点 ＝ 言及重み ÷ {raw_total:.1f}（全観点の合計）× 100　→　最も近い10点刻みに丸める（合計は100のまま）</p>
   <table class="dv">
     <thead><tr><th>観点</th><th>◎</th><th>○</th><th class="num">言及重み</th>
-      <th class="num">正規化</th><th class="num">配点</th></tr></thead>
+      <th class="num">正規化</th><th class="num">配点<br><span style="font-weight:400;font-size:9px">10点刻み</span></th></tr></thead>
     <tbody>{deriv}</tbody>
     <tfoot><tr><th>合計</th>
       <td>{sum(1 for c in CRITERIA for _, m, _ in c["sources"] if m == "◎")}</td>

@@ -6,7 +6,9 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.comments import Comment
 
-from rubric_data import CRITERIA, JUDGES, FLAGS, BANDS, TIEBREAK, META, WEIGHTS
+from rubric_data import CRITERIA, JUDGES, FLAGS, BANDS, TIEBREAK, META, WEIGHTS, STEP
+
+RAW_TOTAL = sum(c["raw"] for c in CRITERIA)
 
 FONT = "Arial"
 NAVY = "1F3864"
@@ -81,7 +83,7 @@ rows = [
     ("元データ", META["source"] + "（本ブックの 06_元データ_審査員コメント シートに全文を収録）"),
     ("集約方針", META["policy"]),
     ("配点の出し方", "各観点に紐づく審査員の言及を数え、グランドフィナーレコメント由来を1.0、審査コメント由来を0.5として合計し、"
-                  "100点に正規化した。02_審査員対応表 シートで、どの審査員のどの発言がどの観点の何点分になっているかを1件ずつ追える。"),
+                  "100点に正規化したうえで、扱いやすさのため10点刻みに丸めている。02_審査員対応表 シートで、どの審査員のどの発言がどの観点の何点分になっているかを1件ずつ追える。"),
     ("採点の手順", "① 03_採点シート に応募部門を1行ずつ並べる  →  ② 各観点を 01_ルーブリック のレベル記述に照らして 1〜5 で入力  →  "
                  "③ 前提フラグ F1〜F4 に該当すれば ○ を入力（該当観点に自動で上限がかかる）  →  ④ 加重得点・総合点・判定・順位は自動計算。"),
     ("AIで実施する場合", "05_AI審査プロンプト シートの本文をそのままAIに渡し、応募資料を1件ずつ入力する。JSONで返させ、03_採点シート に貼り付ける。"),
@@ -111,7 +113,8 @@ r += 1
 for c_ in CRITERIA:
     a = ws.cell(r, 2, f"{c_['id']}  {c_['name']}")
     a.font, a.border, a.alignment = BODY_B, BOX, WRAP
-    b = ws.cell(r, 3, f"{c_['weight']} 点　（言及重み {c_['raw']:.1f} / 22.5 ＝ {c_['exact']:.1f}%）　主な出所：{c_['question']}")
+    b = ws.cell(r, 3, f"{c_['weight']} 点　（言及重み {c_['raw']:.1f} / {RAW_TOTAL:.1f} ＝ {c_['exact']:.1f}% → {STEP}点刻みに丸めて {c_['weight']}）"
+       f"　問い：{c_['question']}")
     b.font, b.border, b.alignment = BODY, BOX, WRAP
     ws.row_dimensions[r].height = 30
     r += 1
@@ -206,7 +209,7 @@ for ci, c_ in enumerate(CRITERIA):
     cell = ws.cell(r, 4 + ci, c_["raw"])
     cell.font, cell.fill, cell.border, cell.alignment = BODY, FILL_GRAY, BOX, CENTER
 r += 1
-ws.cell(r, 3, "→ 配点（100点に正規化）").font = BODY_B
+ws.cell(r, 3, "→ 配点（100点に正規化 → 10点刻み）").font = BODY_B
 ws.cell(r, 3).fill, ws.cell(r, 3).border, ws.cell(r, 3).alignment = FILL_GOLD, BOX, CENTER
 ws.cell(r, 3).font = Font(name=FONT, size=10, bold=True, color="FFFFFF")
 for ci, c_ in enumerate(CRITERIA):
@@ -296,12 +299,12 @@ for r in range(EX_ROW, LAST + 1):
         wt = f"${get_column_letter(L1+i)}${W_ROW}"
         c = ws.cell(r, W1 + i, f'=IF({lv}="","",ROUND({lv}/5*{wt},1))')
         c.font, c.alignment = BODY, CENTER
-        c.number_format = "0.0"
+        c.number_format = "0.#"
 
     wrange = f"{get_column_letter(W1)}{r}:{get_column_letter(W2)}{r}"
     ws.cell(r, TOT, f'=IF(COUNT({get_column_letter(L1)}{r}:{get_column_letter(L2)}{r})<6,"",ROUND(SUM({wrange}),1))')
     ws.cell(r, TOT).font = Font(name=FONT, size=11, bold=True)
-    ws.cell(r, TOT).number_format = "0.0"
+    ws.cell(r, TOT).number_format = "0.#"
 
     t = f"{get_column_letter(TOT)}{r}"
     band_f = f'=IF({t}="","",'
@@ -436,8 +439,9 @@ for i, t in enumerate(TIEBREAK, 1):
     ws.merge_cells(start_row=r, start_column=3, end_row=r, end_column=5)
     r += 1
 ws.merge_cells(start_row=r + 1, start_column=2, end_row=r + 1, end_column=5)
-ws.cell(r + 1, 2, "配点の大きい観点（C4→C2→C6→C1）から順に見るのが原則だが、C6（当事者性と熱量）は当日のプレゼンで印象が変わりうるため、"
-                  "予備審査のタイブレークでは組織の実態を示すC2・C4・C1を優先している。").font = SMALL
+ws.cell(r + 1, 2, "10点刻みに丸めた結果、C1・C2・C4・C6 は同じ20点で並ぶため、配点の大小では順序が決まらない。"
+                  "同点が出た場合は、書面から実態を読み取りやすい観点を優先する。"
+                  "C6（当事者性と熱量）は当日のプレゼンで印象が変わりうるため最後に置いている。").font = SMALL
 ws.cell(r + 1, 2).alignment = WRAP
 
 # =============================================================== 05 プロンプト
