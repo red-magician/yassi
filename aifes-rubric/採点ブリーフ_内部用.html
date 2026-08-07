@@ -2,9 +2,9 @@
 <style>
 *{box-sizing:border-box}
 :root{
-  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --bg:#FFFFFF; --card:#FFFFFF; --sunk:#F5F7FC;
   --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
-  --line:#DFE3EF; --line2:#EDEFF6;
+  --line:#DCE1EE; --line2:#EBEEF6;
   --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
   --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
   --ok:#07756B; --ok-s:#E1F4F1;
@@ -14,8 +14,8 @@
   --h4:#A15900; --h4s:#FBEEDC;
   --h5:#B93077; --h5s:#FBE9F2;
   --h6:#155FAF; --h6s:#E4EFFB;
-  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
-  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
+  --sh:0 1px 2px rgba(30,34,51,.06),0 6px 18px -12px rgba(30,34,51,.22);
+  --sh2:0 2px 5px rgba(30,34,51,.08),0 14px 30px -16px rgba(30,34,51,.3);
   --r:12px; --r2:8px;
   --disp:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Hiragino Sans",
     "Yu Gothic","Noto Sans JP",sans-serif;
@@ -55,9 +55,9 @@
   --sh2:0 2px 6px rgba(0,0,0,.45),0 16px 34px -18px rgba(0,0,0,.9);
 }
 :root[data-theme="light"]{
-  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --bg:#FFFFFF; --card:#FFFFFF; --sunk:#F5F7FC;
   --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
-  --line:#DFE3EF; --line2:#EDEFF6;
+  --line:#DCE1EE; --line2:#EBEEF6;
   --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
   --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
   --ok:#07756B; --ok-s:#E1F4F1;
@@ -67,8 +67,8 @@
   --h4:#A15900; --h4s:#FBEEDC;
   --h5:#B93077; --h5s:#FBE9F2;
   --h6:#155FAF; --h6s:#E4EFFB;
-  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
-  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
+  --sh:0 1px 2px rgba(30,34,51,.06),0 6px 18px -12px rgba(30,34,51,.22);
+  --sh2:0 2px 5px rgba(30,34,51,.08),0 14px 30px -16px rgba(30,34,51,.3);
 }
 /* 観点ごとの色。--c＝地色に載る色、--cs＝淡色地 */
 .c1{--c:var(--h1);--cs:var(--h1s)} .c2{--c:var(--h2);--cs:var(--h2s)}
@@ -298,6 +298,48 @@ ul.dont h3{margin:0 0 4px;font-family:var(--disp);font-size:13.5px;font-weight:7
   line-height:1.5}
 ul.dont p{margin:0;font-size:12px;color:var(--ink2);line-height:1.75}
 
+/* 図解 */
+.dg{margin:0 0 20px;padding:16px 18px 12px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--sh);color:var(--ink)}
+.dg svg{display:block;width:100%;max-width:100%;height:auto;overflow:visible}
+.dg figcaption{margin-top:12px;font-size:11.5px;color:var(--mute);line-height:1.75;
+  border-top:1px solid var(--line2);padding-top:9px}
+.dg figcaption b{color:var(--ink2)}
+.dg text{font-family:var(--body);fill:currentColor}
+.sg-id{font-family:var(--mono);font-size:12px;font-weight:800;text-anchor:middle;fill:var(--onc)}
+.sg-w{font-size:15px;font-weight:800;text-anchor:middle;fill:var(--onc)}
+.sg-n{font-size:11px;text-anchor:middle;fill:var(--mute)}
+.dg .ln{stroke:currentColor;stroke-width:1.6;opacity:.55;fill:none}
+.dg .ln.warn{stroke:var(--warn);opacity:1;stroke-width:1.8}
+.dg .ln.bad{stroke:var(--bad);opacity:1;stroke-width:2}
+.dg .ln.dash{stroke-dasharray:5 4}
+.dg .ln.pin{stroke:var(--pri);opacity:.55;stroke-dasharray:3 3}
+.dg .bx{fill:var(--card);stroke:currentColor;stroke-width:1.4;opacity:1;
+  stroke-opacity:.28}
+.dg .bt{font-size:13px;font-weight:700;text-anchor:middle}
+.dg .bs{font-size:10.5px;text-anchor:middle;fill:var(--mute)}
+.dg .lb{font-size:11px;text-anchor:middle}
+.dg .lb.st{text-anchor:start}
+.dg .lb.warn{fill:var(--warn);font-weight:700}
+.dg .lb.bad{fill:var(--bad);font-weight:700;text-anchor:start}
+.dg .lb.ok{fill:var(--ok);font-weight:700;text-anchor:start}
+.dg .lb.pin{fill:var(--pri);font-weight:700;font-size:10.5px}
+.dg .dia{fill:var(--warn-s);stroke:var(--warn);stroke-width:1.8}
+.dg .dia-t{fill:var(--warn)}
+.dg .bl2{font-family:var(--mono);font-size:13px;font-weight:800;text-anchor:start}
+.dg .bs2{font-size:11px;text-anchor:start;fill:var(--ink2)}
+.dg .b5{fill:var(--h5s);stroke:var(--h5)} .dg text.b5,.dg .sc-l.b5{fill:var(--h5);stroke:none}
+.dg .b2{fill:var(--h2s);stroke:var(--h2)} .dg text.b2,.dg .sc-l.b2{fill:var(--h2);stroke:none}
+.dg .b4{fill:var(--h4s);stroke:var(--h4)} .dg text.b4,.dg .sc-l.b4{fill:var(--h4);stroke:none}
+.dg .bm{fill:var(--sunk);stroke:var(--mute)} .dg text.bm,.dg .sc-l.bm{fill:var(--mute);stroke:none}
+.dg .cl-ok{fill:var(--ok-s);stroke:var(--ok);stroke-width:1.6}
+.dg .cl-okt{font-size:12px;font-weight:700;text-anchor:middle;fill:var(--ok)}
+.dg .cl-ng{fill:var(--sunk);stroke:currentColor;stroke-width:1.2;stroke-opacity:.25}
+.dg .cl-ngt{font-size:12px;text-anchor:middle;fill:var(--mute)}
+.dg .sc{stroke-width:0}
+.dg .sc-l{font-size:15px;font-weight:800;text-anchor:middle;font-family:var(--mono)}
+.dg .tk{font-size:10.5px;text-anchor:middle;fill:var(--mute);font-family:var(--mono)}
+
 .note{background:var(--pri-s);border-radius:var(--r);padding:14px 18px;font-size:12.5px;
   color:var(--ink2);line-height:1.85;margin-top:18px}
 .note b{color:var(--ink)}
@@ -345,6 +387,17 @@ a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   <div class="sh"><span class="sn">01</span><h2>採点する6つの観点</h2>
     <p class="ss">配点は10点刻み・合計100点。各観点をレベル1〜5でつけ、レベル ÷ 5 × 配点 が得点になります。
     観点ごとの色は、この資料のどこでも同じものを使っています。</p></div>
+  
+<figure class="dg">
+  <svg viewBox="0 0 880 94" role="img"
+       aria-label="100点の配点の内訳。C1 業務再設計 20点、C2 組織浸透 20点、C3 仕組み化・資産化 10点、C4 波及と視座 20点、C5 価値と再投資 10点、C6 当事者性と熱量 20点。">
+    <clipPath id="wclip"><rect x="4" y="12" width="872" height="52" rx="9"/></clipPath>
+    <g clip-path="url(#wclip)"><rect class="c1" x="4.0" y="12" width="174.4" height="52" style="fill:var(--c)"/><text x="91.2" y="33" class="sg-id">C1</text><text x="91.2" y="54" class="sg-w">20点</text><rect class="c2" x="178.4" y="12" width="174.4" height="52" style="fill:var(--c)"/><text x="265.6" y="33" class="sg-id">C2</text><text x="265.6" y="54" class="sg-w">20点</text><rect class="c3" x="352.8" y="12" width="87.2" height="52" style="fill:var(--c)"/><text x="396.4" y="33" class="sg-id">C3</text><text x="396.4" y="54" class="sg-w">10点</text><rect class="c4" x="440.0" y="12" width="174.4" height="52" style="fill:var(--c)"/><text x="527.2" y="33" class="sg-id">C4</text><text x="527.2" y="54" class="sg-w">20点</text><rect class="c5" x="614.4" y="12" width="87.2" height="52" style="fill:var(--c)"/><text x="658.0" y="33" class="sg-id">C5</text><text x="658.0" y="54" class="sg-w">10点</text><rect class="c6" x="701.6" y="12" width="174.4" height="52" style="fill:var(--c)"/><text x="788.8" y="33" class="sg-id">C6</text><text x="788.8" y="54" class="sg-w">20点</text></g>
+    <text x="91.2" y="84" class="sg-n">業務再設計</text><text x="265.6" y="84" class="sg-n">組織浸透</text><text x="396.4" y="84" class="sg-n">仕組み化・資産化</text><text x="527.2" y="84" class="sg-n">波及と視座</text><text x="658.0" y="84" class="sg-n">価値と再投資</text><text x="788.8" y="84" class="sg-n">当事者性と熱量</text>
+  </svg>
+  <figcaption>面積がそのまま配点。C2 組織浸透 と C4 波及と視座 に重みが寄っているのは、
+    その観点を挙げた役員が多かったためです。</figcaption>
+</figure>
   <div class="tsc"><table class="sum">
     <thead><tr><th>ID</th><th>観点</th><th>何を見るか</th><th style="text-align:right">配点</th></tr></thead>
     <tbody><tr class="c1"><td class="cid"><a href="#C1">C1</a></td><th scope="row">業務そのものの再設計と「やめる」判断</th><td class="qq">AIを既存業務に足したのか、業務のかたち自体を作り直したのか。</td><td class="wt">20</td></tr><tr class="c2"><td class="cid"><a href="#C2">C2</a></td><th scope="row">組織への浸透と参加の広がり</th><td class="qq">部門の何割が、当たり前のこととして使っているか。主役は誰か。</td><td class="wt">20</td></tr><tr class="c3"><td class="cid"><a href="#C3">C3</a></td><th scope="row">仕組み化と会社のプロセス資産化</th><td class="qq">担当者が抜けても回るか。他部門が実際に再利用しているか。</td><td class="wt">10</td></tr><tr class="c4"><td class="cid"><a href="#C4">C4</a></td><th scope="row">波及範囲と経営視座</th><td class="qq">自部門で閉じているか、面で会社を、さらに顧客を引き上げているか。</td><td class="wt">20</td></tr><tr class="c5"><td class="cid"><a href="#C5">C5</a></td><th scope="row">創出した価値と、その再投資先</th><td class="qq">浮いた時間はどこへ行ったか。二段・三段先とつながっているか。</td><td class="wt">10</td></tr><tr class="c6"><td class="cid"><a href="#C6">C6</a></td><th scope="row">語りの当事者性と熱量</th><td class="qq">本人の言葉か。借り物の言葉か。聞き手が引き込まれるか。</td><td class="wt">20</td></tr></tbody>
@@ -444,6 +497,24 @@ a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 <section>
   <div class="sh"><span class="sn">03</span><h2>採点の手順</h2>
     <p class="ss">1件あたりの流れ。ステップ4を飛ばすと前提フラグが効かないまま順位が出ます。</p></div>
+  
+<figure class="dg">
+  <svg viewBox="0 0 890 232" role="img"
+       aria-label="採点フロー。応募資料をAIが採点しJSONを採点シートに転記、上限チェックで超過なら該当観点のレベルを下げて転記に戻り、通れば判定に応じてSとAは人手審査、Bは拾い上げ検討、Cは見送り。">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    <rect x="6" y="105" width="104" height="46" rx="9" class="bx"/><text x="58.0" y="123" class="bt">応募資料</text><text x="58.0" y="140" class="bs">1件ずつ</text><rect x="136" y="105" width="152" height="46" rx="9" class="bx"/><text x="212.0" y="123" class="bt">AIが採点</text><text x="212.0" y="140" class="bs">プロンプトは固定</text><rect x="316" y="105" width="152" height="46" rx="9" class="bx"/><text x="392.0" y="123" class="bt">採点シートに転記</text><text x="392.0" y="140" class="bs">自動で加重・集計</text><line x1="110" y1="128" x2="132" y2="128" class="ln" marker-end="url(#ah)"/><line x1="288" y1="128" x2="312" y2="128" class="ln" marker-end="url(#ah)"/><line x1="468" y1="128" x2="496" y2="128" class="ln" marker-end="url(#ah)"/>
+    <polygon points="575,82 650,128 575,174 500,128" class="dia"/>
+    <text x="575" y="124" class="bt dia-t">上限チェック</text>
+    <text x="575" y="141" class="bs dia-t">W列</text>
+    <path d="M575,82 L575,58 L392,58 L392,101" class="ln warn" fill="none"
+          marker-end="url(#ah)"/>
+    <text x="484" y="48" class="lb warn">上限超過 → その観点のレベルを下げる</text>
+    <text x="664" y="120" class="lb">OK</text>
+    <line x1="650" y1="128" x2="678" y2="128" class="ln"/><line x1="678" y1="62" x2="678" y2="194" class="ln"/><line x1="678" y1="62" x2="696" y2="62" class="ln" marker-end="url(#ah)"/><line x1="678" y1="128" x2="696" y2="128" class="ln" marker-end="url(#ah)"/><line x1="678" y1="194" x2="696" y2="194" class="ln" marker-end="url(#ah)"/><rect x="700" y="40" width="176" height="44" rx="9" class="bx b5"/><text x="716" y="67" class="bl2 b5">S・A</text><text x="774" y="67" class="bs2">人手審査へ回す</text><rect x="700" y="106" width="176" height="44" rx="9" class="bx b4"/><text x="716" y="133" class="bl2 b4">B</text><text x="750" y="133" class="bs2">事務局で拾い上げを検討</text><rect x="700" y="172" width="176" height="44" rx="9" class="bx bm"/><text x="716" y="199" class="bl2 bm">C</text><text x="750" y="199" class="bs2">見送り</text>
+  </svg>
+  <figcaption>要点は2つ。<b>上限チェックで超過が出たら転記に戻る</b>こと（ここを飛ばすと前提フラグが効きません）、
+    そして<b>判定は3方向に分かれ、Cで終わりではない</b>ことです。</figcaption>
+</figure>
   <ol class="steps">
 <li><div class="stn">1</div><div class="stb"><h3>応募資料を1件ずつAIに渡す</h3><p>プロンプトは <code>AI予備審査プロンプト.md</code>（Excelの 05 シートにも同じ本文あり）。件ごとに書き換える必要はない。応募資料だけを差し替える。</p></div></li>
 <li><div class="stn">2</div><div class="stb"><h3>AIがJSONで返す</h3><p>6観点のレベル・根拠の原文引用・そのレベルにした理由・前提フラグの該当・強み弱み・「人手審査で確認すべき点」「資料に情報が不足している観点」が入る。</p></div></li>
@@ -551,6 +622,22 @@ a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 <section>
   <div class="sh"><span class="sn">05</span><h2>前提フラグ</h2>
     <p class="ss">加点ではなく上限です。該当したら、その観点は指定レベル以上をつけられません。</p></div>
+  
+<figure class="dg">
+  <svg viewBox="0 0 564 152" role="img"
+       aria-label="前提フラグF2に該当すると、資料上はレベル5相当でもレベル2が天井になり、それ以上はつけられない。">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    <text x="30" y="26" class="lb st">資料の記述だけならレベル5相当</text>
+    <path d="M226,20 L494,20 L494,60" class="ln" fill="none"
+          marker-end="url(#ah)"/>
+    <rect x="30" y="66" width="96" height="46" rx="8" class="cl-ok"/><text x="78.0" y="95" class="cl-okt">レベル1</text><rect x="132" y="66" width="96" height="46" rx="8" class="cl-ok"/><text x="180.0" y="95" class="cl-okt">レベル2</text><rect x="234" y="66" width="96" height="46" rx="8" class="cl-ng"/><text x="282.0" y="95" class="cl-ngt">レベル3</text><line x1="260" y1="79" x2="304" y2="99" class="ln bad"/><rect x="336" y="66" width="96" height="46" rx="8" class="cl-ng"/><text x="384.0" y="95" class="cl-ngt">レベル4</text><line x1="362" y1="79" x2="406" y2="99" class="ln bad"/><rect x="438" y="66" width="96" height="46" rx="8" class="cl-ng"/><text x="486.0" y="95" class="cl-ngt">レベル5</text><line x1="464" y1="79" x2="508" y2="99" class="ln bad"/>
+    <line x1="231.0" y1="52" x2="231.0" y2="126" class="ln bad dash"/>
+    <text x="239.0" y="142" class="lb bad">F2 に該当 → ここが天井</text>
+    <text x="30" y="142" class="lb ok">つけられる</text>
+  </svg>
+  <figcaption>フラグは加点材料ではありません。該当した瞬間、その観点で到達できるレベルの上が塞がれます
+    （図は 特定個人1名の成果 が C2 にかける上限）。</figcaption>
+</figure>
   <div class="fgrid">
 <article class="fg">
   <div class="fgh"><span class="fgid">F1</span><h3>生産性向上の数値のみ</h3></div>
@@ -583,6 +670,15 @@ a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 <section>
   <div class="sh"><span class="sn">06</span><h2>判定と得点の目安</h2>
     <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
+  
+<figure class="dg">
+  <svg viewBox="0 0 888 122" role="img"
+       aria-label="0点から100点の判定スケール。Sは80点以上、Aは65点以上、Bは50点以上、Cは0点以上。全観点をレベル3でつけると60点、レベル4で80点、レベル5で100点。">
+    <rect x="44.0" y="56" width="400.0" height="36" class="sc bm"/><text x="244.0" y="80" class="sc-l bm">C</text><rect x="444.0" y="56" width="120.0" height="36" class="sc b4"/><text x="504.0" y="80" class="sc-l b4">B</text><rect x="564.0" y="56" width="120.0" height="36" class="sc b2"/><text x="624.0" y="80" class="sc-l b2">A</text><rect x="684.0" y="56" width="160.0" height="36" class="sc b5"/><text x="764.0" y="80" class="sc-l b5">S</text><text x="44.0" y="112" class="tk">0</text><text x="444.0" y="112" class="tk">50</text><text x="564.0" y="112" class="tk">65</text><text x="684.0" y="112" class="tk">80</text><text x="844.0" y="112" class="tk">100</text><line x1="524.0" y1="22" x2="524.0" y2="56" class="ln pin"/><text x="524.0" y="16" class="lb pin" text-anchor="middle">全観点Lv3 = 60点</text><line x1="684.0" y1="22" x2="684.0" y2="56" class="ln pin"/><text x="684.0" y="16" class="lb pin" text-anchor="middle">全観点Lv4 = 80点</text><line x1="844.0" y1="22" x2="844.0" y2="56" class="ln pin"/><text x="844.0" y="16" class="lb pin" text-anchor="end">全観点Lv5 = 100点</text>
+  </svg>
+  <figcaption>全観点レベル4でちょうど S の下限。
+    <b>A（65〜79点）はレベル3と4が混在する帯</b>で、全部レベル3では届きません。</figcaption>
+</figure>
   <div class="tsc"><table class="bd">
     <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
     <tbody><tr><td class="bl b-S"><span>S</span></td><td class="num">80〜</td><td>グランドフィナーレ最有力。6観点のいずれにも穴がない。</td></tr><tr><td class="bl b-A"><span>A</span></td><td class="num">65〜</td><td>通過候補。人手審査へ回す。</td></tr><tr><td class="bl b-B"><span>B</span></td><td class="num">50〜</td><td>要議論。強い観点があれば人手審査で拾い上げる。</td></tr><tr><td class="bl b-C"><span>C</span></td><td class="num">〜49</td><td>予備審査で見送り。</td></tr></tbody>

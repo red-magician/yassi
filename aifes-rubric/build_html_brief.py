@@ -213,12 +213,176 @@ donts = "".join(
 
 tie = "".join(f"<li>{E(t)}</li>" for t in TIEBREAK)
 
+# ==================================================================
+# 図解。すべて rubric_data の値から座標を計算しているので、観点や
+# 配点を変えると図も追随する。
+# ==================================================================
+ARROW = ('<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" '
+         'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+         '<path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>')
+
+
+def fig_weights():
+    """配点の構成（100点の内訳を面積で示す）"""
+    W, BX, BW, BY, BH = 880, 4, 872, 12, 52
+    segs, names, x = [], [], BX
+    for c in CRITERIA:
+        w = c["weight"] / TOTAL * BW
+        segs.append(
+            f'<rect class="{hue(c)}" x="{x:.1f}" y="{BY}" width="{w:.1f}" height="{BH}" '
+            f'style="fill:var(--c)"/>'
+            f'<text x="{x + w / 2:.1f}" y="{BY + 21}" class="sg-id">{c["id"]}</text>'
+            f'<text x="{x + w / 2:.1f}" y="{BY + 42}" class="sg-w">{c["weight"]}点</text>')
+        names.append(
+            f'<text x="{x + w / 2:.1f}" y="{BY + BH + 20}" class="sg-n">{E(c["short"])}</text>')
+        x += w
+    return f"""
+<figure class="dg">
+  <svg viewBox="0 0 {W} {BY + BH + 30}" role="img"
+       aria-label="100点の配点の内訳。{'、'.join(f'{c["id"]} {c["short"]} {c["weight"]}点' for c in CRITERIA)}。">
+    <clipPath id="wclip"><rect x="{BX}" y="{BY}" width="{BW}" height="{BH}" rx="9"/></clipPath>
+    <g clip-path="url(#wclip)">{"".join(segs)}</g>
+    {"".join(names)}
+  </svg>
+  <figcaption>面積がそのまま配点。C2 組織浸透 と C4 波及と視座 に重みが寄っているのは、
+    その観点を挙げた役員が多かったためです。</figcaption>
+</figure>"""
+
+
+def fig_flow():
+    """採点フロー。差し戻しの経路と、判定による3分岐がこの図の要点。"""
+    boxes = [
+        (6, 104, "応募資料", "1件ずつ"),
+        (136, 152, "AIが採点", "プロンプトは固定"),
+        (316, 152, "採点シートに転記", "自動で加重・集計"),
+    ]
+    bs = "".join(
+        f'<rect x="{x}" y="105" width="{w}" height="46" rx="9" class="bx"/>'
+        f'<text x="{x + w / 2}" y="{123 if sub else 132}" class="bt">{t}</text>'
+        + (f'<text x="{x + w / 2}" y="140" class="bs">{sub}</text>' if sub else "")
+        for x, w, t, sub in boxes)
+    arrows = "".join(
+        f'<line x1="{a}" y1="128" x2="{b}" y2="128" class="ln" marker-end="url(#ah)"/>'
+        for a, b in ((110, 132), (288, 312), (468, 496)))
+
+    outs = [
+        (40, "S・A", "人手審査へ回す", "b5"),
+        (106, "B", "事務局で拾い上げを検討", "b4"),
+        (172, "C", "見送り", "bm"),
+    ]
+    ob = "".join(
+        f'<rect x="700" y="{y}" width="176" height="44" rx="9" class="bx {cl}"/>'
+        f'<text x="716" y="{y + 27}" class="bl2 {cl}">{lab}</text>'
+        f'<text x="{716 + (34 if len(lab) < 3 else 58)}" y="{y + 27}" class="bs2">{txt}</text>'
+        for y, lab, txt, cl in outs)
+    fan = ('<line x1="650" y1="128" x2="678" y2="128" class="ln"/>'
+           '<line x1="678" y1="62" x2="678" y2="194" class="ln"/>'
+           + "".join(f'<line x1="678" y1="{y + 22}" x2="696" y2="{y + 22}" '
+                     f'class="ln" marker-end="url(#ah)"/>' for y, *_ in outs))
+
+    return f"""
+<figure class="dg">
+  <svg viewBox="0 0 890 232" role="img"
+       aria-label="採点フロー。応募資料をAIが採点しJSONを採点シートに転記、上限チェックで超過なら該当観点のレベルを下げて転記に戻り、通れば判定に応じてSとAは人手審査、Bは拾い上げ検討、Cは見送り。">
+    {ARROW}
+    {bs}{arrows}
+    <polygon points="575,82 650,128 575,174 500,128" class="dia"/>
+    <text x="575" y="124" class="bt dia-t">上限チェック</text>
+    <text x="575" y="141" class="bs dia-t">W列</text>
+    <path d="M575,82 L575,58 L392,58 L392,101" class="ln warn" fill="none"
+          marker-end="url(#ah)"/>
+    <text x="484" y="48" class="lb warn">上限超過 → その観点のレベルを下げる</text>
+    <text x="664" y="120" class="lb">OK</text>
+    {fan}{ob}
+  </svg>
+  <figcaption>要点は2つ。<b>上限チェックで超過が出たら転記に戻る</b>こと（ここを飛ばすと前提フラグが効きません）、
+    そして<b>判定は3方向に分かれ、Cで終わりではない</b>ことです。</figcaption>
+</figure>"""
+
+
+def fig_cap():
+    """前提フラグが「加点」ではなく「天井」であることを示す。"""
+    f2 = next(f for f in FLAGS if f["id"] == "F2")
+    cap = f2["cap"]["C2"]
+    CW, GAP, X0, Y, H = 96, 6, 30, 66, 46
+    cells = ""
+    for i, n in enumerate(range(1, 6)):
+        x = X0 + i * (CW + GAP)
+        ok = n <= cap
+        cells += (
+            f'<rect x="{x}" y="{Y}" width="{CW}" height="{H}" rx="8" '
+            f'class="{"cl-ok" if ok else "cl-ng"}"/>'
+            f'<text x="{x + CW / 2}" y="{Y + 29}" class="{"cl-okt" if ok else "cl-ngt"}">'
+            f'レベル{n}</text>')
+        if not ok:
+            cells += (f'<line x1="{x + 26}" y1="{Y + 13}" x2="{x + CW - 26}" y2="{Y + H - 13}" '
+                      f'class="ln bad"/>')
+    capx = X0 + cap * (CW + GAP) - GAP / 2
+    right = X0 + 5 * (CW + GAP) - GAP
+    return f"""
+<figure class="dg">
+  <svg viewBox="0 0 {right + 30} 152" role="img"
+       aria-label="前提フラグF2に該当すると、資料上はレベル5相当でもレベル{cap}が天井になり、それ以上はつけられない。">
+    {ARROW}
+    <text x="{X0}" y="26" class="lb st">資料の記述だけならレベル5相当</text>
+    <path d="M{X0 + 196},20 L{right - 40},20 L{right - 40},{Y - 6}" class="ln" fill="none"
+          marker-end="url(#ah)"/>
+    {cells}
+    <line x1="{capx}" y1="{Y - 14}" x2="{capx}" y2="{Y + H + 14}" class="ln bad dash"/>
+    <text x="{capx + 8}" y="{Y + H + 30}" class="lb bad">{f2["id"]} に該当 → ここが天井</text>
+    <text x="{X0}" y="{Y + H + 30}" class="lb ok">つけられる</text>
+  </svg>
+  <figcaption>フラグは加点材料ではありません。該当した瞬間、その観点で到達できるレベルの上が塞がれます
+    （図は {E(f2["name"])} が C2 にかける上限）。</figcaption>
+</figure>"""
+
+
+def fig_scale():
+    """判定バンドと、全観点を同レベルでつけた場合の位置関係。"""
+    X0, X1, Y, H = 44, 844, 56, 36
+    px = (X1 - X0) / 100
+    def x(v):
+        return X0 + v * px
+    cuts = [(b[0], b[1]) for b in BANDS][::-1]      # 低い順
+    segs = ""
+    for i, (lo, lab) in enumerate(cuts):
+        hi = cuts[i + 1][0] if i + 1 < len(cuts) else 100
+        cls = {"S": "b5", "A": "b2", "B": "b4", "C": "bm"}[lab]
+        segs += (f'<rect x="{x(lo):.1f}" y="{Y}" width="{x(hi) - x(lo):.1f}" height="{H}" '
+                 f'class="sc {cls}"/>'
+                 f'<text x="{(x(lo) + x(hi)) / 2:.1f}" y="{Y + 24}" class="sc-l {cls}">{lab}</text>')
+    ticks = "".join(
+        f'<text x="{x(v):.1f}" y="{Y + H + 20}" class="tk">{v}</text>'
+        for v in sorted({0, 100} | {b[0] for b in BANDS if b[0]}))
+    pins = ""
+    for n in (3, 4, 5):
+        v = flat(n)
+        pins += (f'<line x1="{x(v):.1f}" y1="22" x2="{x(v):.1f}" y2="{Y}" class="ln pin"/>'
+                 f'<text x="{x(v):.1f}" y="16" class="lb pin" '
+                 f'text-anchor="{"end" if v >= 100 else "middle"}">'
+                 f'全観点Lv{n} = {int(v)}点</text>')
+    return f"""
+<figure class="dg">
+  <svg viewBox="0 0 888 {Y + H + 30}" role="img"
+       aria-label="0点から100点の判定スケール。{'、'.join(f'{b[1]}は{b[0]}点以上' for b in BANDS)}。全観点をレベル3でつけると{int(flat(3))}点、レベル4で{int(flat(4))}点、レベル5で100点。">
+    {segs}{ticks}{pins}
+  </svg>
+  <figcaption>全観点レベル4でちょうど S の下限。
+    <b>A（{BANDS[1][0]}〜{BANDS[0][0] - 1}点）はレベル3と4が混在する帯</b>で、全部レベル3では届きません。</figcaption>
+</figure>"""
+
+
+FIG_WEIGHTS = fig_weights()
+FIG_FLOW = fig_flow()
+FIG_CAP = fig_cap()
+FIG_SCALE = fig_scale()
+
 CSS = """
 *{box-sizing:border-box}
 :root{
-  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --bg:#FFFFFF; --card:#FFFFFF; --sunk:#F5F7FC;
   --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
-  --line:#DFE3EF; --line2:#EDEFF6;
+  --line:#DCE1EE; --line2:#EBEEF6;
   --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
   --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
   --ok:#07756B; --ok-s:#E1F4F1;
@@ -228,8 +392,8 @@ CSS = """
   --h4:#A15900; --h4s:#FBEEDC;
   --h5:#B93077; --h5s:#FBE9F2;
   --h6:#155FAF; --h6s:#E4EFFB;
-  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
-  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
+  --sh:0 1px 2px rgba(30,34,51,.06),0 6px 18px -12px rgba(30,34,51,.22);
+  --sh2:0 2px 5px rgba(30,34,51,.08),0 14px 30px -16px rgba(30,34,51,.3);
   --r:12px; --r2:8px;
   --disp:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Hiragino Sans",
     "Yu Gothic","Noto Sans JP",sans-serif;
@@ -269,9 +433,9 @@ CSS = """
   --sh2:0 2px 6px rgba(0,0,0,.45),0 16px 34px -18px rgba(0,0,0,.9);
 }
 :root[data-theme="light"]{
-  --bg:#F6F7FC; --card:#FFFFFF; --sunk:#EFF1F8;
+  --bg:#FFFFFF; --card:#FFFFFF; --sunk:#F5F7FC;
   --ink:#1E2233; --ink2:#414962; --mute:#6B7189;
-  --line:#DFE3EF; --line2:#EDEFF6;
+  --line:#DCE1EE; --line2:#EBEEF6;
   --pri:#4B4CD6; --pri-s:#EAEAFC; --onc:#FFFFFF;
   --warn:#A15900; --warn-s:#FBEEDC; --bad:#C2372B; --bad-s:#FBEAE8;
   --ok:#07756B; --ok-s:#E1F4F1;
@@ -281,8 +445,8 @@ CSS = """
   --h4:#A15900; --h4s:#FBEEDC;
   --h5:#B93077; --h5s:#FBE9F2;
   --h6:#155FAF; --h6s:#E4EFFB;
-  --sh:0 1px 2px rgba(30,34,51,.05),0 8px 20px -14px rgba(30,34,51,.28);
-  --sh2:0 2px 4px rgba(30,34,51,.06),0 14px 30px -18px rgba(30,34,51,.35);
+  --sh:0 1px 2px rgba(30,34,51,.06),0 6px 18px -12px rgba(30,34,51,.22);
+  --sh2:0 2px 5px rgba(30,34,51,.08),0 14px 30px -16px rgba(30,34,51,.3);
 }
 /* 観点ごとの色。--c＝地色に載る色、--cs＝淡色地 */
 .c1{--c:var(--h1);--cs:var(--h1s)} .c2{--c:var(--h2);--cs:var(--h2s)}
@@ -512,6 +676,48 @@ ul.dont h3{margin:0 0 4px;font-family:var(--disp);font-size:13.5px;font-weight:7
   line-height:1.5}
 ul.dont p{margin:0;font-size:12px;color:var(--ink2);line-height:1.75}
 
+/* 図解 */
+.dg{margin:0 0 20px;padding:16px 18px 12px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--sh);color:var(--ink)}
+.dg svg{display:block;width:100%;max-width:100%;height:auto;overflow:visible}
+.dg figcaption{margin-top:12px;font-size:11.5px;color:var(--mute);line-height:1.75;
+  border-top:1px solid var(--line2);padding-top:9px}
+.dg figcaption b{color:var(--ink2)}
+.dg text{font-family:var(--body);fill:currentColor}
+.sg-id{font-family:var(--mono);font-size:12px;font-weight:800;text-anchor:middle;fill:var(--onc)}
+.sg-w{font-size:15px;font-weight:800;text-anchor:middle;fill:var(--onc)}
+.sg-n{font-size:11px;text-anchor:middle;fill:var(--mute)}
+.dg .ln{stroke:currentColor;stroke-width:1.6;opacity:.55;fill:none}
+.dg .ln.warn{stroke:var(--warn);opacity:1;stroke-width:1.8}
+.dg .ln.bad{stroke:var(--bad);opacity:1;stroke-width:2}
+.dg .ln.dash{stroke-dasharray:5 4}
+.dg .ln.pin{stroke:var(--pri);opacity:.55;stroke-dasharray:3 3}
+.dg .bx{fill:var(--card);stroke:currentColor;stroke-width:1.4;opacity:1;
+  stroke-opacity:.28}
+.dg .bt{font-size:13px;font-weight:700;text-anchor:middle}
+.dg .bs{font-size:10.5px;text-anchor:middle;fill:var(--mute)}
+.dg .lb{font-size:11px;text-anchor:middle}
+.dg .lb.st{text-anchor:start}
+.dg .lb.warn{fill:var(--warn);font-weight:700}
+.dg .lb.bad{fill:var(--bad);font-weight:700;text-anchor:start}
+.dg .lb.ok{fill:var(--ok);font-weight:700;text-anchor:start}
+.dg .lb.pin{fill:var(--pri);font-weight:700;font-size:10.5px}
+.dg .dia{fill:var(--warn-s);stroke:var(--warn);stroke-width:1.8}
+.dg .dia-t{fill:var(--warn)}
+.dg .bl2{font-family:var(--mono);font-size:13px;font-weight:800;text-anchor:start}
+.dg .bs2{font-size:11px;text-anchor:start;fill:var(--ink2)}
+.dg .b5{fill:var(--h5s);stroke:var(--h5)} .dg text.b5,.dg .sc-l.b5{fill:var(--h5);stroke:none}
+.dg .b2{fill:var(--h2s);stroke:var(--h2)} .dg text.b2,.dg .sc-l.b2{fill:var(--h2);stroke:none}
+.dg .b4{fill:var(--h4s);stroke:var(--h4)} .dg text.b4,.dg .sc-l.b4{fill:var(--h4);stroke:none}
+.dg .bm{fill:var(--sunk);stroke:var(--mute)} .dg text.bm,.dg .sc-l.bm{fill:var(--mute);stroke:none}
+.dg .cl-ok{fill:var(--ok-s);stroke:var(--ok);stroke-width:1.6}
+.dg .cl-okt{font-size:12px;font-weight:700;text-anchor:middle;fill:var(--ok)}
+.dg .cl-ng{fill:var(--sunk);stroke:currentColor;stroke-width:1.2;stroke-opacity:.25}
+.dg .cl-ngt{font-size:12px;text-anchor:middle;fill:var(--mute)}
+.dg .sc{stroke-width:0}
+.dg .sc-l{font-size:15px;font-weight:800;text-anchor:middle;font-family:var(--mono)}
+.dg .tk{font-size:10.5px;text-anchor:middle;fill:var(--mute);font-family:var(--mono)}
+
 .note{background:var(--pri-s);border-radius:var(--r);padding:14px 18px;font-size:12.5px;
   color:var(--ink2);line-height:1.85;margin-top:18px}
 .note b{color:var(--ink)}
@@ -562,6 +768,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
   <div class="sh"><span class="sn">01</span><h2>採点する6つの観点</h2>
     <p class="ss">配点は{STEP}点刻み・合計{TOTAL}点。各観点をレベル1〜5でつけ、レベル ÷ 5 × 配点 が得点になります。
     観点ごとの色は、この資料のどこでも同じものを使っています。</p></div>
+  {FIG_WEIGHTS}
   <div class="tsc"><table class="sum">
     <thead><tr><th>ID</th><th>観点</th><th>何を見るか</th><th style="text-align:right">配点</th></tr></thead>
     <tbody>{summary}</tbody>
@@ -601,6 +808,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
 <section>
   <div class="sh"><span class="sn">03</span><h2>採点の手順</h2>
     <p class="ss">1件あたりの流れ。ステップ4を飛ばすと前提フラグが効かないまま順位が出ます。</p></div>
+  {FIG_FLOW}
   <ol class="steps">{steps}</ol>
 </section>
 
@@ -613,6 +821,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
 <section>
   <div class="sh"><span class="sn">05</span><h2>前提フラグ</h2>
     <p class="ss">加点ではなく上限です。該当したら、その観点は指定レベル以上をつけられません。</p></div>
+  {FIG_CAP}
   <div class="fgrid">{flagcards}</div>
   <div class="note">
     <b>なぜ加点ではなく上限なのか。</b>
@@ -625,6 +834,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
 <section>
   <div class="sh"><span class="sn">06</span><h2>判定と得点の目安</h2>
     <p class="ss">総合点から判定が自動で決まります。同点時は下記の順で比較します。</p></div>
+  {FIG_SCALE}
   <div class="tsc"><table class="bd">
     <thead><tr><th>判定</th><th style="text-align:right">総合点</th><th>扱い</th></tr></thead>
     <tbody>{bandrows}</tbody>
