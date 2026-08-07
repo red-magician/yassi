@@ -15,7 +15,7 @@ export default {
   'home.caveat.item3': '训练数据以A级为主（A100/B11/C3），<strong>尤其是C级的判定精度尚不明确</strong>。',
   'home.caveat.item4': '置信度较低的判定会自动显示为“需要确认”。',
   'home.caveat.item5':
-    '<strong>通过实际照片验证，已确认A级判定较难出现的倾向。</strong>正式使用前，强烈建议针对拍摄环境重新校准（详情请参阅开发者文档<code>VALIDATION.md</code>）。',
+    '<strong>正式使用前，强烈建议针对本拍摄环境重新校准。</strong>请收集已知正确等级的样本照片并执行“校准模式”（详情请参阅开发者文档<code>VALIDATION.md</code>）。',
 
   'home.lead': '请将单个果实放在无彩色背景上拍摄。',
   'home.captureCamera': '📷 拍照',

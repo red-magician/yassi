@@ -16,7 +16,7 @@ export default {
     'The training data was mostly Grade A (A100/B11/C3), so <strong>Grade C accuracy in particular is largely unverified</strong>.',
   'home.caveat.item4': 'Low-confidence predictions are automatically flagged as "needs review".',
   'home.caveat.item5':
-    '<strong>Testing on real photos found that Grade A rarely comes out.</strong> We strongly recommend recalibrating for your shooting environment before real-world use (see <code>VALIDATION.md</code> for developers).',
+    '<strong>We strongly recommend recalibrating for your shooting environment before real-world use.</strong> Collect sample photos with known correct grades and run "Calibration mode" (see <code>VALIDATION.md</code> for developers).',
 
   'home.lead': 'Place a single fruit on a neutral-colored background and take a photo.',
   'home.captureCamera': '📷 Take a photo',

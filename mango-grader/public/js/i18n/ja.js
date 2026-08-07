@@ -14,7 +14,7 @@ export default {
   'home.caveat.item3': '学習データはA級中心（A100/B11/C3）で、<strong>特にC級の判定精度は未知数</strong>です。',
   'home.caveat.item4': '「確信度」が低い判定は自動的に「要確認」と表示されます。',
   'home.caveat.item5':
-    '<strong>実写真での検証で、A判定が出にくい傾向を確認済みです。</strong>本番利用の前に撮影環境向けの再較正を強く推奨します（詳細は開発者向け<code>VALIDATION.md</code>）。',
+    '<strong>本番利用の前に、この撮影環境向けの再較正を強く推奨します。</strong>正解等級が分かっているサンプル写真を集めて「較正モード」を実行してください（詳細は開発者向け<code>VALIDATION.md</code>）。',
 
   'home.lead': '無彩色の背景の上に果実を1個だけ置いて撮影してください。',
   'home.captureCamera': '📷 写真を撮る',
