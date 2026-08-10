@@ -7,15 +7,11 @@ export default {
   'header.title': '🥭 芒果等级判定',
   'header.badge': '试用版 v1',
 
-  'home.caveat.summary': '⚠ 关于判定精度的注意事项（请务必阅读）',
+  'home.caveat.summary': '⚠ 判定结果的使用方法',
   'home.caveat.item1':
-    '该模型是根据<strong>2019年拍摄的照片</strong>校准的。如果拍摄环境（相机、光线、背景）不同，精度可能会下降。',
-  'home.caveat.item2':
-    '该模型只判断<strong>表面颜色</strong>。无法判定因伤痕、树脂痕迹导致的降级，请务必由人工进行最终确认。',
-  'home.caveat.item3': '训练数据以A级为主（A100/B11/C3），<strong>尤其是C级的判定精度尚不明确</strong>。',
-  'home.caveat.item4': '置信度较低的判定会自动显示为“需要确认”。',
-  'home.caveat.item5':
-    '<strong>正式使用前，强烈建议针对本拍摄环境重新校准。</strong>请收集已知正确等级的样本照片并执行“校准模式”（详情请参阅开发者文档<code>VALIDATION.md</code>）。',
+    '该模型只判断<strong>表面颜色</strong>。无法判定因伤痕、树脂痕迹导致的降级，<strong>最终等级请由人工确认。</strong>',
+  'home.caveat.item2': '显示为“需要确认”的判定，请务必由人工核实。',
+  'home.caveat.item3': '这是<strong>试用版</strong>，判定结果请作为参考使用。',
 
   'home.lead': '请将单个果实放在无彩色背景上拍摄。',
   'home.captureCamera': '📷 拍照',
@@ -28,6 +24,13 @@ export default {
   'calibrate.title': '针对拍摄环境的校准',
   'calibrate.lead':
     '当拍摄环境（相机、光线、背景）发生变化时，该模型的精度会下降。收集在实际拍摄环境中已知正确等级的样本照片后，可以为该环境重新选择判定用的颜色阈值（建议每个等级约20张）。',
+  'calibrate.notice.summary': '模型的前提与已知局限（员工专用）',
+  'calibrate.notice.item1':
+    '该模型是根据<strong>2019年拍摄的照片</strong>校准的。如果拍摄环境（相机、光线、背景）不同，精度可能会下降。',
+  'calibrate.notice.item2': '训练数据以A级为主（A100/B11/C3），<strong>尤其是C级的判定精度尚不明确</strong>。',
+  'calibrate.notice.item3':
+    '<strong>正式使用前，强烈建议针对本拍摄环境重新校准。</strong>请收集已知正确等级的样本照片，并按下方步骤执行校准。',
+  'calibrate.notice.item4': '验证的详细内容与数值，请参阅开发者文档<code>VALIDATION.md</code>。',
   'calibrate.addPhotos': '＋ 添加样本照片',
   'calibrate.progressDefault': '计算中…',
   'calibrate.back': '返回',

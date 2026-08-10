@@ -7,16 +7,11 @@ export default {
   'header.title': '🥭 Mango Grade Checker',
   'header.badge': 'Prototype v1',
 
-  'home.caveat.summary': '⚠ About accuracy (please read)',
+  'home.caveat.summary': '⚠ How to use this result',
   'home.caveat.item1':
-    'This model was calibrated on photos taken in <strong>2019</strong>. Accuracy may drop if the shooting conditions (camera, lighting, background) are different.',
-  'home.caveat.item2':
-    'It only looks at <strong>surface color</strong>. It cannot detect downgrades from bruises or sap stains — please have a person do the final check.',
-  'home.caveat.item3':
-    'The training data was mostly Grade A (A100/B11/C3), so <strong>Grade C accuracy in particular is largely unverified</strong>.',
-  'home.caveat.item4': 'Low-confidence predictions are automatically flagged as "needs review".',
-  'home.caveat.item5':
-    '<strong>We strongly recommend recalibrating for your shooting environment before real-world use.</strong> Collect sample photos with known correct grades and run "Calibration mode" (see <code>VALIDATION.md</code> for developers).',
+    'It only looks at <strong>surface color</strong>. It cannot detect downgrades from bruises or sap stains — <strong>a person must confirm the final grade.</strong>',
+  'home.caveat.item2': 'Always double-check any result flagged as "needs review" by eye.',
+  'home.caveat.item3': 'This is a <strong>prototype</strong>. Treat its results as a reference, not a decision.',
 
   'home.lead': 'Place a single fruit on a neutral-colored background and take a photo.',
   'home.captureCamera': '📷 Take a photo',
@@ -29,6 +24,15 @@ export default {
   'calibrate.title': 'Calibrate for your shooting environment',
   'calibrate.lead':
     'This model loses accuracy when the shooting conditions (camera, lighting, background) change. Collecting sample photos with known correct grades from your actual shooting environment lets you re-select the color thresholds for that environment (about 20 photos per grade is a good target).',
+  'calibrate.notice.summary': 'Model assumptions and known limits (for staff)',
+  'calibrate.notice.item1':
+    'This model was calibrated on photos taken in <strong>2019</strong>. Accuracy may drop if the shooting conditions (camera, lighting, background) are different.',
+  'calibrate.notice.item2':
+    'The training data was mostly Grade A (A100/B11/C3), so <strong>Grade C accuracy in particular is largely unverified</strong>.',
+  'calibrate.notice.item3':
+    '<strong>We strongly recommend recalibrating for your shooting environment before real-world use.</strong> Collect sample photos with known correct grades and run the calibration below.',
+  'calibrate.notice.item4':
+    'For validation details and figures, see the developer document <code>VALIDATION.md</code>.',
   'calibrate.addPhotos': '＋ Add sample photos',
   'calibrate.progressDefault': 'Calculating…',
   'calibrate.back': 'Back',

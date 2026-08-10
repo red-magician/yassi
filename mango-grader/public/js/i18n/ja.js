@@ -6,15 +6,11 @@ export default {
   'header.title': '🥭 マンゴー等級判定',
   'header.badge': '試作 v1',
 
-  'home.caveat.summary': '⚠ 判定精度についての注意（必読）',
+  'home.caveat.summary': '⚠ この判定の使い方',
   'home.caveat.item1':
-    'このモデルは<strong>2019年撮影の写真</strong>で較正されています。撮影環境（カメラ・照明・背景）が変わると精度が落ちる場合があります。',
-  'home.caveat.item2':
-    '<strong>表面の着色だけ</strong>を見ています。傷・ヤニによる格下げは判定できません。最終確認は人が行ってください。',
-  'home.caveat.item3': '学習データはA級中心（A100/B11/C3）で、<strong>特にC級の判定精度は未知数</strong>です。',
-  'home.caveat.item4': '「確信度」が低い判定は自動的に「要確認」と表示されます。',
-  'home.caveat.item5':
-    '<strong>本番利用の前に、この撮影環境向けの再較正を強く推奨します。</strong>正解等級が分かっているサンプル写真を集めて「較正モード」を実行してください（詳細は開発者向け<code>VALIDATION.md</code>）。',
+    '<strong>表面の着色だけ</strong>を見ています。傷・ヤニによる格下げは判定できません。<strong>最終等級は人が確認してください。</strong>',
+  'home.caveat.item2': '「要確認」と表示された判定は、必ず人の目で確かめてください。',
+  'home.caveat.item3': 'これは<strong>試作版</strong>です。判定は参考値として使ってください。',
 
   'home.lead': '無彩色の背景の上に果実を1個だけ置いて撮影してください。',
   'home.captureCamera': '📷 写真を撮る',
@@ -27,6 +23,13 @@ export default {
   'calibrate.title': '撮影環境向けの較正',
   'calibrate.lead':
     'このモデルは撮影環境（カメラ・照明・背景）が変わると精度が落ちます。実際の撮影環境で正解の等級が分かっているサンプル写真を集めると、その環境向けに判定の色しきい値を選び直せます（各等級20枚程度が目安）。',
+  'calibrate.notice.summary': 'モデルの前提と既知の限界（スタッフ向け）',
+  'calibrate.notice.item1':
+    'このモデルは<strong>2019年撮影の写真</strong>で較正されています。撮影環境（カメラ・照明・背景）が変わると精度が落ちる場合があります。',
+  'calibrate.notice.item2': '学習データはA級中心（A100/B11/C3）で、<strong>特にC級の判定精度は未知数</strong>です。',
+  'calibrate.notice.item3':
+    '<strong>本番利用の前に、この撮影環境向けの再較正を強く推奨します。</strong>正解等級が分かっているサンプル写真を集めて、下の手順で較正を実行してください。',
+  'calibrate.notice.item4': '検証の詳細・数値は開発者向けドキュメント<code>VALIDATION.md</code>を参照してください。',
   'calibrate.addPhotos': '＋ サンプル写真を追加',
   'calibrate.progressDefault': '計算中…',
   'calibrate.back': '戻る',
