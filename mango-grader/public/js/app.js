@@ -1,4 +1,5 @@
 import { A_THR_DEFAULT, H_THR_DEFAULT } from './features.js';
+import { t, applyTranslations, getLang, setLang } from './i18n.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -54,9 +55,10 @@ function resetActiveThresholds() {
 
 function renderThresholdStatus() {
   const { aThr, hThr, isCustom } = getActiveThresholds();
-  $('#threshold-status-text').textContent = isCustom
-    ? `カスタム (a=${aThr}, h=${hThr})`
-    : `既定 (a=${aThr}, h=${hThr})`;
+  $('#threshold-status-text').textContent = t(
+    isCustom ? 'calibrate.thresholdCustom' : 'calibrate.thresholdDefault',
+    { a: aThr, h: hThr }
+  );
 }
 
 // ---- worker plumbing ----
@@ -122,7 +124,6 @@ function loadImageElementFallback(file) {
 }
 
 // ---- grade presentation ----
-const GRADE_LABEL = { A: '赤秀 A', B: '黒秀 B', C: '白箱 C' };
 const GRADE_CLASS = { A: 'grade-a', B: 'grade-b', C: 'grade-c' };
 
 let lastResult = null;
@@ -142,7 +143,7 @@ async function handleFile(file) {
   } catch (err) {
     console.error(err);
     showScreen('home');
-    alert('画像の処理に失敗しました: ' + (err && err.message ? err.message : err));
+    alert(t('result.processFailedAlert', { error: err && err.message ? err.message : err }));
   }
 }
 
@@ -154,11 +155,11 @@ function renderResult(result) {
   const featEl = $('#feature-details');
 
   if (result.error) {
-    badge.textContent = '？';
+    badge.textContent = t('result.gradeUnknown');
     badge.className = 'grade-badge grade-unknown';
     confEl.textContent = '-';
     reviewEl.classList.remove('hidden');
-    reviewEl.textContent = '⚠ ' + result.error + '（背景や写り方を変えて再撮影してください）';
+    reviewEl.textContent = '⚠ ' + t('result.error.' + result.error) + t('result.errorHint');
     noteEl.classList.add('hidden');
     featEl.innerHTML = '';
     return;
@@ -166,19 +167,19 @@ function renderResult(result) {
 
   badge.textContent = result.grade;
   badge.className = 'grade-badge ' + GRADE_CLASS[result.grade];
-  $('#grade-label').textContent = GRADE_LABEL[result.grade];
+  $('#grade-label').textContent = t('result.gradeLabel.' + result.grade);
   confEl.textContent = Math.round(result.confidence * 100) + '%';
 
   if (result.needs_review) {
     reviewEl.classList.remove('hidden');
-    reviewEl.textContent = '⚠ 確信度が低い判定です。人の目で確認してください。';
+    reviewEl.textContent = t('result.needsReview');
   } else {
     reviewEl.classList.add('hidden');
   }
 
   if (result.note) {
     noteEl.classList.remove('hidden');
-    noteEl.textContent = 'ℹ ' + result.note;
+    noteEl.textContent = 'ℹ ' + t('result.note.' + result.note);
   } else {
     noteEl.classList.add('hidden');
   }
@@ -190,10 +191,10 @@ function renderResult(result) {
         .join(' / ')
     : '-';
   featEl.innerHTML = `
-    <dt>確率内訳</dt><dd>${probaStr}</dd>
-    <dt>鮮紅色の面積割合 (vr_whole)</dt><dd>${f.vr_whole.toFixed(1)}%</dd>
-    <dt>最大連結成分の割合 (blob_largest_frac)</dt><dd>${f.blob_largest_frac.toFixed(1)}%</dd>
-    <dt>連結成分の数 (blob_n)</dt><dd>${f.blob_n}</dd>
+    <dt>${t('result.probaLabel')}</dt><dd>${probaStr}</dd>
+    <dt>${t('result.vrWholeLabel')}</dt><dd>${f.vr_whole.toFixed(1)}%</dd>
+    <dt>${t('result.blobFracLabel')}</dt><dd>${f.blob_largest_frac.toFixed(1)}%</dd>
+    <dt>${t('result.blobNLabel')}</dt><dd>${f.blob_n}</dd>
   `;
 }
 
@@ -232,9 +233,9 @@ async function submitCorrection(humanGrade, hasDefect) {
         has_defect: !!hasDefect,
       }),
     });
-    alert('訂正を送信しました。ありがとうございます。');
+    alert(t('result.correctionSentAlert'));
   } catch (err) {
-    alert('送信に失敗しました（オフラインの可能性があります）。');
+    alert(t('result.correctionFailedAlert'));
   }
   showScreen('result');
 }
@@ -267,7 +268,7 @@ let calibrationItems = []; // {id, previewUrl, imageData, grade}
 function renderCalibrateList() {
   const list = $('#calibrate-list');
   if (calibrationItems.length === 0) {
-    list.innerHTML = '<p class="calibrate-empty">まだサンプル写真がありません</p>';
+    list.innerHTML = `<p class="calibrate-empty">${t('calibrate.empty')}</p>`;
   } else {
     list.innerHTML = calibrationItems
       .map(
@@ -275,10 +276,10 @@ function renderCalibrateList() {
         <div class="calibrate-item" data-id="${item.id}">
           <img src="${item.previewUrl}" alt="" />
           <select class="grade-select" data-id="${item.id}">
-            <option value="" ${item.grade === '' ? 'selected' : ''}>等級を選択</option>
-            <option value="A" ${item.grade === 'A' ? 'selected' : ''}>A（赤秀）</option>
-            <option value="B" ${item.grade === 'B' ? 'selected' : ''}>B（黒秀）</option>
-            <option value="C" ${item.grade === 'C' ? 'selected' : ''}>C（白箱）</option>
+            <option value="" ${item.grade === '' ? 'selected' : ''}>${t('calibrate.gradeSelectPlaceholder')}</option>
+            <option value="A" ${item.grade === 'A' ? 'selected' : ''}>${t('grade.A')}</option>
+            <option value="B" ${item.grade === 'B' ? 'selected' : ''}>${t('grade.B')}</option>
+            <option value="C" ${item.grade === 'C' ? 'selected' : ''}>${t('grade.C')}</option>
           </select>
           <button type="button" class="remove-btn" data-id="${item.id}">✕</button>
         </div>`
@@ -327,7 +328,7 @@ $('#calibrate-back-btn').addEventListener('click', () => showScreen('home'));
 
 $('#calibrate-reset-btn').addEventListener('click', () => {
   resetActiveThresholds();
-  alert('既定の判定基準に戻しました。');
+  alert(t('calibrate.resetAlert'));
 });
 
 $('#calibrate-run-btn').addEventListener('click', () => {
@@ -337,7 +338,7 @@ $('#calibrate-run-btn').addEventListener('click', () => {
   $('#calibrate-run-btn').disabled = true;
   $('#calibrate-result').classList.add('hidden');
   $('#calibrate-progress').classList.remove('hidden');
-  $('#calibrate-progress-text').textContent = '計算中…';
+  $('#calibrate-progress-text').textContent = t('calibrate.progressDefault');
 
   const requestId = calibrateRequestId++;
   const { aThr, hThr } = getActiveThresholds();
@@ -346,14 +347,17 @@ $('#calibrate-run-btn').addEventListener('click', () => {
     const msg = e.data;
     if (msg.requestId !== requestId) return;
     if (msg.type === 'progress') {
-      $('#calibrate-progress-text').textContent = `計算中… (${msg.done}/${msg.total})`;
+      $('#calibrate-progress-text').textContent = t('calibrate.progressWithCount', {
+        done: msg.done,
+        total: msg.total,
+      });
       return;
     }
     calibrateWorker.removeEventListener('message', onMessage);
     $('#calibrate-progress').classList.add('hidden');
     $('#calibrate-run-btn').disabled = false;
     if (msg.type === 'error') {
-      alert('較正に失敗しました: ' + msg.error);
+      alert(t('calibrate.failedAlert', { error: msg.error }));
       return;
     }
     renderCalibrateResult(msg);
@@ -368,26 +372,40 @@ $('#calibrate-run-btn').addEventListener('click', () => {
   });
 });
 
+let lastCalibrateResultMsg = null;
+
 function renderCalibrateResult(msg) {
+  lastCalibrateResultMsg = msg;
   const { best, currentScore, noFruitCount, nPhotos } = msg;
   const { aThr: curA, hThr: curH } = getActiveThresholds();
   const improved = best.score > currentScore + 1e-9;
   const el = $('#calibrate-result');
   el.classList.remove('hidden');
   el.innerHTML = `
-    <p>${nPhotos}枚のサンプル（うち果実未検出 ${noFruitCount}枚）で較正しました。</p>
-    <p>現在の設定 (a=${curA}, h=${curH}) のスコア: ${currentScore.toFixed(3)}</p>
-    <p>見つかった最良の設定: <strong>a=${best.aThr}, h=${best.hThr}</strong>（スコア ${best.score.toFixed(3)}）</p>
+    <p>${t('calibrate.resultSummary', { n: nPhotos, noFruit: noFruitCount })}</p>
+    <p>${t('calibrate.resultCurrentScore', { a: curA, h: curH, score: currentScore.toFixed(3) })}</p>
+    <p>${t('calibrate.resultBestScore', { a: best.aThr, h: best.hThr, score: best.score.toFixed(3) })}</p>
     <p class="${improved ? 'improved' : 'not-improved'}">
-      ${improved ? '✓ 現在の設定より改善しています。' : '△ 現在の設定と同等かそれ以下でした。サンプルを増やすと変わる可能性があります。'}
+      ${improved ? t('calibrate.resultImproved') : t('calibrate.resultNotImproved')}
     </p>
-    <button type="button" id="calibrate-apply-btn" class="btn btn-primary">この設定を適用する</button>
+    <button type="button" id="calibrate-apply-btn" class="btn btn-primary">${t('calibrate.apply')}</button>
   `;
   $('#calibrate-apply-btn').addEventListener('click', () => {
     setActiveThresholds(best.aThr, best.hThr);
-    alert(`設定を適用しました（a=${best.aThr}, h=${best.hThr}）。`);
+    alert(t('calibrate.applyAlert', { a: best.aThr, h: best.hThr }));
   });
 }
+
+// ---- language switcher ----
+const langSelect = $('#lang-select');
+langSelect.value = getLang();
+langSelect.addEventListener('change', () => {
+  setLang(langSelect.value); // re-applies data-i18n text automatically
+  renderThresholdStatus();
+  renderCalibrateList();
+  if (lastCalibrateResultMsg) renderCalibrateResult(lastCalibrateResultMsg);
+  if (lastResult) renderResult(lastResult);
+});
 
 // service worker (offline / installable)
 if ('serviceWorker' in navigator) {
@@ -396,5 +414,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+applyTranslations();
 renderThresholdStatus();
 showScreen('home');

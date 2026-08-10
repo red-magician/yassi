@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#e8571f" />
-<title>マンゴー等級判定（試作）</title>
+<title data-i18n="meta.title">マンゴー等級判定（試作）</title>
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="./icons/icon-180.png" />
@@ -12,34 +12,37 @@
 </head>
 <body>
 <header class="app-header">
-  <h1>🥭 マンゴー等級判定</h1>
-  <span class="badge-experimental">試作 v1</span>
+  <h1 data-i18n="header.title">🥭 マンゴー等級判定</h1>
+  <div class="header-right">
+    <span class="badge-experimental" data-i18n="header.badge">試作 v1</span>
+    <select id="lang-select" class="lang-select" data-i18n-attr="aria-label:home.langLabel" aria-label="Language">
+      <option value="ja">日本語</option>
+      <option value="en">English</option>
+      <option value="zh">中文</option>
+    </select>
+  </div>
 </header>
 
 <main>
   <section id="screen-home" class="screen">
     <details class="caveat-box" open>
-      <summary>⚠ 判定精度についての注意（必読）</summary>
+      <summary data-i18n="home.caveat.summary">⚠ この判定の使い方</summary>
       <ul>
-        <li>このモデルは<strong>2019年撮影の写真</strong>で較正されています。撮影環境（カメラ・照明・背景）が変わると精度が落ちる場合があります。</li>
-        <li><strong>表面の着色だけ</strong>を見ています。傷・ヤニによる格下げは判定できません。最終確認は人が行ってください。</li>
-        <li>学習データはA級中心（A100/B11/C3）で、<strong>特にC級の判定精度は未知数</strong>です。</li>
-        <li>「確信度」が低い判定は自動的に「要確認」と表示されます。</li>
-        <li><strong>実写真での検証で、A判定が出にくい傾向を確認済みです。</strong>
-          本番利用の前に撮影環境向けの再較正を強く推奨します（詳細は開発者向け
-          <code>VALIDATION.md</code>）。</li>
+        <li data-i18n="home.caveat.item1"></li>
+        <li data-i18n="home.caveat.item2"></li>
+        <li data-i18n="home.caveat.item3"></li>
       </ul>
     </details>
 
-    <p class="lead">無彩色の背景の上に果実を1個だけ置いて撮影してください。</p>
+    <p class="lead" data-i18n="home.lead">無彩色の背景の上に果実を1個だけ置いて撮影してください。</p>
 
     <div class="capture-buttons">
       <label class="btn btn-primary">
-        📷 写真を撮る
+        <span data-i18n="home.captureCamera">📷 写真を撮る</span>
         <input id="camera-input" type="file" accept="image/*" capture="environment" hidden />
       </label>
       <label class="btn btn-secondary">
-        🖼 アルバムから選ぶ
+        <span data-i18n="home.captureGallery">🖼 アルバムから選ぶ</span>
         <input id="gallery-input" type="file" accept="image/*" hidden />
       </label>
     </div>
@@ -47,88 +50,94 @@
     <div class="settings-box">
       <label class="switch-row">
         <input id="send-logs-toggle" type="checkbox" />
-        判定結果をモデル改善のために送信する（画像は送信されません。数値と等級のみ）
+        <span data-i18n="home.sendLogsLabel">判定結果をモデル改善のために送信する（画像は送信されません。数値と等級のみ）</span>
       </label>
-      <p class="threshold-status">現在の判定基準: <span id="threshold-status-text">-</span></p>
-      <button id="open-calibrate-btn" class="btn btn-link">⚙ 較正モード（スタッフ向け）</button>
+      <p class="threshold-status"><span data-i18n="home.thresholdStatusPrefix">現在の判定基準: </span><span id="threshold-status-text">-</span></p>
+      <button id="open-calibrate-btn" class="btn btn-link" data-i18n="home.openCalibrate">⚙ 較正モード（スタッフ向け）</button>
     </div>
   </section>
 
   <section id="screen-calibrate" class="screen hidden">
-    <h2>撮影環境向けの較正</h2>
-    <p class="lead">
-      このモデルは撮影環境（カメラ・照明・背景）が変わると精度が落ちます。
-      実際の撮影環境で正解の等級が分かっているサンプル写真を集めると、
-      その環境向けに判定の色しきい値を選び直せます（各等級20枚程度が目安）。
-    </p>
+    <h2 data-i18n="calibrate.title">撮影環境向けの較正</h2>
+    <p class="lead" data-i18n="calibrate.lead"></p>
+
+    <details class="caveat-box">
+      <summary data-i18n="calibrate.notice.summary">モデルの前提と既知の限界（スタッフ向け）</summary>
+      <ul>
+        <li data-i18n="calibrate.notice.item1"></li>
+        <li data-i18n="calibrate.notice.item2"></li>
+        <li data-i18n="calibrate.notice.item3"></li>
+        <li data-i18n="calibrate.notice.item4"></li>
+      </ul>
+    </details>
 
     <div id="calibrate-list" class="calibrate-list"></div>
 
     <label class="btn btn-secondary">
-      ＋ サンプル写真を追加
+      <span data-i18n="calibrate.addPhotos">＋ サンプル写真を追加</span>
       <input id="calibrate-input" type="file" accept="image/*" multiple hidden />
     </label>
 
     <div id="calibrate-progress" class="calibrate-progress hidden">
       <div class="spinner"></div>
-      <p id="calibrate-progress-text">計算中…</p>
+      <p id="calibrate-progress-text" data-i18n="calibrate.progressDefault">計算中…</p>
     </div>
 
     <div id="calibrate-result" class="calibrate-result hidden"></div>
 
     <div class="action-row">
-      <button id="calibrate-back-btn" class="btn btn-secondary">戻る</button>
-      <button id="calibrate-run-btn" class="btn btn-primary" disabled>較正を実行</button>
+      <button id="calibrate-back-btn" class="btn btn-secondary" data-i18n="calibrate.back">戻る</button>
+      <button id="calibrate-run-btn" class="btn btn-primary" disabled data-i18n="calibrate.run">較正を実行</button>
     </div>
-    <button id="calibrate-reset-btn" class="btn btn-link">既定の設定に戻す</button>
+    <button id="calibrate-reset-btn" class="btn btn-link" data-i18n="calibrate.reset">既定の設定に戻す</button>
   </section>
 
   <section id="screen-loading" class="screen hidden">
     <div class="spinner"></div>
-    <p>判定中…</p>
+    <p data-i18n="loading.text">判定中…</p>
   </section>
 
   <section id="screen-result" class="screen hidden">
-    <img id="result-preview" class="preview-img" alt="撮影した写真" />
+    <img id="result-preview" class="preview-img" data-i18n-attr="alt:result.previewAlt" alt="撮影した写真" />
     <div class="result-card">
       <div id="grade-badge" class="grade-badge">?</div>
       <div id="grade-label" class="grade-label"></div>
-      <p class="confidence-row">確信度: <span id="confidence-value">-</span></p>
+      <p class="confidence-row"><span data-i18n="result.confidencePrefix">確信度: </span><span id="confidence-value">-</span></p>
       <p id="needs-review-banner" class="needs-review hidden"></p>
       <p id="result-note" class="result-note hidden"></p>
       <details class="feature-box">
-        <summary>詳細を見る</summary>
+        <summary data-i18n="result.detailsSummary">詳細を見る</summary>
         <dl id="feature-details"></dl>
       </details>
     </div>
     <div class="action-row">
-      <button id="wrong-btn" class="btn btn-secondary">この判定は違う</button>
-      <button id="retake-btn" class="btn btn-primary">もう一度撮る</button>
+      <button id="wrong-btn" class="btn btn-secondary" data-i18n="result.wrong">この判定は違う</button>
+      <button id="retake-btn" class="btn btn-primary" data-i18n="result.retake">もう一度撮る</button>
     </div>
   </section>
 
   <section id="screen-correct" class="screen hidden">
-    <h2>正しい等級を選んでください</h2>
+    <h2 data-i18n="correct.title">正しい等級を選んでください</h2>
     <form id="correct-form">
       <div class="radio-row">
-        <label><input type="radio" name="human_grade" value="A" required /> A（赤秀）</label>
-        <label><input type="radio" name="human_grade" value="B" /> B（黒秀）</label>
-        <label><input type="radio" name="human_grade" value="C" /> C（白箱）</label>
+        <label><input type="radio" name="human_grade" value="A" required /> <span data-i18n="grade.A">A（赤秀）</span></label>
+        <label><input type="radio" name="human_grade" value="B" /> <span data-i18n="grade.B">B（黒秀）</span></label>
+        <label><input type="radio" name="human_grade" value="C" /> <span data-i18n="grade.C">C（白箱）</span></label>
       </div>
       <label class="switch-row">
         <input id="has-defect" type="checkbox" />
-        傷・ヤニなど色以外の理由で等級が下がっている
+        <span data-i18n="correct.hasDefect">傷・ヤニなど色以外の理由で等級が下がっている</span>
       </label>
       <div class="action-row">
-        <button type="button" id="correct-cancel-btn" class="btn btn-secondary">キャンセル</button>
-        <button type="submit" class="btn btn-primary">送信</button>
+        <button type="button" id="correct-cancel-btn" class="btn btn-secondary" data-i18n="correct.cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary" data-i18n="correct.submit">送信</button>
       </div>
     </form>
   </section>
 </main>
 
 <footer class="app-footer">
-  <p>色（表面等級）のみの試作判定です。最終等級は人の目で確認してください。</p>
+  <p data-i18n="footer.text">色（表面等級）のみの試作判定です。最終等級は人の目で確認してください。</p>
 </footer>
 
 <script type="module" src="./js/app.js"></script>

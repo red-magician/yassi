@@ -55,7 +55,9 @@ export function predict(features, { confidenceThreshold = 0.55 } = {}) {
       confidence: null,
       needs_review: true,
       features: null,
-      error: '果実領域を検出できませんでした',
+      // stable code, not user-facing text -- the UI layer (app.js) is
+      // responsible for translating this into the active language.
+      error: 'no_fruit_detected',
     };
   }
 
@@ -66,7 +68,7 @@ export function predict(features, { confidenceThreshold = 0.55 } = {}) {
       confidence: 1.0,
       needs_review: false,
       features,
-      note: '鮮紅色画素が検出されなかったため、判定モデルを介さずCとしました',
+      note: 'forced_c_no_vivid_pixels',
     };
   }
 
