@@ -1,0 +1,341 @@
+<title>グランドフィナーレの審査、この設計で決め切れるか？ ― 決まったこと／残る論点 ―</title>
+<style>/* ============================================================
+   論点整理ボード 共通スタイル
+   このファイルの中身をそのままページの style 要素に入れて使う。
+   （コメント内にタグを書くと検証ツールが誤検出するため、ここでは書かない）
+
+   寸法はすべて cqw（.stage の幅の1%）。1600px 幅で 1cqw = 16px。
+   幅が変わってもボードが1枚の紙のように等比で拡縮する。
+   色は「役割」に紐づく。同じ役割には同じ色を使い、
+   1つの色に2つの意味を持たせないこと。
+   ============================================================ */
+
+*{box-sizing:border-box}
+
+:root{
+  /* 役割色 ─ 主色 / 淡色地。全色 白地・淡色地の両方で AA 以上を確認済み */
+  --navy:#1F3864;   --navy-s:#E7ECF5;   /* 構造・確定 */
+  --red:#C00000;    --red-s:#FBE9E7;    /* 最重要の考え方（1枚に1〜2個） */
+  --org:#A34A0C;    --org-s:#FCE9DC;    /* 番号・強調・共通事項 */
+  --gold:#8A6300;   --gold-s:#FFF3D1;   /* 決めること・ゴール */
+  --grn:#2C6B3F;    --grn-s:#E4F0E6;    /* フェーズA・肯定 */
+  --blu:#1C5FA8;    --blu-s:#E3EEFA;    /* フェーズB */
+  --gry:#5A6377;    --gry-s:#F2F4F8;    /* 補助 */
+
+  --ink:#24304A;    --paper:#FFFFFF;
+  --line:#C9D2E2;   --line2:#E4E9F2;
+
+  --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",
+       "Noto Sans JP","Meiryo",sans-serif;
+  --num:ui-rounded,"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+
+/* ── 台紙。狭い画面ではここが横スクロールする ───────────────── */
+.scroll{overflow-x:auto;background:#E9ECF2;padding:1.2vw 0}
+.stage{container-type:inline-size;min-width:1040px;max-width:1760px;margin:0 auto}
+
+.board{
+  background:var(--paper);color:var(--ink);font-family:var(--jp);
+  border:0.28cqw solid var(--navy);
+  padding:1.1cqw;
+  display:flex;flex-direction:column;gap:0.85cqw;
+  line-height:1.7;font-feature-settings:"palt" 1;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 型スケール（1600px 幅換算のpxを併記） */
+.board{
+  --t-title:2.45cqw;  /* 39px */
+  --t-sub:1.15cqw;    /* 18px */
+  --t-band:1.12cqw;   /* 18px */
+  --t-lead:1.0cqw;    /* 16px */
+  --t-card:0.95cqw;   /* 15px */
+  --t-body:0.8cqw;    /* 13px */
+  --t-sm:0.7cqw;      /* 11px */
+  --rad:0.4cqw;
+}
+
+/* ── 1. タイトル帯 ──────────────────────────────────────── */
+.hd{text-align:center;padding:0.3cqw 0 0.6cqw}
+.hd h1{
+  margin:0;font-size:var(--t-title);font-weight:900;color:var(--navy);
+  line-height:1.3;letter-spacing:.01em;text-wrap:balance;
+}
+.hd h1 em{font-style:normal;color:var(--org)}      /* 副題・強調したい語 */
+.hd h1 q{quotes:none;color:var(--red)}             /* 「？」など最強調 */
+.hd .sub{
+  margin:0.45cqw 0 0;font-size:var(--t-sub);color:var(--ink);font-weight:600;
+}
+.hd .sub b{color:var(--navy)}
+
+/* ── 2. 前提バー ────────────────────────────────────────── */
+.pre{display:grid;grid-template-columns:auto 1fr;align-items:stretch;
+  border:0.09cqw solid var(--navy);border-radius:var(--rad);overflow:hidden}
+.pre-lab{background:var(--navy);color:#fff;font-weight:800;font-size:var(--t-band);
+  display:grid;place-items:center;padding:0.6cqw 0.7cqw;letter-spacing:.08em;
+  writing-mode:horizontal-tb;min-width:3.6cqw;text-align:center;line-height:1.45}
+.pre-body{padding:0.6cqw 0.8cqw;display:flex;align-items:center;gap:0.9cqw;flex-wrap:wrap}
+/* ラベルの色を役割に合わせて振り替える（共通事項ブロックなど） */
+.pre-org{border-color:var(--org)} .pre-org .pre-lab{background:var(--org)}
+.pre-gold{border-color:var(--gold)} .pre-gold .pre-lab{background:var(--gold)}
+.pre-grn{border-color:var(--grn)} .pre-grn .pre-lab{background:var(--grn)}
+
+/* 前提バーと並ぶハイライト箱 */
+.hi{border-radius:var(--rad);padding:0.55cqw 0.8cqw;border:0.11cqw solid}
+.hi h3{margin:0 0 0.25cqw;font-size:var(--t-lead);font-weight:800;text-align:center}
+.hi p{margin:0.2cqw 0 0;font-size:var(--t-body);line-height:1.7}
+.hi ul{margin:0.2cqw 0 0;padding-left:1.1cqw;font-size:var(--t-body);line-height:1.85}
+.hi-red{border-color:var(--red);background:var(--red-s)}
+.hi-red h3{color:var(--red)}
+.hi-red .key{display:block;text-align:center;font-size:var(--t-lead);font-weight:900;
+  color:var(--red);margin:0.15cqw 0 0.3cqw}
+.hi-gold{border-color:var(--gold);background:var(--gold-s)}
+.hi-gold h3{color:var(--gold)}
+.hi-gold li{font-weight:700;color:var(--navy)}
+
+/* ── 3. タイムライン ────────────────────────────────────── */
+.tl{display:flex;align-items:center;gap:0.4cqw;flex-wrap:nowrap}
+.tl-step{flex:1 1 0;border-radius:var(--rad);padding:0.45cqw 0.6cqw;text-align:center;
+  background:var(--gry-s);border:0.09cqw solid var(--line)}
+.tl-step b{display:block;font-family:var(--num);font-size:var(--t-card);font-weight:800;
+  color:var(--navy);line-height:1.4}
+.tl-step span{display:block;font-size:var(--t-sm);color:var(--ink);line-height:1.5}
+.tl-step.on{background:var(--gold-s);border-color:var(--gold)}
+.tl-step.on b{color:var(--gold)}
+.tl-arw{color:var(--gry);font-size:var(--t-card);flex:none}
+.tl-ico{flex:0 0 auto;display:grid;place-items:center;padding:0 0.4cqw;color:var(--navy)}
+
+/* ── 4. セクション帯 ────────────────────────────────────── */
+.band{color:#fff;font-weight:800;font-size:var(--t-band);
+  padding:0.4cqw 0.8cqw;border-radius:var(--rad) var(--rad) 0 0;letter-spacing:.02em}
+.band-navy{background:var(--navy)}
+.band-green{background:var(--grn)}
+.band-blue{background:var(--blu)}
+.band-org{background:var(--org)}
+.sec{border:0.11cqw solid;border-radius:var(--rad);overflow:hidden;
+  display:flex;flex-direction:column}
+.sec-green{border-color:var(--grn)} .sec-blue{border-color:var(--blu)}
+.sec-navy{border-color:var(--navy)} .sec-org{border-color:var(--org)}
+.sec-in{padding:0.7cqw;display:flex;flex-direction:column;gap:0.6cqw;flex:1}
+
+/* 目的ラベル（帯の直下に置く1行） */
+.aim{display:grid;grid-template-columns:auto 1fr;gap:0.6cqw;align-items:center;
+  font-size:var(--t-body)}
+.aim b{background:var(--navy);color:#fff;font-size:var(--t-sm);font-weight:800;
+  padding:0.2cqw 0.55cqw;border-radius:0.25cqw;letter-spacing:.08em}
+.aim span em{font-style:normal;color:var(--red);font-weight:700}
+
+/* ── 5. 論点カード（このボードの中核） ──────────────────── */
+.cards{display:grid;gap:0.5cqw}
+.cards.c2{grid-template-columns:repeat(2,1fr)}
+.cards.c3{grid-template-columns:repeat(3,1fr)}
+.cards.c5{grid-template-columns:repeat(5,1fr)}
+.cards.c6{grid-template-columns:repeat(6,1fr)}
+.card{border:0.09cqw solid var(--line);border-radius:var(--rad);
+  background:var(--paper);display:flex;flex-direction:column}
+.card-h{display:grid;grid-template-columns:auto 1fr;gap:0.4cqw;align-items:start;
+  padding:0.45cqw 0.5cqw;background:var(--gry-s);border-bottom:0.09cqw solid var(--line2);
+  border-radius:var(--rad) var(--rad) 0 0}
+.n{font-family:var(--num);font-weight:800;font-size:var(--t-sm);color:#fff;
+  background:var(--org);width:1.25cqw;height:1.25cqw;border-radius:50%;
+  display:grid;place-items:center;flex:none;margin-top:0.1cqw}
+.n-grn{background:var(--grn)} .n-blu{background:var(--blu)} .n-navy{background:var(--navy)}
+.card-h h4{margin:0;font-size:var(--t-card);font-weight:800;color:var(--navy);line-height:1.45}
+.card ul{margin:0;padding:0.45cqw 0.5cqw 0.5cqw 1.35cqw;font-size:var(--t-body);
+  line-height:1.75;flex:1}
+.card li{margin-bottom:0.12cqw}
+.card li::marker{color:var(--gry)}
+.card li b{color:var(--navy)}
+
+/* ── 6. 横フロー ────────────────────────────────────────── */
+.flow{display:flex;align-items:center;gap:0.45cqw;flex-wrap:nowrap}
+.flow.wrap{flex-wrap:wrap}
+.flow-step{border:0.09cqw solid var(--line);border-radius:var(--rad);
+  padding:0.4cqw 0.6cqw;text-align:center;background:var(--paper);min-width:0}
+.flow-step b{display:block;font-size:var(--t-card);font-weight:800;color:var(--navy)}
+.flow-step span{display:block;font-size:var(--t-sm);color:var(--gry)}
+.flow-arw{color:var(--gry);font-size:var(--t-lead);flex:none}
+
+/* ── 7. 対比ペア ────────────────────────────────────────── */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0.45cqw}
+.vs>div{border-radius:var(--rad);padding:0.45cqw 0.6cqw;border:0.09cqw solid}
+.vs h5{margin:0 0 0.3cqw;font-size:var(--t-body);font-weight:800;text-align:center}
+.vs p{margin:0;font-size:var(--t-sm);line-height:1.7;text-align:center}
+.vs-lo{border-color:var(--line);background:var(--gry-s)}
+.vs-lo h5{color:var(--gry)}
+.vs-hi{border-color:var(--grn);background:var(--grn-s)}
+.vs-hi h5{color:var(--grn)}
+
+/* ── 8. 判定バンド ──────────────────────────────────────── */
+.grades{display:flex;gap:0.4cqw}
+.grades>div{flex:1;border-radius:var(--rad);padding:0.45cqw;text-align:center;
+  border:0.11cqw solid}
+.grades b{display:block;font-family:var(--num);font-size:1.5cqw;font-weight:900;line-height:1.2}
+.grades span{display:block;font-size:var(--t-sm);color:var(--ink)}
+.g-s{border-color:var(--red);background:var(--red-s)} .g-s b{color:var(--red)}
+.g-a{border-color:var(--org);background:var(--org-s)} .g-a b{color:var(--org)}
+.g-b{border-color:var(--grn);background:var(--grn-s)} .g-b b{color:var(--grn)}
+.g-c{border-color:var(--line);background:var(--gry-s)} .g-c b{color:var(--gry)}
+
+/* ── 9. チェックリスト ──────────────────────────────────── */
+.chk{list-style:none;margin:0;padding:0;font-size:var(--t-body);line-height:1.9}
+.chk li{position:relative;padding-left:1.5cqw}
+.chk li::before{content:"✓";position:absolute;left:0;top:0.34cqw;
+  color:#fff;background:var(--grn);width:0.95cqw;height:0.95cqw;
+  border-radius:50%;display:grid;place-items:center;font-size:var(--t-sm);font-weight:800}
+.chk li b{color:var(--navy)}
+
+/* ── 10. 結論帯 ─────────────────────────────────────────── */
+.goal{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0.8cqw;
+  border-radius:var(--rad);overflow:hidden;border:0.11cqw solid var(--navy)}
+.goal-lab{background:var(--navy);color:#fff;font-weight:800;font-size:var(--t-body);
+  padding:0.6cqw 0.8cqw;letter-spacing:.06em;white-space:nowrap}
+.goal p{margin:0;padding:0.5cqw 0.9cqw 0.5cqw 0;font-size:var(--t-lead);font-weight:800;
+  color:var(--navy);line-height:1.6}
+.goal-gold{border-color:var(--gold);background:var(--gold-s)}
+.goal-gold .goal-lab{background:var(--gold)}
+.goal-gold p{color:var(--gold)}
+
+/* ── 汎用 ───────────────────────────────────────────────── */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0.8cqw;align-items:stretch}
+.two-a{display:grid;grid-template-columns:auto 1fr auto;gap:0.8cqw;align-items:stretch}
+.note{font-size:var(--t-sm);color:var(--gry);line-height:1.7;margin:0}
+/* 左右のセクションは高さが揃う。短いほうの最後のブロックに付けて下端に寄せる */
+.push{margin-top:auto}
+.sub-h{font-size:var(--t-body);font-weight:800;color:var(--navy);margin:0 0 0.3cqw}
+.ico{width:2.4cqw;height:2.4cqw;flex:none;color:var(--navy)}
+.ico-sm{width:1.5cqw;height:1.5cqw;flex:none}
+
+/* 図解（インラインSVG）を置くとき */
+.dgm{width:100%;height:auto;display:block}
+.dgm text{font-family:var(--jp);fill:var(--ink)}
+.dgm .st{fill:none;stroke:currentColor;stroke-width:1.4}
+
+/* ── 印刷：A3横で1枚に ──────────────────────────────────── */
+@page{size:A3 landscape;margin:6mm}
+@media print{
+  .scroll{background:#fff;padding:0;overflow:visible}
+  .stage{min-width:0;max-width:none;width:100%}
+  .board{border-width:2px;break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+.dgm .pt-top{fill:var(--gold-s);stroke:var(--gold);stroke-width:2}
+.dgm .pt-in{fill:var(--grn-s);stroke:var(--grn);stroke-width:1.4}
+.dgm .pt-out{fill:var(--gry-s);stroke:var(--line);stroke-width:1.4}
+.dgm .pt-r{font-size:12px;text-anchor:middle;fill:var(--gry)}
+.dgm .pt-p{font-size:16px;font-weight:800;text-anchor:middle;fill:var(--ink)}
+.dgm .pt-cap{font-size:11px;fill:var(--gry)}
+</style>
+<div class="scroll"><div class="stage"><div class="board">
+
+<div class="hd">
+  <h1>グランドフィナーレの審査、この設計で決め切れるか<q>？</q>
+      <em>― 決まったこと／残る論点 ―</em></h1>
+  <p class="sub">上司資料の26論点のうち<b>18が確定</b>しました。残るのは運用系の5項目です。
+     応募は5〜10件、予備審査は役員4名、最終審査は12名という前提で組み直しています。</p>
+</div>
+
+<div class="two-a">
+  <div class="pre">
+    <div class="pre-lab">前提</div>
+    <div class="pre-body">
+      <div class="flow" style="flex:1">
+        <div class="flow-step"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg><b>応募資料</b><span>5〜10件</span></div>
+        <span class="flow-arw">→</span>
+        <div class="flow-step"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="12" height="11" rx="2.5"/><path d="M12 4v3M9.5 12h.01M14.5 12h.01M9.5 15.5h5"/><path d="M3 11v3M21 11v3"/></svg><b>AI予備審査</b><span>6観点で整理・根拠抽出</span></div>
+        <span class="flow-arw">→</span>
+        <div class="flow-step"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.8M17 20a6 6 0 0 0-2-4.4"/></svg><b>役員予備審査</b><span>4名・順位投票</span></div>
+        <span class="flow-arw">→</span>
+        <div class="flow-step"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg><b>本番審査</b><span>12名・スタジオ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hi hi-red">
+    <h3>重要な考え方</h3>
+    <span class="key">予選と本番は切り離す。</span>
+    <p>予選の点数は最終順位に持ち込まない。<br>
+       AIの点数も順位計算には一切入れない。<br>
+       <b>最終順位は本番12名の採点だけで決まる。</b></p>
+  </div>
+
+  <div class="hi hi-gold">
+    <h3>今日ここで決めること</h3>
+    <ul><li>登壇順の決め方</li><li>入力ツールと当日運用</li><li>記録・講評・発表の段取り</li></ul>
+  </div>
+</div>
+
+<div class="sec sec-navy">
+  <div class="band band-navy">全体の流れ（何をいつ決めるか）</div>
+  <div class="sec-in">
+    <div class="tl"><div class="tl-ico"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div class="tl-step"><b>8/31</b><span>応募締切</span></div><span class="tl-arw">▶</span><div class="tl-step"><b>9月初旬</b><span>AI予備審査：全応募を6観点で整理</span></div><span class="tl-arw">▶</span><div class="tl-step"><b>9/4ごろ</b><span>役員4名へ資料配布（五十音順）</span></div><span class="tl-arw">▶</span><div class="tl-step on"><b>9/10</b><span>役員予備審査：順位投票 → 決勝4部決定</span></div><span class="tl-arw">▶</span><div class="tl-step"><b>9/15 当日</b><span>12名がスタジオで最終審査 → 表彰</span></div></div>
+  </div>
+</div>
+
+<div class="two">
+  <div class="sec sec-green">
+    <div class="band band-green">A. 役員予備審査（4名）― 決勝に進む4部を決める</div>
+    <div class="sec-in">
+      <p class="aim"><b>確定</b><span>各役員が上位4部に順位をつけ、合計点で予選順位を出す。
+        <em>予選順位は非公開</em></span></p>
+      
+<svg class="dgm" viewBox="0 0 620 76" role="img"
+     aria-label="役員1名がつける順位点。1位10点、2位8点、3位7点、4位6点、5位以下は0点。">
+  <rect x="4" y="24" width="116" height="40" rx="7" class="pt-top"/><text x="62.0" y="41" class="pt-r">1位</text><text x="62.0" y="58" class="pt-p">10点</text><rect x="128" y="24" width="116" height="40" rx="7" class="pt-in"/><text x="186.0" y="41" class="pt-r">2位</text><text x="186.0" y="58" class="pt-p">8点</text><rect x="252" y="24" width="116" height="40" rx="7" class="pt-in"/><text x="310.0" y="41" class="pt-r">3位</text><text x="310.0" y="58" class="pt-p">7点</text><rect x="376" y="24" width="116" height="40" rx="7" class="pt-in"/><text x="434.0" y="41" class="pt-r">4位</text><text x="434.0" y="58" class="pt-p">6点</text><rect x="500" y="24" width="116" height="40" rx="7" class="pt-out"/><text x="558.0" y="41" class="pt-r">5位以下</text><text x="558.0" y="58" class="pt-p">0点</text>
+  <text x="4" y="14" class="pt-cap">役員1名がつける点（4名分を合計）</text>
+  <text x="616" y="14" class="pt-cap" text-anchor="end">合計40点満点</text>
+</svg>
+      <ul class="chk"><li>AIの6観点評価・根拠・強み／弱みを材料に、各自が<b>上位4部に順位</b>をつける</li><li>各役員が<b>1位に選んだ部は無条件で決勝進出</b></li><li>残りの枠は<b>合計点の高い順</b>で埋める</li><li>同点は ①1位票の数 → ②2位票の数 → ③4名の合議 で決める</li><li>資料は<b>部門名の五十音順</b>で配布する（AI点順に並べない）</li></ul>
+      <div class="vs push">
+        <div class="vs-lo"><h5>点数だけで選ぶと</h5>
+          <p>「3人がそこそこ推す部」が<br>「1人が熱烈に推す部」に勝つ</p></div>
+        <div class="vs-hi"><h5>1位票を保護すると</h5>
+          <p>4名それぞれの一番が必ず残り<br><b>尖った応募も決勝に上がる</b></p></div>
+      </div>
+      <p class="note">1位10点／2位8点は差が2点だが、4位6点と5位0点の差は6点。
+        つまり「4位以内に入るだけ」で下駄が大きく、票が割れる応募が不利になる。
+        上坂さんの「粗削りでも兆し」、前田さんの「遊びから生まれたものでも」を効かせるための保護ルール。</p>
+    </div>
+  </div>
+
+  <div class="sec sec-blue">
+    <div class="band band-blue">B. 本番審査（12名・スタジオ）― 最終順位を決める</div>
+    <div class="sec-in">
+      <p class="aim"><b>確定</b><span>各部を100点満点で採点し、最高・最低を除外した10名の平均で順位を確定する
+        <em>（合議による順位変更なし）</em></span></p>
+      <ul class="chk"><li>各審査員が<b>4部それぞれを100点満点</b>で採点する</li><li><b>最高点と最低点を各1つずつ除外</b>し、残り10名の平均で確定</li><li>同値が複数あっても<b>除外は1つだけ</b>（全部除くと母数が減りすぎる）</li><li><b>4部すべてを採点した人のみ有効</b>。途中退席者の採点は全部無効</li><li>平均は<b>小数第2位</b>まで（第1位だと同点が出やすい）</li><li>予選の点数は加算しない。<b>最終順位は本番の点数だけ</b>で決まる</li></ul>
+      <div class="sec sec-blue push" style="border-width:0.09cqw">
+        <div class="sec-in" style="background:var(--blu-s);gap:0.4cqw">
+          <p class="sub-h" style="color:var(--blu)">当日の流れ</p>
+          <div class="flow">
+            <div class="flow-step"><b>4部が順にプレゼン</b></div>
+            <span class="flow-arw">→</span>
+            <div class="flow-step"><b>各プレゼン直後に入力</b><span>後半有利を防ぐ</span></div>
+            <span class="flow-arw">→</span>
+            <div class="flow-step"><b>終了後に修正2分</b><span>前半の辛さを補正</span></div>
+            <span class="flow-arw">→</span>
+            <div class="flow-step"><b>最高・最低を除外</b><span>して平均算出</span></div>
+            <span class="flow-arw">→</span>
+            <div class="flow-step" style="border-color:var(--gold);background:var(--gold-s)">
+              <svg class="ico-sm" style="color:#8A6300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v3M9 20h6"/></svg><b style="color:var(--gold)">最終順位を発表・表彰</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pre pre-org">
+  <div class="pre-lab">C.<br>まだ<br>決まって<br>いないこと</div>
+  <div class="pre-body" style="align-items:stretch">
+    <div class="cards c5"><div class="card"><div class="card-h"><span class="n n">1</span><h4>登壇順はどう決める？</h4></div><ul><li>抽選にする？</li><li>予選順位を使う？</li><li>事務局が演出で決める？</li></ul></div><div class="card"><div class="card-h"><span class="n n">2</span><h4>入力ツールは何を使う？</h4></div><ul><li>スマホ／PCどちらで入力？</li><li>集計・表示は自動化する？</li><li>トラブル時の代替手段は？</li></ul></div><div class="card"><div class="card-h"><span class="n n">3</span><h4>記録と説明責任は？</h4></div><ul><li>予選の投票記録をどこまで残す？</li><li>落選部門にどう説明する？</li><li>社内にはいつ何を出す？</li></ul></div><div class="card"><div class="card-h"><span class="n n">4</span><h4>講評は誰が書く？</h4></div><ul><li>6観点をそのまま使う？</li><li>全部門に返す？ 決勝4部だけ？</li><li>AIの根拠抽出を流用する？</li></ul></div><div class="card"><div class="card-h"><span class="n n">5</span><h4>発表と表彰の段取りは？</h4></div><ul><li>順位はいつ確定して誰が発表する？</li><li>点数は公開する？ 非公開？</li><li>表彰の流れ・時間配分は？</li></ul></div></div>
+  </div>
+</div>
+
+<div class="goal">
+  <div class="goal-lab"><svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.3.3.5.7.5 1.1h6c0-.4.2-.8.5-1.1A6 6 0 0 0 12 3z"/></svg> この会議のゴール</div>
+  <p>上記 C の5項目を確定し、9/4の役員4名向け配布資料と、9/15当日の運用マニュアルに落とし込むこと</p>
+</div>
+
+</div></div></div>
