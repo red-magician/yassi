@@ -24,6 +24,8 @@ dummy/ダミー_採点マスター_デビューライブ_7月.xlsx
 dummy/ダミー_受賞一覧_6月.xlsx
 dummy/master_real_shape.xlsx
 dummy/master_target_sheet.xlsx
+dummy/ranking_award_test.xlsx
+dummy/like_bonus_test.xlsx
 
 # 実データを一時的に置いて検証する場合の避難場所（コミットしない）
 dummy/real/

@@ -23,8 +23,8 @@ for i, name in enumerate(names, start=1):
     axis = [random.choice([2,5,8,10]) for _ in range(4)]
     fmt_work = random.choice(fmts)
     fmt_proc = random.choice(fmts)
-    likes = random.choice([2,5,10,18,25,30,40])         # もらう。25超えは上限テスト用
-    likes_given = random.choice([0,3,8,13,15,20,34])    # 押す。15超えは上限テスト用
+    likes = random.choice([2,5,10,18,25,30,40])         # もらう（相対配点。最多者が満点20、他は比率）
+    likes_given = random.choice([0,3,8,13,15,20,34])    # 押す（相対配点。最多者が満点40、他は比率）
     has_work_link = i != 12   # 1件だけ資料欠損にする（未提出のためURL・形式ともに空）
     row = [code, f'GID-{i:05d}', '2026年7月', who,
            (f'https://example.com/works/{code}' if has_work_link else ''),

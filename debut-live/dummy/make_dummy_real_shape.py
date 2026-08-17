@@ -22,8 +22,8 @@ rows = []
 for i, (name, dept) in enumerate(names, start=1):
     code = f'DEBUT-2026-{i:06d}'
     ukey = f'entra-{i:04d}'
-    likes = random.choice([3,8,15,22,28,35,45])       # もらう（25超えは上限テスト用）
-    likes_given = random.choice([0,4,13,15,20,34])    # 押す（15超えは上限テスト用・投稿者単位）
+    likes = random.choice([3,8,15,22,28,35,45])       # もらう（相対配点。最多者が満点20、他は比率）
+    likes_given = random.choice([0,4,13,15,20,34])    # 押す（相対配点。最多者が満点40、他は比率・投稿者単位）
     url_ext = 'html' if i != 5 else 'md'   # 1件だけmd
     url = f'https://example.com/DebutSubmissions/entry-{i}.{url_ext}'
     proc = f'https://example.com/DebutSubmissions/entry-{i}-proc.html' if i == 3 else None   # 1件だけ手順書あり

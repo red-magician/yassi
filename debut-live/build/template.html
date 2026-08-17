@@ -188,7 +188,7 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
   <button class="btn-gold" id="btnXLS">Excelを書き出して提出</button>
   <button class="btn" id="btnPrint">印刷 / PDF</button>
   <button class="btn" id="btnClear">入力を全消去</button>
-  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック「書く」40点＋いいね加点(押す「学ぶ」上限+40／もらう「響く」上限+20)＋Cowork加点(+10)＝110点満点で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
+  <span class="hint">一覧の観点①〜④にルーブリック点数(0〜10)を入力すると、最終スコア＝ルーブリック「書く」40点＋いいね加点(押す「学ぶ」満点+40／もらう「響く」満点+20。個人ごとの上限はなく、対象者の中で最も多い人を満点として比率で配点)＋Cowork加点(+10)＝110点満点で自動計算され、上位6件が受賞候補になります。「Copilot採点を取り込む」で点数・講評コメント（全件）・受賞理由（受賞候補のみ）を一括入力することもできます。順位は手動でも変更できます。2人で作業する場合はそれぞれ書き出し、突合ツールで照合してください。</span>
 </div>
 
 <main>
@@ -256,9 +256,13 @@ td.ttl b.codelink:hover{color:var(--gold-deep,#a9781a);background:#fffbe6;border
 
 <script>__SHEETJS__</script>
 <script>
-const LIKE_CAP = 20;        // いいね（もらう＝響く）加点の上限
-const GIVE_CAP = 40;        // いいね（押す＝学ぶ）加点の上限
-const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計上限（もらう20＋押す40＝60）
+// いいね加点は「個人ごとの生の件数を上限で頭打ち」ではなく、採点マスターを読み込んだ時点の
+// 対象者全員（未採点・資料欠損・受賞済み除外者も含む）の中で最も多い人を満点として、
+// 他の人はその人との比率で点数がつく相対配点方式（比率は毎回、読み込んだ対象者全体で計算し直す）。
+// LIKE_CAP／GIVE_CAP は「上限」ではなく、その回の最多者が獲得する満点を表す。
+const LIKE_CAP = 20;        // いいね（もらう＝響く）満点
+const GIVE_CAP = 40;        // いいね（押す＝学ぶ）満点
+const LIKE_TOTAL_CAP = LIKE_CAP + GIVE_CAP;  // いいね加点の合計満点（もらう20＋押す40＝60）
 const HTML_BONUS = 10;      // Cowork加点：Cowork経由の応募（＝作品ファイルがHTML形式）なら一律+10（手順書の形式は問わない）
 const RUBRIC_MAX = 40;      // ルーブリック合計の満点（「書く」40点。各観点は0〜10のまま、換算をこの満点に合わせる）
 const AWARD_SLOTS = 6;      // 月あたりの受賞人数
@@ -476,9 +480,6 @@ function buildEntry(d){
   const bonusWork = d.fmtWork === 'HTML' ? HTML_BONUS : 0;   // Cowork経由（＝作品がHTML）なら一律+10
   const bonusProc = 0;                                       // 手順書の形式は加点に影響しない
   const likesGivenRaw = d.likesGivenRaw || 0;
-  const recvBonus = Math.min(d.likesRaw, LIKE_CAP);       // もらう加点＝響く（上限20）
-  const giveBonus = Math.min(likesGivenRaw, GIVE_CAP);    // 押す加点＝学ぶ（上限40）
-  const likeBonus = recvBonus + giveBonus;                // いいね加点合計（上限60）
   // 作品リンクが無くても、作品ファイル形式（スタッフ書き出し済みExcート等）が分かっていれば提出済みとみなす
   const gap = !d.workLink && !d.fmtWork;                       // どちらも無い＝提出物欠損
   // ルーブリック点数はスタッフが画面で編集できる。マスターにAI採点があれば初期値として使う（aiAxis）
@@ -488,10 +489,10 @@ function buildEntry(d){
     submitterKey: d.submitterKey || '',
     workLink: d.workLink, procLink: d.procLink,
     aiAxis, aiHasScore: !!d.hasScore,
-    // 以下は recomputeScores() が scores（スタッフ入力）＋aiAxis から都度計算する
+    // 以下は recomputeScores() が scores（スタッフ入力）＋aiAxis、および対象者全体のいいね最大値から都度計算する
     axis: aiAxis.slice(), rubricRaw: null, rubricTotal: null, hasScore: false, scoreSource: '', finalScore: null,
     fmtWork: d.fmtWork, fmtProc: d.fmtProc, bonusWork, bonusProc, htmlBonus: bonusWork+bonusProc,
-    likesRaw: d.likesRaw, likesGivenRaw, recvBonus, giveBonus, likeBonus, aiComment: d.aiComment, month: d.month,
+    likesRaw: d.likesRaw, likesGivenRaw, recvBonus: null, giveBonus: null, likeBonus: null, aiComment: d.aiComment, month: d.month,
     gap,
   };
 }
@@ -609,8 +610,20 @@ function openFloat(code, targetEl){
   document.getElementById('cpFloatText').focus();
 }
 function closeFloat(){ document.getElementById('cpFloat').classList.remove('on'); cpFloatCode = ''; }
+// いいね加点（相対配点）：対象者全員（未採点・資料欠損・受賞済み除外者も含む）の中で最も多い人を
+// 満点とし、他の人はその人との比率で点数をつける。個人ごとの上限による頭打ちは行わない。
+function recomputeLikeBonuses(){
+  const maxRecv = ENTRIES.reduce((m,e)=>Math.max(m, e.likesRaw||0), 0);
+  const maxGiven = ENTRIES.reduce((m,e)=>Math.max(m, e.likesGivenRaw||0), 0);
+  ENTRIES.forEach(e=>{
+    e.recvBonus = maxRecv > 0 ? Math.round((e.likesRaw||0) / maxRecv * LIKE_CAP * 10) / 10 : 0;
+    e.giveBonus = maxGiven > 0 ? Math.round((e.likesGivenRaw||0) / maxGiven * GIVE_CAP * 10) / 10 : 0;
+    e.likeBonus = e.recvBonus + e.giveBonus;
+  });
+}
 // スタッフ入力（scores）とAI採点（aiAxis）から各エントリーの実効スコアを再計算する
 function recomputeScores(){
+  recomputeLikeBonuses();
   ENTRIES.forEach(e=>{
     const s = scores[e.code];
     const touched = !!(s && s.some(v => v !== '' && v != null));
@@ -709,20 +722,25 @@ function loadPastFile(file){
     try{
       const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'});
       let sheetRows = null, sheetName = '';
+      // 「順位」「受賞順位」（このツール自身の書き出し形式）に加えて、「ランキング」列（例：集計時点の
+      // 総合ランキングを含む一覧エクスポート）も受賞一覧シートとして認識する
       for(const name of wb.SheetNames){
         const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
         if(!rows.length) continue;
         const head = (rows[0]||[]).map(x=>String(x).trim());
-        if(head.includes('EntryCode') && (head.includes('受賞順位') || head.includes('順位'))){ sheetRows = rows; sheetName = name; break; }
+        if(head.includes('EntryCode') && (head.includes('受賞順位') || head.includes('順位') || head.includes('ランキング'))){ sheetRows = rows; sheetName = name; break; }
       }
       if(!sheetRows){ toast(`${file.name}：受賞一覧シートが見つかりません`); return; }
       const head = sheetRows[0].map(x=>String(x).trim());
       const iWho = head.indexOf('応募者・部署') >=0 ? head.indexOf('応募者・部署') : head.indexOf('応募者');
       const iMonth = head.indexOf('対象月');
+      const iAwardFlag = head.indexOf('受賞フラグ');
       if(iWho < 0){ toast(`${file.name}：応募者列が見つかりません`); return; }
       const names = new Set();
       let month = '';
       sheetRows.slice(1).forEach(row=>{
+        // 「受賞フラグ」列がある場合（ノミネートも含む一覧）は、実際に受賞した行だけを除外対象にする
+        if(iAwardFlag>=0 && !String(row[iAwardFlag]??'').trim()) return;
         const who = String(row[iWho]??'').trim(); if(!who) return;
         names.add(submitterOf(who));
         if(iMonth>=0 && row[iMonth]) month = String(row[iMonth]).trim();
@@ -1041,7 +1059,7 @@ function renderTable(excl){
       <th class="n sci" title="④ 共感・再現性（25%）">④</th>
       <th class="n" title="観点①〜④を${RUBRIC_MAX}点満点に換算した合計">ルーブリック<br><span class="sub">/${RUBRIC_MAX}</span></th>
       <th class="n">いいね<br><span class="sub">もらう／押す</span></th>
-      <th class="n">いいね加点<br><span class="sub">上限+${LIKE_TOTAL_CAP}</span></th>
+      <th class="n">いいね加点<br><span class="sub">満点${LIKE_TOTAL_CAP}</span></th>
       <th class="n">Cowork加点<br><span class="sub">+10</span></th>
       <th class="n">最終スコア</th>
       <th>状態</th>
@@ -1067,7 +1085,7 @@ function renderTable(excl){
       <td class="ttl"><b class="codelink" data-code="${esc(e.code)}" title="クリックして採点結果（===SCORE===）を貼り付け登録">${esc(e.code)}</b><span>${esc(e.who)}</span><button class="rowprompt" data-code="${esc(e.code)}" title="この作品だけの採点プロンプトをコピー（1件ずつ・精度重視）">プロンプト</button></td>
       ${scoreCell(e,0)}${scoreCell(e,1)}${scoreCell(e,2)}${scoreCell(e,3)}
       <td class="n" id="rub-${esc(e.code)}"><span class="sc ${e.hasScore?'':'na'}">${e.hasScore ? e.rubricTotal : '—'}</span></td>
-      <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（上限${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（上限${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
+      <td class="n" title="${esc(`もらう ${e.likesRaw} → +${e.recvBonus}（対象者内の最多者が満点${LIKE_CAP}）\n押す ${e.likesGivenRaw} → +${e.giveBonus}（対象者内の最多者が満点${GIVE_CAP}）`)}"><span class="likepill">♥ ${e.likesRaw}</span> <span class="likepill" style="background:#eef2ff;color:#3949ab">→ ${e.likesGivenRaw}</span></td>
       <td class="n" title="${esc(`もらう +${e.recvBonus}／押す +${e.giveBonus}`)}">${fmtBonus(e.likeBonus, LIKE_TOTAL_CAP)}</td>
       <td class="n" title="${esc(`作品ファイル形式：${e.fmtWork||'—'}（Cowork経由＝HTML形式なら一律+10／手順書の形式は不問）`)}">${fmtBonus(e.htmlBonus, 10)}</td>
       <td class="n" id="fin-${esc(e.code)}"><span class="sc final ${e.hasScore?'':'na'}">${e.hasScore ? e.finalScore : '—'}</span></td>
