@@ -275,7 +275,8 @@ const RUBRIC = [
 
 let ENTRIES = [];                 // {code, gid, submitter, dept, who, workLink, procLink, aiAxis, aiHasScore, axis[4], rubricTotal, fmtWork, fmtProc, likes, htmlBonus, finalScore, aiComment, gap, hasScore, scoreSource}
 let PAST_FILES = [];              // {name, month, names:Set}  … 手動でドロップした過去の受賞一覧Excel
-let MASTER_EXCLUSIONS = [];       // {key, name, period}[]  … 採点マスターに内蔵の「04_受賞者マスタ」
+let MASTER_EXCLUSIONS = [];       // {key, name, period}[]  … 採点マスターに内蔵の過去受賞者リスト（04_受賞者マスタ／受賞者シート）
+let MASTER_EXCLUSIONS_SHEET = ''; // 上記の取得元シート名（バナー表示用）
 let scores = {};                  // code -> [観点①..④]  … スタッフが画面で入力したルーブリック点数（''=未入力）
 let pinned = {};                  // code -> 1..6  … スタッフが手動で固定した受賞順位（永続化する）
 let pinnedOut = {};               // code -> true  … スタッフが手動で「対象外」にしたエントリー（自動選出しない）
@@ -627,22 +628,41 @@ function recomputeScores(){
     e.finalScore = e.hasScore ? Math.round((e.rubricTotal + e.likeBonus + e.htmlBonus) * 10) / 10 : null;
   });
 }
-// 04_受賞者マスタ 相当（マスターExcelに内蔵された過去受賞者リスト）
+// マスターExcelに内蔵された過去受賞者リスト。2つの形式に対応する：
+// (1) 04_受賞者マスタ相当（`受賞者（本人）`／`CompetitionKey`／`PeriodKey`。SubmitterEntraIdがあれば確実に突合できる）
+// (2) ポータルの「受賞者」シート（`受賞者`／`受賞した競技名`／`賞`／`所属`。EntraId等の一意キーは無いため氏名は参考表示に留まる）
 function tryMasterAwardSheet(wb){
-  const found = findSheetByHeaders(wb, ['受賞者（本人）','CompetitionKey','PeriodKey']);
-  if(!found) return null;
-  const col = colMap(found.head, {
-    key: ['SubmitterEntraId'], name: ['受賞者（本人）'], comp: ['CompetitionKey'], period: ['PeriodKey'],
-  });
-  const g = (row,k) => { const i = col[k]; return i>=0 ? String(row[i]??'').trim() : ''; };
-  const rows = [];
-  found.rows.slice(1).forEach(row=>{
-    const comp = g(row,'comp').toLowerCase();
-    if(comp !== 'debut' && comp !== 'デビューライブ') return;
-    const name = g(row,'name'); if(!name) return;
-    rows.push({key: g(row,'key'), name, period: g(row,'period') || '過去'});
-  });
-  return rows;
+  const strict = findSheetByHeaders(wb, ['受賞者（本人）','CompetitionKey','PeriodKey']);
+  if(strict){
+    const col = colMap(strict.head, {
+      key: ['SubmitterEntraId'], name: ['受賞者（本人）'], comp: ['CompetitionKey'], period: ['PeriodKey'],
+    });
+    const g = (row,k) => { const i = col[k]; return i>=0 ? String(row[i]??'').trim() : ''; };
+    const rows = [];
+    strict.rows.slice(1).forEach(row=>{
+      const comp = g(row,'comp').toLowerCase();
+      if(comp !== 'debut' && comp !== 'デビューライブ') return;
+      const name = g(row,'name'); if(!name) return;
+      rows.push({key: g(row,'key'), name, period: g(row,'period') || '過去'});
+    });
+    return {rows, sheetName: strict.name};
+  }
+  const portal = findSheetByHeaders(wb, ['受賞者','受賞した競技名']);
+  if(portal){
+    const col = colMap(portal.head, {
+      name: ['受賞者'], comp: ['受賞した競技名'], award: ['賞'],
+    });
+    const g = (row,k) => { const i = col[k]; return i>=0 ? String(row[i]??'').trim() : ''; };
+    const rows = [];
+    portal.rows.slice(1).forEach(row=>{
+      if(g(row,'comp') !== 'デビューライブ') return;
+      const name = g(row,'name').replace(/さん$/,'').trim(); if(!name) return;
+      const award = g(row,'award');
+      rows.push({key: '', name, period: award || '前回受賞'});
+    });
+    return {rows, sheetName: portal.name};
+  }
+  return null;
 }
 function loadMasterFile(file){
   const rd = new FileReader();
@@ -661,7 +681,9 @@ function loadMasterFile(file){
       const monthGuess = ENTRIES.find(e=>e.month)?.month;
       if(monthGuess && !targetMonth){ targetMonth = monthGuess; document.getElementById('targetMonth').value = monthGuess; }
 
-      MASTER_EXCLUSIONS = tryMasterAwardSheet(wb) || [];
+      const masterAward = tryMasterAwardSheet(wb);
+      MASTER_EXCLUSIONS = masterAward ? masterAward.rows : [];
+      MASTER_EXCLUSIONS_SHEET = masterAward ? masterAward.sheetName : '';
 
       const aiScored = ENTRIES.filter(e=>e.aiHasScore).length;
       loadState();          // 保存済みのスタッフ採点・受賞順位・講評があれば復元
@@ -904,10 +926,17 @@ function renderPastFiles(){
   document.getElementById('pastFiles').querySelectorAll('[data-x]').forEach(b=>{
     b.onclick = () => { PAST_FILES.splice(+b.dataset.x,1); autoRank(); render(); saveState(); };
   });
-  const periods = [...new Set(MASTER_EXCLUSIONS.map(e=>e.period))];
-  document.getElementById('masterExclNote').innerHTML = MASTER_EXCLUSIONS.length
-    ? `<div class="warnbar" style="margin-bottom:14px">採点マスターの「04_受賞者マスタ」から過去の受賞者 ${MASTER_EXCLUSIONS.length}名（${periods.map(esc).join(' / ')}）を自動で除外に反映しました。</div>`
-    : '';
+  document.getElementById('masterExclNote').innerHTML = renderMasterExclNote();
+}
+// 採点マスターに内蔵の過去受賞者（04_受賞者マスタ／受賞者シート）を、氏名付きで見える形にする。
+// 「受賞者」シート由来（EntraId等の一意キーが無い）の場合、氏名の表記がエントリー側（投稿者列）と
+// 異なることがあるため行への自動バッジ付けはできないが、対象者一覧の生成時点で既に除外されている
+// はず（＝一覧に出てこない）ことをここで明示し、除外理由が追える状態にする。
+function renderMasterExclNote(){
+  if(!MASTER_EXCLUSIONS.length) return '';
+  const sheetLabel = MASTER_EXCLUSIONS_SHEET ? `「${esc(MASTER_EXCLUSIONS_SHEET)}」` : '';
+  const names = MASTER_EXCLUSIONS.map(ex => ex.period ? `${esc(ex.name)}（${esc(ex.period)}）` : esc(ex.name)).join('、');
+  return `<div class="warnbar" style="margin-bottom:14px">採点マスター${sheetLabel}シートから、<b>過去にデビューライブで受賞済みのため今回対象外</b>の ${MASTER_EXCLUSIONS.length}名を認識しました：${names}。対象者一覧の生成時点で既に除外されているはずですが、一覧に名前が残っている場合は「受賞済み」バッジが付かないことがあるため手動で確認してください。</div>`;
 }
 function renderHeader(){
   const excl = excludedMap();

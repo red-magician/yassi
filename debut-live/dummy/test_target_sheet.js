@@ -53,6 +53,19 @@ function ok(cond, msg){ assert(cond, 'FAIL: ' + msg); console.log('OK:', msg); }
   const mdRow = await page.locator('tbody tr', { hasText: 'DEBUT-2026-000006' }).first().innerText();
   ok(mdRow.includes('加点なし'), `.md提出はHTML加点なし（実際: ${mdRow.replace(/\n/g,' | ')}）`);
 
+  // ポータルの「受賞者」シート（04_受賞者マスタとは列名が異なる）から、デビューライブの過去受賞者
+  // 2名（山本 太郎・鈴木 花子）だけが認識される（アンコールの横断受賞1件は除外される）
+  const exclusions = await page.evaluate(() => ({ list: MASTER_EXCLUSIONS, sheet: MASTER_EXCLUSIONS_SHEET }));
+  ok(exclusions.sheet === '受賞者', `除外リストの取得元シート名が「受賞者」と認識される（実際: ${exclusions.sheet}）`);
+  ok(exclusions.list.length === 2, `デビューライブの過去受賞者2名だけが認識される（他競技は除外・実際: ${exclusions.list.length}件）`);
+  ok(exclusions.list.some(e => e.name === '山本 太郎' && e.period === 'ゴールド'), `「さん」が取り除かれ、賞（ゴールド）が期間欄に入る（実際: ${JSON.stringify(exclusions.list)}）`);
+
+  // 対象者一覧そのものには元々この2名が含まれていないため、バナーで別途「対象外」が可視化される
+  const banner = await page.locator('#masterExclNote').innerText();
+  ok(banner.includes('受賞者') && banner.includes('山本 太郎') && banner.includes('鈴木 花子') && banner.includes('2名'),
+    `過去受賞者が氏名付きでバナーに表示される（実際: ${banner}）`);
+  ok(!(await page.locator('tbody tr', { hasText: '山本 太郎' }).count()), '過去受賞者は対象者一覧の行としては出てこない（対象者シート側で既に除外済み）');
+
   ok(errors.length === 0, `JSエラーが発生していない（実際: ${errors.length}件 ${errors.join(' / ')}）`);
 
   await browser.close();
