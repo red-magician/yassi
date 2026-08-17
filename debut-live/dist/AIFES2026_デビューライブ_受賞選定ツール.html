@@ -349,15 +349,15 @@ const ENTRY_COLS = {
   code: ['EntryCode'],
   gid: ['GlobalEntryId'],
   who: ['応募者・部署','応募者'],
-  submitterName: ['SubmitterDisplayName','応募者名'],
-  dept: ['Department','部署'],
+  submitterName: ['SubmitterDisplayName','応募者名','投稿者'],
+  dept: ['Department','部署','所属'],
   submitterKey: ['SubmitterUserKey','SubmitterEntraId'],
   workLink: ['作品リンク','WorkUrl','PrimaryFileUrl'],
   procLink: ['ProcedureFileUrl','手順書リンク'],
   fmtWork: ['作品ファイル形式','提出形式（作品）','提出形式 (作品)','提出形式 (HTML/MD)'],
   fmtProc: ['手順書ファイル形式','提出形式（手順書）','提出形式 (手順書)'],
-  likes: ['いいね（もらう）','LikesReceived（もらう）','いいね数（もらう）'],
-  likesGiven: ['いいね（押す）','LikesGiven（押す）','いいね数（押す）'],
+  likes: ['いいね（もらう）','LikesReceived（もらう）','いいね数（もらう）','LikeCount'],
+  likesGiven: ['いいね（押す）','LikesGiven（押す）','いいね数（押す）','投稿者LikesGiven件数（全競技）'],
   month: ['対象月','PeriodKey'],
 };
 const SCORE_COLS = {
@@ -413,16 +413,20 @@ function tryCombinedSheet(wb){
 }
 // エントリー一覧（16_デビュー抽出 相当）と 採点結果（02_採点結果台帳 相当）が別シートの場合。EntryCode で結合する
 function tryJoinedSheets(wb){
-  // 「16_デビュー抽出」のような名前のシートを優先する（IsHidden等の絞り込み済みの正式リストのため）。
+  // 「16_デビュー抽出」「対象者」のような名前のシートを優先する（絞り込み済みの正式リストのため）。
   // 見つからない場合は、EntryCode・応募者名・いいね数を持つ最初のシートにフォールバックする
   // （例：03_いいね集計は全競技混在なので、その場合はCompetitionKey列で絞り込む）
   let entrySheet = null;
-  for(const name of wb.SheetNames){
-    if(!/デビュー抽出/.test(name)) continue;
-    const rows = sheetRowsOf(wb, name);
-    if(!rows.length) continue;
-    const head = rows[0].map(x=>String(x).trim());
-    if(head.includes('EntryCode')){ entrySheet = {name, rows, head}; break; }
+  const PREFERRED_SHEET_NAME_PATTERNS = [/デビュー抽出/, /^対象者$/];
+  for(const pat of PREFERRED_SHEET_NAME_PATTERNS){
+    for(const name of wb.SheetNames){
+      if(!pat.test(name)) continue;
+      const rows = sheetRowsOf(wb, name);
+      if(!rows.length) continue;
+      const head = rows[0].map(x=>String(x).trim());
+      if(head.includes('EntryCode')){ entrySheet = {name, rows, head}; break; }
+    }
+    if(entrySheet) break;
   }
   if(!entrySheet){
     entrySheet = findSheetByHeaderGroups(wb, [
