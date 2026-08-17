@@ -254,9 +254,13 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 const AWARD_N   = 6;    // 受賞（上位）
 const NOMINEE_N = 10;   // ノミネート（上位）
 const HTML_BONUS = 10;  // Cowork加点：Cowork経由の応募（＝作品ファイルがHTML形式）なら一律+10（手順書の形式は問わない）
-const GIVE_CAP = 40;    // いいね（押す＝学ぶ）加点の上限
-const RECV_CAP = 20;    // いいね（もらう＝響く）加点の上限
-let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
+// いいね加点は「個人ごとの生の件数を上限で頭打ち」ではなく、各メンバーの「全エントリー」シートに
+// 含まれる対象者全員（未採点・資料欠損・受賞済み除外者も含む）の中で最も多い人を満点として、
+// 他の人はその人との比率で点数がつく相対配点方式（受賞選定ツールと同じ計算式）。
+// GIVE_CAP／RECV_CAPは「上限」ではなく、対象者内の最多者が獲得する満点を表す。
+const GIVE_CAP = 40;    // いいね（押す＝学ぶ）満点
+const RECV_CAP = 20;    // いいね（もらう＝響く）満点
+let FILES = [];   // {name, memberName, month, entries:{code:{who, finalScore, rubricTotal, likeBonus, recvBonus, giveBonus, htmlBonus, likesRaw, likesGivenRaw, comment}}}
 let pinned = {};  // code -> 総合順位（手動固定 1..N）
 let commentMember = '';  // ''=全メンバー連結表示／指定時はそのメンバーの講評コメントのみを採用
 let view = 'compare';    // 'compare'=採点比較（メンバー別点数＋平均）／'cards'=受賞候補カード／'final'=最終結果（受賞理由・講評コメント込みの出力プレビュー）／'portal'=ポータル表示（応募者・一般向けの公開プレビュー）
@@ -364,17 +368,23 @@ function readFile(file){
           if(memberName && month) break;
         }
       }
+      // いいね加点は取り込み側では列を信用せず、生のいいね数から現行の相対配点方式で常に再計算する
+      // （受賞選定ツールと同じ計算式：このシート＝そのメンバーが読み込んだ対象者全員の中で最も多い
+      // 人を満点（押す「学ぶ」満点+40／もらう「響く」満点+20）とし、他の人はその人との比率で点数がつく。
+      // 個人ごとの絶対的な上限は無い）。旧上限方式で書き出された古いExcelを読み込んでも現行ルールに揃う
+      const dataRows = sheet.rows.slice(1);
+      const maxRecv = dataRows.reduce((m,row)=>Math.max(m, num(g(row,'いいね（もらう）'))||0), 0);
+      const maxGiven = dataRows.reduce((m,row)=>Math.max(m, num(g(row,'いいね（押す）'))||0), 0);
       const entries = {};
-      sheet.rows.slice(1).forEach(row=>{
+      dataRows.forEach(row=>{
         const code = g(row,'EntryCode'); if(!code) return;
         if(!month) month = g(row,'対象月');
         const rubricTotal = num(g(row,'ルーブリック合計'));
-        // いいね加点は取り込み側では列を信用せず、生のいいね数から現行の上限
-        // （押す「学ぶ」上限+40／もらう「響く」上限+20）で常に再計算する。
-        // 旧上限（押す15／もらう25）で書き出された古いExcelを読み込んでも現行ルールに揃う
         const likesRaw = num(g(row,'いいね（もらう）')), likesGivenRaw = num(g(row,'いいね（押す）'));
+        const recvBonus = maxRecv > 0 ? Math.round((likesRaw||0) / maxRecv * RECV_CAP * 10) / 10 : 0;
+        const giveBonus = maxGiven > 0 ? Math.round((likesGivenRaw||0) / maxGiven * GIVE_CAP * 10) / 10 : 0;
         const likeBonus = (likesRaw!=null || likesGivenRaw!=null)
-          ? Math.min(likesGivenRaw??0, GIVE_CAP) + Math.min(likesRaw??0, RECV_CAP)
+          ? recvBonus + giveBonus
           : num(g(row,'いいね加点'));
         // Cowork加点（旧称HTML加点）も同様に、作品ファイル形式から常に再計算する
         // （Cowork経由＝作品ファイルがHTMLなら一律+10、手順書の形式は不問）
@@ -384,10 +394,11 @@ function readFile(file){
         const finalScore = (rubricTotal!=null && likeBonus!=null && htmlBonus!=null)
           ? Math.round((rubricTotal + likeBonus + htmlBonus) * 10) / 10
           : num(g(row,'最終スコア'));
+        const hasLikes = likesRaw!=null || likesGivenRaw!=null;
         entries[code] = {
           who: g(row,'応募者・部署'),
           finalScore, rubricTotal, likeBonus, htmlBonus, fmtWork,
-          likesRaw, likesGivenRaw,
+          likesRaw, likesGivenRaw, recvBonus: hasLikes ? recvBonus : null, giveBonus: hasLikes ? giveBonus : null,
           comment: g(row,'講評コメント'),
           workLink: g(row,'作品リンク'), procLink: g(row,'手順書リンク'),
         };
@@ -419,7 +430,8 @@ function aggregate(){
     return {
       code, who: base.who||'', avg, avgRubric, scoredCount: scores.length, memberScores: scores,
       workLink: withWork.workLink||'', procLink: withWork.procLink||'',
-      likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus, htmlBonus: base.htmlBonus,
+      likesRaw: base.likesRaw, likesGivenRaw: base.likesGivenRaw, likeBonus: base.likeBonus,
+      recvBonus: base.recvBonus, giveBonus: base.giveBonus, htmlBonus: base.htmlBonus,
       comments: per.map(x=>({member:x.member, comment:x.e.comment})).filter(x=>x.comment),
       primaryComment: (per.find(x=>x.member===commentMember) || {}).e?.comment || '',
     };
@@ -668,8 +680,8 @@ function renderPortalView(sorted, rankOf){
         <div class="pt-score-row"><span class="pt-score-num">${a.avg==null?'—':a.avg}</span><span class="pt-score-max">/ 110点</span></div>
         <div class="pt-stat-row">
           <div class="pt-stat d1"><span class="k">書く</span><span class="v">${a.avgRubric==null?'—':a.avgRubric}<small>/40点</small></span></div>
-          <div class="pt-stat d2"><span class="k">学ぶ（押したいいね）</span><span class="v">${a.likesGivenRaw==null?'—':Math.min(a.likesGivenRaw, GIVE_CAP)}<small>/40点</small></span>${a.likesGivenRaw==null?'':`<span class="sub">いいね ${a.likesGivenRaw}件</span>`}</div>
-          <div class="pt-stat d3"><span class="k">響く（もらったいいね）</span><span class="v">${a.likesRaw==null?'—':Math.min(a.likesRaw, RECV_CAP)}<small>/20点</small></span>${a.likesRaw==null?'':`<span class="sub">いいね ${a.likesRaw}件</span>`}</div>
+          <div class="pt-stat d2"><span class="k">学ぶ（押したいいね）</span><span class="v">${a.giveBonus==null?'—':a.giveBonus}<small>/40点</small></span>${a.likesGivenRaw==null?'':`<span class="sub">いいね ${a.likesGivenRaw}件</span>`}</div>
+          <div class="pt-stat d3"><span class="k">響く（もらったいいね）</span><span class="v">${a.recvBonus==null?'—':a.recvBonus}<small>/20点</small></span>${a.likesRaw==null?'':`<span class="sub">いいね ${a.likesRaw}件</span>`}</div>
           <div class="pt-stat d4"><span class="k">＋α（Cowork）</span><span class="v">+${a.htmlBonus==null?0:a.htmlBonus}<small>点</small></span></div>
         </div>
         <div class="pt-comment"><span class="lbl">評価コメント</span>${comment ? esc(comment) : '（未入力）'}</div>
@@ -693,8 +705,8 @@ function renderPortalView(sorted, rankOf){
       <p>最終スコアは、3つの行動に<b>110点</b>を配分しています。盛れば勝てる設計ではなく、<b>具体的に書けば伝わる・行動すれば積み上がる</b>設計です。審査だけで決まる仕組みでも、人気投票だけで決まる仕組みでもありません。</p>
       <div class="pa-split pa-quad">
         <div class="pa-half pa-d1"><div class="pa-htitle"><span class="pa-dot"></span>書く（40点）</div><p>4つの問いをどれだけ具体的に書けたか。AIによる一次評価を土台に、審査担当者が内容を確認して採点しています。AIが観点ごとの見落としを防ぎ、最終的な妥当性は必ず人が確認する二段構えです。</p></div>
-        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>学ぶ（40点）</div><p>1ヶ月で仲間のTipsをどれだけ読みに行ったか（押したいいねの数）。読んで応援する行動そのものが、審査と同じ重みでスコアになります。1件につき1点、最大40点までスコアに反映されます。</p></div>
-        <div class="pa-half pa-d3"><div class="pa-htitle"><span class="pa-dot"></span>響く（20点）</div><p>自分の物語に集まったいいねの数。実際に見てくれた皆さんの反応を反映します。1件につき1点、最大20点までスコアに反映されます。</p></div>
+        <div class="pa-half pa-d2"><div class="pa-htitle"><span class="pa-dot"></span>学ぶ（40点）</div><p>1ヶ月で仲間のTipsをどれだけ読みに行ったか（押したいいねの数）。読んで応援する行動そのものが、審査と同じ重みでスコアになります。今月いちばん多く読んだ人を満点(40点)とし、そのペースとの割合でスコアに反映されます。</p></div>
+        <div class="pa-half pa-d3"><div class="pa-htitle"><span class="pa-dot"></span>響く（20点）</div><p>自分の物語に集まったいいねの数。実際に見てくれた皆さんの反応を反映します。今月いちばん多く集めた人を満点(20点)とし、そのいいね数との割合でスコアに反映されます。</p></div>
         <div class="pa-half pa-d4"><div class="pa-htitle"><span class="pa-dot"></span>＋α（+10点）</div><p>Microsoft Copilot Cowork経由で応募すると自動加点されます。</p></div>
       </div>
       <p>つまり最終スコアは、<b>AI＋審査担当者による評価（書く）</b>と、<b>皆さんの学び・応援の行動（学ぶ・響く・＋α）</b>を足し合わせた、満点110点です。結果をご覧いただく際の参考にしていただければと思います。</p>

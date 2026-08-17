@@ -16,11 +16,17 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   // --- 3人分のエクスポートを生成（メンバーごとに base をずらして平均が意味を持つように） ---
   const members = [{name:'田中', key:'A', base:8},{name:'佐藤', key:'B', base:6},{name:'鈴木', key:'C', base:10}];
   const files = [];
+  let sourceBonuses = null;   // 受賞選定ツール側（相対配点方式）で計算されたいいね加点。集計ツール側の再計算と突合する
   for(const m of members){
     const p = await b.newPage();
     await p.goto(SEL); await p.fill('#staffName', m.name); await p.fill('#targetMonth','2026年7月');
     await p.setInputFiles('#fileMaster', MASTER); await p.waitForTimeout(800);
     const codes = await p.evaluate(()=>ENTRIES.map(e=>e.code));
+    if(!sourceBonuses){
+      sourceBonuses = await p.evaluate(()=>Object.fromEntries(
+        ENTRIES.map(e=>[e.code, {recvBonus:e.recvBonus, giveBonus:e.giveBonus, likeBonus:e.likeBonus}])
+      ));
+    }
     const blocks = codes.map((c,i)=>{
       const v = Math.max(0, Math.min(10, m.base + (i%5) - 2));
       return `===SCORE===\nEntryCode: ${c}\n観点①: ${v}\n観点②: ${v}\n観点③: ${v}\n観点④: ${v}\n===END===`;
@@ -44,6 +50,19 @@ const MASTER = path.resolve(__dirname, 'master_test.xlsx');
   ok((await p.textContent('#hWin')).replace(/\s/g,'').startsWith('6/6'), '受賞6件が選出される');
   ok((await p.textContent('#hNom')).replace(/\s/g,'').startsWith('10/10'), 'ノミネート10件が選出される');
   ok((await p.locator('tbody tr').count()) === 15, '全15作品が表示される');
+
+  // いいね加点は「個人ごとの上限」ではなく相対配点方式で、受賞選定ツール側の計算結果と一致すること
+  // （集計ツールは取り込み時にいいね加点を独自に再計算するため、両者がズレていないかを突合する）
+  const aggBonuses = await p.evaluate(()=>Object.fromEntries(
+    aggregate().map(a=>[a.code, {recvBonus:a.recvBonus, giveBonus:a.giveBonus, likeBonus:a.likeBonus}])
+  ));
+  const mismatches = Object.keys(sourceBonuses).filter(code => {
+    const s = sourceBonuses[code], a = aggBonuses[code];
+    return !a || Math.abs(s.recvBonus - a.recvBonus) > 0.05 || Math.abs(s.giveBonus - a.giveBonus) > 0.05;
+  });
+  ok(mismatches.length === 0, `集計ツールのいいね加点（相対配点）が受賞選定ツールの計算結果と一致する（不一致: ${JSON.stringify(mismatches)}）`);
+  const anyPositive = Object.values(aggBonuses).some(a => a.likeBonus > 0);
+  ok(anyPositive, 'いいね加点が実際に0より大きい値を持つ作品がある（相対配点が機能していることの確認）');
 
   // 平均 = 各人の最終スコアの単純平均（採点した人だけ）
   const top = await p.evaluate(()=>{
