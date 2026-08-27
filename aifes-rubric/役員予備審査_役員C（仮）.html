@@ -92,6 +92,25 @@ textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 .pstep.ok{color:var(--ok)}
 .pdot{width:20px;height:20px;border-radius:50%;background:#e8ecf2;color:var(--mute);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
 .pstep.ok .pdot{background:var(--ok);color:#fff}
+.modal{position:fixed;inset:0;background:rgba(13,33,64,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:60px 20px;overflow-y:auto}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:10px;max-width:640px;width:100%;padding:0;box-shadow:0 20px 60px rgba(13,33,64,.35)}
+.mbox .mhead{background:var(--navy);color:#fff;padding:18px 26px;border-radius:10px 10px 0 0;border-bottom:3px solid var(--gold);display:flex;align-items:center;gap:14px}
+.mbox .mhead h3{font-size:16px;font-weight:700}
+.mbox .mhead .sub{font-size:11px;color:#9fb3cd;margin-top:2px}
+.mbox .mhead button{margin-left:auto;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35);font-size:12px;padding:6px 12px}
+.mbox .mhead button:hover{background:rgba(255,255,255,.22)}
+.mbody{padding:20px 26px 26px}
+.result-row{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;cursor:pointer}
+.result-row:hover{border-color:var(--gold);background:#fffdf2}
+.result-row .rnum{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--navy-deep);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.result-row .rbody{flex:1;min-width:0}
+.result-row .rdept{font-weight:700;font-size:13.5px}
+.result-row .rtitle{font-size:11.5px;color:var(--mute);margin-top:2px}
+.result-row .rreason{font-size:12px;color:#3a4356;margin-top:6px;line-height:1.6;white-space:pre-wrap}
+.result-row .rsc{flex-shrink:0;font-size:11.5px;color:var(--mute);text-align:right}
+.result-empty{padding:16px;text-align:center;color:var(--mute);font-size:12.5px;border:1.5px dashed var(--line);border-radius:8px}
+.mbody .unranked{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--mute)}
 </style></head>
 <body>
 <header>
@@ -112,13 +131,26 @@ textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
   </div>
 </header>
 <div class="toolbar">
+  <button class="btn-gold" id="resultsBtn">✓ 自分の最終結果を見る（<span id="resultsBtnCount">0</span>/4）</button>
   <label class="btn">結果を読み込む<input id="importInput" type="file" accept="application/json" style="display:none"></label>
-  <button class="btn-gold" id="exportBtn">結果をエクスポート</button>
+  <button class="btn" id="exportBtn">結果をエクスポート</button>
   <div class="savestate"><span class="dot" id="saveDot"></span><span id="saveTxt"></span></div>
 </div>
 <div class="wrap">
   <div class="list" id="rows"></div>
   <div class="main" id="main"></div>
+</div>
+<div class="modal" id="resultsModal">
+  <div class="mbox">
+    <div class="mhead">
+      <div>
+        <h3>あなたの最終結果</h3>
+        <div class="sub">役員C（仮） さんが選んだ1〜4位</div>
+      </div>
+      <button id="resultsClose">閉じる ✕</button>
+    </div>
+    <div class="mbody" id="resultsBody"></div>
+  </div>
 </div>
 <script>
 
@@ -185,6 +217,9 @@ function renderList(){
   document.getElementById('hDoneNum').textContent = done;
   document.getElementById('hDoneTotal').textContent = ENTRIES.length;
   document.getElementById('hBar').style.width = (ENTRIES.length ? done/ENTRIES.length*100 : 0) + '%';
+
+  const realRanked = ENTRIES.filter(e=>!e.demo && rec(e.code).rank).length;
+  document.getElementById('resultsBtnCount').textContent = realRanked;
 }
 
 function critRow(c){
@@ -260,6 +295,41 @@ function renderMain(){
 
 function renderAll(){ renderList(); renderMain(); }
 
+function renderResultsModal(){
+  const ranked = ENTRIES.filter(e=>!e.demo && rec(e.code).rank)
+    .sort((a,b)=> (+rec(a.code).rank) - (+rec(b.code).rank));
+  const unranked = ENTRIES.filter(e=>!e.demo && !rec(e.code).rank);
+  const demoRanked = ENTRIES.filter(e=>e.demo && rec(e.code).rank);
+
+  const rows = ranked.map(e=>{
+    const r = rec(e.code);
+    return `<div class="result-row" data-code="${e.code}">
+      <div class="rnum">${r.rank}位</div>
+      <div class="rbody">
+        <div class="rdept">${esc(e.dept)}</div>
+        <div class="rtitle">${esc(e.title)}</div>
+        ${r.reason.trim() ? `<div class="rreason">${esc(r.reason)}</div>` : `<div class="rreason" style="color:#aab0bd">理由は未入力です</div>`}
+      </div>
+      <div class="rsc">AI ${e.aiTotal}点<br>${esc(e.aiBand)}ランク</div>
+    </div>`;
+  }).join('');
+
+  const body =
+    (ranked.length ? rows : `<div class="result-empty">まだ順位をつけた部門がありません。一覧から1〜4位を選んでください。</div>`) +
+    (unranked.length ? `<div class="unranked">順位をつけていない部門（${unranked.length}件）：${unranked.map(e=>esc(e.dept)).join(' / ')}</div>` : '') +
+    (demoRanked.length ? `<div class="unranked">※デモ部門（${demoRanked.map(e=>esc(e.dept)).join(' / ')}）につけた順位は、動作確認用のため最終結果・エクスポートには含まれません。</div>` : '');
+
+  document.getElementById('resultsBody').innerHTML = body;
+  document.querySelectorAll('.result-row').forEach(row=>{
+    row.onclick = ()=>{
+      closeResults();
+      document.getElementById('card-' + row.dataset.code).scrollIntoView({behavior:'smooth', block:'start'});
+    };
+  });
+}
+function openResults(){ renderResultsModal(); document.getElementById('resultsModal').classList.add('on'); }
+function closeResults(){ document.getElementById('resultsModal').classList.remove('on'); }
+
 function doExport(){
   const payload = {
     officer: OFFICER, exportedAt: new Date().toISOString(),
@@ -293,6 +363,10 @@ function fitSticky(){
 loadLocal();
 document.getElementById('exportBtn').onclick = doExport;
 document.getElementById('importInput').onchange = (ev)=>{ if(ev.target.files[0]) doImport(ev.target.files[0]); };
+document.getElementById('resultsBtn').onclick = openResults;
+document.getElementById('resultsClose').onclick = closeResults;
+document.getElementById('resultsModal').onclick = (ev)=>{ if(ev.target.id==='resultsModal') closeResults(); };
+document.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeResults(); });
 paintSave();
 renderAll();
 fitSticky();
