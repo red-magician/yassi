@@ -439,7 +439,7 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ AI予備審査ルーブ
     <tbody>{bands}</tbody>
   </table>
   <h4 style="margin-top:28px">同点時のタイブレーク順</h4>
-  <ol class="tb">{"".join(f"<li>{E(t)} のレベルが高いほうを上位</li>" for t in TIEBREAK)}</ol>
+  <ol class="tb">{"".join(f"<li>{E(t)}</li>" for t in TIEBREAK)}</ol>
   <div class="note">
     <b>予備審査の位置づけ。</b>
     S・A判定は人手審査へ自動送付、B判定は事務局が拾い上げを検討、C判定は見送りを基本とします。

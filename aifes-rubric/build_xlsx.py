@@ -80,13 +80,16 @@ ws.column_dimensions["D"].width = 2
 rows = [
     ("目的", "グランドフィナーレの予備審査を、12名の審査員それぞれに個別に依頼することなくAIで一次実施するための共通ルーブリック。"
              "審査員12名のコメントを6観点に集約しており、1回の採点で全員の観点が反映される。"),
-    ("元データ", META["source"] + "（本ブックの 06_元データ_審査員コメント シートに全文を収録）"),
+    ("元データ", META["source"] + "（本ブックの 07_元データ_審査員コメント シートに全文を収録）"),
     ("集約方針", META["policy"]),
     ("配点の出し方", "各観点に紐づく審査員の言及を数え、グランドフィナーレコメント由来を1.0、審査コメント由来を0.5として合計し、"
                   "100点に正規化したうえで、扱いやすさのため10点刻みに丸めている。02_審査員対応表 シートで、どの審査員のどの発言がどの観点の何点分になっているかを1件ずつ追える。"),
     ("採点の手順", "① 03_採点シート に応募部門を1行ずつ並べる  →  ② 各観点を 01_ルーブリック のレベル記述に照らして 1〜5 で入力  →  "
                  "③ 前提フラグ F1〜F4 に該当すれば ○ を入力（該当観点に自動で上限がかかる）  →  ④ 加重得点・総合点・判定・順位は自動計算。"),
-    ("AIで実施する場合", "05_AI審査プロンプト シートの本文をそのままAIに渡し、応募資料を1件ずつ入力する。JSONで返させ、03_採点シート に貼り付ける。"),
+    ("応募が5〜6件のとき", "04_役員予備審査投票 シートで、役員4名がAIの評価を参考に上位4部へ順位をつける。"
+                       "1位10点・2位8点・3位7点・4位6点の配点と「各役員の1位は無条件で決勝進出」のルールで、決勝4部を自動判定する。"
+                       "応募が4件以下ならこのシートは使わず、全件がそのまま決勝進出する。"),
+    ("AIで実施する場合", "06_AI審査プロンプト シートの本文をそのままAIに渡し、応募資料を1件ずつ入力する。JSONで返させ、03_採点シート に貼り付ける。"),
     ("予備審査の位置づけ", "本ルーブリックは足切りと順位づけの一次スクリーニングに用いる。最終決定は審査員による人手審査で行う。"
                       "判定 S・A は人手審査へ自動送付、B は事務局が拾い上げを検討、C は見送りを基本とする。"),
     ("注意", "審査員本人の発言を観点に集約する過程で、個別の言い回しは要約されている。判断に迷う応募は、02_審査員対応表 から"
@@ -219,7 +222,7 @@ for ci, c_ in enumerate(CRITERIA):
 
 r += 2
 ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=9)
-note = ws.cell(r, 1, "各審査員の発言原文は 06_元データ_審査員コメント シートに全文収録。セルのコメント（赤い三角）に、その審査員のどの発言がこの観点に効いているかを記載している。")
+note = ws.cell(r, 1, "各審査員の発言原文は 07_元データ_審査員コメント シートに全文収録。セルのコメント（赤い三角）に、その審査員のどの発言がこの観点に効いているかを記載している。")
 note.font, note.fill, note.alignment = SMALL, FILL_GRAY, WRAP
 ws.freeze_panes = "D4"
 
@@ -378,8 +381,118 @@ for i, (lab, formula) in enumerate([
 
 ws.freeze_panes = f"D{FIRST}"
 
-# =============================================================== 04 判定ルール
-ws = wb.create_sheet("04_判定ルールとフラグ")
+# =============================================================== 04 役員予備審査投票
+# 応募が5〜6件のときだけ使う。4件以下なら全件がそのまま決勝進出のため不要。
+# 01_ルーブリック（AI）の評価を参考に、役員4名が上位4部へ順位をつけ、
+# 1位10点/2位8点/3位7点/4位6点＋「各役員の1位は無条件で決勝進出」の
+# 1位保護ルールで決勝4部を決める（審査設計ボードで確定した方式）。
+ws = wb.create_sheet("04_役員予備審査投票")
+banner(ws, "役員予備審査 投票集計（応募5〜6件のときだけ使用）", 10,
+       "応募4件以下なら全件がそのまま決勝進出。このシートは使わない。"
+       "5〜6件のときだけ、役員4名がAIの評価（③列C・D＝03_採点シートより自動参照）を参考に"
+       "上位4部へ順位をつけ、下の配点で決勝進出4部を自動判定する。")
+for col, w in zip("ABCDEFGHIJ", [5, 26, 13, 10, 13, 13, 13, 13, 12, 10, 12]):
+    ws.column_dimensions[col].width = w
+
+APP_HEAD, APP_FIRST, APP_LAST = 5, 6, 11        # ①応募一覧（最大6件）
+VOTE_HEAD, VOTE_FIRST, VOTE_LAST = 14, 15, 18   # ②役員4名の投票
+SC_HEAD, SC_FIRST, SC_LAST = 21, 22, 27         # ③得点集計・決勝進出判定
+
+app_rng = f"$B${APP_FIRST}:$B${APP_LAST}"
+cond = (f'=IF(COUNTA({app_rng})=0,"部門名をまず①に入力してください。",'
+        f'IF(COUNTA({app_rng})<=4,'
+        f'"★ 応募"&COUNTA({app_rng})&"件（4件以下）：このシートは不要です。全件がそのまま決勝進出。②③は空欄のままで構いません。",'
+        f'"応募"&COUNTA({app_rng})&"件：②で役員4名が投票すると、③で決勝4部を自動判定します。"))')
+ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=10)
+cc = ws.cell(3, 2, cond)
+cc.font = Font(name=FONT, size=11, bold=True, color=NAVY)
+cc.fill, cc.alignment = FILL_YELL, Alignment(vertical="center", wrap_text=True, indent=1)
+ws.row_dimensions[3].height = 30
+
+# ---- ① 応募一覧 --------------------------------------------------------
+ws.cell(APP_HEAD, 2, "① 応募一覧（部門名を入力。②のドロップダウンと③の集計の元になる）").font = H2
+head_row(ws, APP_HEAD + 1, ["No", "部門名", "AI総合点（参考）", "AI判定（参考）"])
+for i in range(APP_FIRST, APP_LAST + 1):
+    ws.cell(i, 1, i - APP_FIRST + 1).font, ws.cell(i, 1).alignment = BODY, CENTER
+    ws.cell(i, 2).font = INPUT_F
+    ai_tot = ws.cell(i, 3, f"=IFERROR(INDEX('03_採点シート'!${get_column_letter(TOT)}${FIRST}:${get_column_letter(TOT)}${LAST},"
+                           f"MATCH($B{i},'03_採点シート'!${get_column_letter(2)}${FIRST}:${get_column_letter(2)}${LAST},0)),\"\")")
+    ai_jdg = ws.cell(i, 4, f"=IFERROR(INDEX('03_採点シート'!${get_column_letter(JDG)}${FIRST}:${get_column_letter(JDG)}${LAST},"
+                           f"MATCH($B{i},'03_採点シート'!${get_column_letter(2)}${FIRST}:${get_column_letter(2)}${LAST},0)),\"\")")
+    for c in (ai_tot, ai_jdg):
+        c.font, c.alignment = BODY, CENTER
+    for col in range(1, 5):
+        ws.cell(i, col).border = BOX
+ws.cell(APP_LAST + 1, 2, "※ 03_採点シートの部門名と1文字違わず同じ表記で入力すること（一致しないとAI参考値が引けない）。").font = SMALL
+
+# ---- ② 役員4名の投票 ----------------------------------------------------
+ws.cell(VOTE_HEAD, 2, "② 役員4名の投票（①のAI評価を参考に、上位4部へ順位をつける）").font = H2
+head_row(ws, VOTE_HEAD + 1, ["No", "審査員名", "1位", "2位", "3位", "4位", "入力チェック"])
+dv_vote = DataValidation(type="list", formula1=f"=${app_rng[1:]}", allow_blank=True,
+                          error="①の応募一覧に入力した部門名から選んでください。", errorTitle="入力値エラー")
+ws.add_data_validation(dv_vote)
+dv_vote.add(f"$C${VOTE_FIRST}:$F${VOTE_LAST}")
+for i in range(VOTE_FIRST, VOTE_LAST + 1):
+    ws.cell(i, 1, i - VOTE_FIRST + 1).font, ws.cell(i, 1).alignment = BODY, CENTER
+    for col in (2, 3, 4, 5, 6):
+        ws.cell(i, col).font = INPUT_F
+    chk = ws.cell(i, 7,
+        f'=IF(COUNTBLANK($C{i}:$F{i})>0,"",'
+        f'IF(OR(COUNTIF($C{i}:$F{i},$C{i})>1,COUNTIF($C{i}:$F{i},$D{i})>1,'
+        f'COUNTIF($C{i}:$F{i},$E{i})>1,COUNTIF($C{i}:$F{i},$F{i})>1),"★重複あり","OK"))')
+    chk.font, chk.alignment = BODY_B, CENTER
+    for col in range(1, 8):
+        ws.cell(i, col).border = BOX
+ws.cell(VOTE_LAST + 1, 2, "※ 1位〜4位は同じ役員の中で重複させないこと（G列が「★重複あり」なら入力し直す）。").font = SMALL
+
+# ---- ③ 得点集計・決勝進出判定 -------------------------------------------
+ws.cell(SC_HEAD, 2, "③ 得点集計・決勝進出判定（自動計算）").font = H2
+head_row(ws, SC_HEAD + 1,
+         ["No", "部門名", "1位票", "2位票", "3位票", "4位票", "合計点\n(40点満点)", "1位保護", "決勝進出", "内部計算用"])
+vote_rng = lambda col: f"${col}${VOTE_FIRST}:${col}${VOTE_LAST}"
+for k, i in enumerate(range(SC_FIRST, SC_LAST + 1)):
+    app_row = APP_FIRST + k
+    ws.cell(i, 1, k + 1).font, ws.cell(i, 1).alignment = BODY, CENTER
+    b = ws.cell(i, 2, f'=IF($B${app_row}="","",$B${app_row})')
+    c1 = ws.cell(i, 3, f'=IF($B{i}="","",COUNTIF({vote_rng("C")},$B{i}))')
+    c2 = ws.cell(i, 4, f'=IF($B{i}="","",COUNTIF({vote_rng("D")},$B{i}))')
+    c3 = ws.cell(i, 5, f'=IF($B{i}="","",COUNTIF({vote_rng("E")},$B{i}))')
+    c4 = ws.cell(i, 6, f'=IF($B{i}="","",COUNTIF({vote_rng("F")},$B{i}))')
+    tot = ws.cell(i, 7, f'=IF($B{i}="","",C{i}*10+D{i}*8+E{i}*7+F{i}*6)')
+    # 応募4件以下ならこのシート自体を使わない（全件がそのまま決勝進出）ので、
+    # ①のメッセージと矛盾しないよう1位保護・決勝進出は空欄にする
+    prot = ws.cell(i, 8, f'=IF(OR($B{i}="",COUNTA({app_rng})<=4),"",IF(C{i}>=1,"◎内定",""))')
+    key = ws.cell(i, 10, f'=IF($B{i}="","",IF(H{i}<>"",100000,0)+G{i}*100+C{i}*10+D{i})')
+    fin = ws.cell(i, 9, f'=IF(OR($B{i}="",COUNTA({app_rng})<=4),"",IF(RANK(J{i},$J${SC_FIRST}:$J${SC_LAST},0)<=4,"◎決勝進出",""))')
+    for cell in (b,):
+        cell.font, cell.alignment = BODY_B, WRAP
+    for cell in (c1, c2, c3, c4, tot):
+        cell.font, cell.alignment = BODY, CENTER
+    prot.font, prot.alignment = Font(name=FONT, size=10, bold=True, color=NAVY), CENTER
+    prot.fill = FILL_GOLD
+    fin.font, fin.alignment = Font(name=FONT, size=10, bold=True, color="FFFFFF"), CENTER
+    fin.fill = FILL_GREEN
+    key.font, key.alignment = SMALL, CENTER
+    for col in range(1, 11):
+        ws.cell(i, col).border = BOX
+
+lr = SC_LAST + 2
+ws.merge_cells(start_row=lr, start_column=2, end_row=lr, end_column=10)
+ws.cell(lr, 2,
+        "配点：1位10点／2位8点／3位7点／4位6点／5位以下0点（役員4名分の合計・40点満点）。"
+        "各役員の1位に選ばれた部門は、合計点に関わらず無条件で決勝進出（1位保護ルール）。"
+        "残りの枠は合計点の高い順で埋める。同点の場合は ①1位票の数 → ②2位票の数 → ③4名の合議、で決める。"
+        "予選の点数・順位は非公開。本番12名の最終順位には加算しない（登壇順の決定と、本番同点時のタイブレークにのみ使用）。"
+        ).font, ws.cell(lr, 2).fill, ws.cell(lr, 2).alignment = SMALL, FILL_YELL, WRAP
+ws.row_dimensions[lr].height = 46
+ws.merge_cells(start_row=lr + 1, start_column=2, end_row=lr + 1, end_column=10)
+ws.cell(lr + 1, 2, "J列（内部計算用）は決勝進出の判定に使う優先度スコアで、触らない。"
+                  "1位保護に該当する部門は常に非該当より上位になるよう十分大きい値を足してある。").font = SMALL
+
+ws.freeze_panes = "C6"
+
+# =============================================================== 05 判定ルール
+ws = wb.create_sheet("05_判定ルールとフラグ")
 banner(ws, "判定バンド・前提フラグ・タイブレーク", 6)
 widths = [5, 20, 24, 40, 40, 2]
 r = 3
@@ -434,18 +547,18 @@ r += 1
 for i, t in enumerate(TIEBREAK, 1):
     ws.cell(r, 2, f"第{i}順位").font = BODY_B
     ws.cell(r, 2).border, ws.cell(r, 2).fill = BOX, FILL_BLUE
-    ws.cell(r, 3, f"{t} のレベルが高いほうを上位とする").font = BODY
+    ws.cell(r, 3, t).font = BODY
     ws.cell(r, 3).border = BOX
     ws.merge_cells(start_row=r, start_column=3, end_row=r, end_column=5)
     r += 1
 ws.merge_cells(start_row=r + 1, start_column=2, end_row=r + 1, end_column=5)
-ws.cell(r + 1, 2, "10点刻みに丸めた結果、C1・C2・C4・C6 は同じ20点で並ぶため、配点の大小では順序が決まらない。"
-                  "同点が出た場合は、書面から実態を読み取りやすい観点を優先する。"
-                  "C6（当事者性と熱量）は当日のプレゼンで印象が変わりうるため最後に置いている。").font = SMALL
+ws.cell(r + 1, 2, "10点刻みに丸めた結果、C1・C2 は同じ20点で並ぶ。C6（他部門・全社への波及と未来）は"
+                  "単独で最も重い30点なので、まずここのレベル差で決めるのが最も情報量が大きい。"
+                  "それでも並ぶ場合はC2→C1の順で見て、最後は事務局・役員の合議とする。").font = SMALL
 ws.cell(r + 1, 2).alignment = WRAP
 
 # =============================================================== 05 プロンプト
-ws = wb.create_sheet("05_AI審査プロンプト")
+ws = wb.create_sheet("06_AI審査プロンプト")
 banner(ws, "AI予備審査プロンプト（このままコピーして使用）", 3)
 ws.column_dimensions["A"].width = 3
 ws.column_dimensions["B"].width = 130
@@ -464,7 +577,7 @@ for line in prompt_text.split("\n"):
     r += 1
 
 # =============================================================== 06 元データ
-ws = wb.create_sheet("06_元データ_審査員コメント")
+ws = wb.create_sheet("07_元データ_審査員コメント")
 banner(ws, "元データ：審査員コメント一覧（全文）", 6, META["source"])
 widths = [5, 16, 26, 30, 62, 62]
 head_row(ws, 3, ["No", "審査員", "役職", "担当ステージ", "審査コメント（本人の言葉）＝ 従（○）", "グランドフィナーレコメント ＝ 主（◎）"], widths)

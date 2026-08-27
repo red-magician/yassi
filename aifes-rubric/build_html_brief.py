@@ -174,7 +174,7 @@ calib = "".join(
 
 STEPS = [
     ("応募資料を1件ずつAIに渡す",
-     "プロンプトは <code>AI予備審査プロンプト.md</code>（Excelの 05 シートにも同じ本文あり）。"
+     "プロンプトは <code>AI予備審査プロンプト.md</code>（Excelの 06 シートにも同じ本文あり）。"
      "件ごとに書き換える必要はない。応募資料だけを差し替える。"),
     ("AIがJSONで返す",
      "6観点のレベル・根拠の原文引用・そのレベルにした理由・前提フラグの該当・強み弱み・"
@@ -860,10 +860,11 @@ HTML = f"""<title>AIFES 2026 グランドフィナーレ 予備審査 採点ブ�
   <h4 style="margin-top:26px">同点時のタイブレーク順</h4>
   <ol class="tie">{tie}</ol>
   <div class="note">
-    <b>配点の大小では順位が決まりません。</b>
-    {STEP}点刻みに丸めた結果、{"・".join(c["id"] for c in CRITERIA if c["weight"] == max(WEIGHTS))} が同じ{max(WEIGHTS)}点で並びます。
-    同点が出た場合は、書面から実態を読み取りやすい観点を優先してください。
-    C6（当事者性と熱量）は当日のプレゼンで印象が変わりうるため、最後に置いています。
+    <b>{next(c['id'] for c in CRITERIA if c['weight']==max(WEIGHTS))}
+    （{next(c['short'] for c in CRITERIA if c['weight']==max(WEIGHTS))}）が単独で最も重い{max(WEIGHTS)}点です。</b>
+    同点はまずここのレベル差で見るのが最も情報量が大きく、次点で並ぶ
+    {"・".join(c["id"] for c in CRITERIA if c["weight"] == sorted(set(WEIGHTS))[-2])}
+    （{sorted(set(WEIGHTS))[-2]}点）で見てください。それでも並ぶ場合は事務局・役員の合議で決めます。
   </div>
 </section>
 
