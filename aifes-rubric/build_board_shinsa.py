@@ -7,7 +7,7 @@ decision-board-design スキルの assets/board.css と部品をそのまま使�
 """
 import pathlib
 
-SKILL = pathlib.Path("/root/.claude/skills/decision-board-design")
+SKILL = pathlib.Path("/root/.claude/skills/synced/decision-board-design")
 CSS = (SKILL / "assets" / "board.css").read_text(encoding="utf-8")
 
 ICO = dict(

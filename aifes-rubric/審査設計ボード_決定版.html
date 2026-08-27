@@ -1,8 +1,7 @@
 <title>グランドフィナーレの審査、この設計で決め切れるか？ ― 決まったこと／残る論点 ―</title>
 <style>/* ============================================================
    論点整理ボード 共通スタイル
-   このファイルの中身をそのままページの style 要素に入れて使う。
-   （コメント内にタグを書くと検証ツールが誤検出するため、ここでは書かない）
+   このファイルの中身をそのまま <style> に入れて使う。
 
    寸法はすべて cqw（.stage の幅の1%）。1600px 幅で 1cqw = 16px。
    幅が変わってもボードが1枚の紙のように等比で拡縮する。
@@ -59,7 +58,7 @@
 .hd{text-align:center;padding:0.3cqw 0 0.6cqw}
 .hd h1{
   margin:0;font-size:var(--t-title);font-weight:900;color:var(--navy);
-  line-height:1.3;letter-spacing:.01em;text-wrap:balance;
+  line-height:1.3;letter-spacing:.01em;
 }
 .hd h1 em{font-style:normal;color:var(--org)}      /* 副題・強調したい語 */
 .hd h1 q{quotes:none;color:var(--red)}             /* 「？」など最強調 */
@@ -179,11 +178,10 @@
 
 /* ── 9. チェックリスト ──────────────────────────────────── */
 .chk{list-style:none;margin:0;padding:0;font-size:var(--t-body);line-height:1.9}
-.chk li{position:relative;padding-left:1.5cqw}
-.chk li::before{content:"✓";position:absolute;left:0;top:0.34cqw;
-  color:#fff;background:var(--grn);width:0.95cqw;height:0.95cqw;
-  border-radius:50%;display:grid;place-items:center;font-size:var(--t-sm);font-weight:800}
-.chk li b{color:var(--navy)}
+.chk li{display:grid;grid-template-columns:auto 1fr;gap:0.4cqw;align-items:start}
+.chk li::before{content:"✓";color:#fff;background:var(--grn);width:0.95cqw;height:0.95cqw;
+  border-radius:50%;display:grid;place-items:center;font-size:var(--t-sm);
+  font-weight:800;margin-top:0.32cqw}
 
 /* ── 10. 結論帯 ─────────────────────────────────────────── */
 .goal{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0.8cqw;
