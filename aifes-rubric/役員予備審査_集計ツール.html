@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<title>AIFES 2026 グランドフィナーレ 役員予備審査 集計</title>
+<style>
+:root{
+  --bg:#fafbfc; --panel:#fff; --line:#e3e6ee; --ink:#1c2233; --mute:#707890;
+  --accent:#1f3a5f; --accent2:#3a6ea5; --ok:#1f7a4d; --ok-s:#e6f5ec;
+  --warn:#a15900; --warn-s:#fbeedc; --bad:#c2372b; --bad-s:#fbeae8;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Meiryo","游ゴシック","Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header.top{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;padding:16px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 4px 14px rgba(31,58,95,.25)}
+header.top h1{font-size:16px;margin:0;font-weight:700}
+header.top .who{font-size:13px;opacity:.9}
+header.top .stats{margin-left:auto;display:flex;gap:16px;align-items:center;font-size:13px}
+header.top .stats b{font-size:16px;font-weight:800}
+header.top button{background:#fff;color:var(--accent);border:0;border-radius:8px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer}
+header.top button:hover{opacity:.9}
+header.top label.imp{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:8px;padding:9px 14px;font-size:12px;cursor:pointer}
+.wrap{display:flex;max-width:1320px;margin:0 auto;gap:20px;padding:20px 24px 80px;align-items:flex-start}
+.list{width:300px;flex:none;position:sticky;top:74px}
+.list .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px;max-height:calc(100vh - 100px);overflow:auto}
+.row{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 12px;border-radius:9px;cursor:pointer;margin-bottom:2px}
+.row:hover{background:#f2f4f8}
+.row.sel{background:#eaf0fb;box-shadow:inset 0 0 0 1.5px var(--accent2)}
+.row .t{font-size:13px;font-weight:700;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row .m{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--mute)}
+.row .badge{font-weight:700;border-radius:6px;padding:2px 7px;font-size:11px}
+.row .rankchip{background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}
+.detail{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px 32px}
+.eyebrow{font-size:12px;color:var(--mute);letter-spacing:.5px}
+.detail h2{font-size:24px;margin:6px 0 2px;color:var(--ink)}
+.meta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:18px}
+.gapwarn{background:var(--warn-s);border:1px solid #f0d19a;color:var(--warn);border-radius:9px;padding:12px 16px;font-size:13px;margin:14px 0}
+section.panel{margin:22px 0;padding:20px 22px;border:1px solid var(--line);border-radius:var(--radius);background:#fcfcfe}
+section.panel h3{margin:0 0 12px;font-size:14px;color:var(--accent)}
+.ainote{background:#f2f7fc;border-left:4px solid var(--accent2);border-radius:8px;padding:12px 16px;font-size:13px;color:#25354a;margin-bottom:14px}
+table.ax{width:100%;border-collapse:collapse;font-size:13px}
+table.ax td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.ax td.name{width:34%;font-weight:700}
+table.ax td.name span{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
+table.ax td.lv{width:14%;text-align:center;font-weight:800;font-size:15px}
+table.ax td.txt{color:#333;font-size:12.5px}
+.bar{height:6px;border-radius:4px;background:#eef0f6;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%}
+.totalrow{display:flex;align-items:baseline;gap:10px;margin-top:14px}
+.totalrow .num{font-size:30px;font-weight:800;color:var(--accent)}
+.totalrow .band{font-size:13px;font-weight:800;border-radius:7px;padding:3px 10px}
+.band-S{background:#e6f5ec;color:#1f7a4d}
+.band-A{background:#e4effb;color:#155faf}
+.band-B{background:#fbeedc;color:#a15900}
+.band-C{background:#fbeae8;color:#c2372b}
+.links{font-size:13px;color:#333}
+.links dt{font-weight:700;color:var(--mute);font-size:11px;margin-top:8px}
+.links dd{margin:2px 0 0}
+.rankbtns{display:flex;gap:10px;flex-wrap:wrap}
+.rankbtns button{flex:1;min-width:110px;border:1.5px solid var(--accent2);background:#fff;color:var(--accent2);border-radius:9px;padding:12px 10px;font-weight:700;font-size:13px;cursor:pointer}
+.rankbtns button.on{background:var(--accent2);color:#fff}
+.rankbtns button:hover{opacity:.88}
+.rankhint{font-size:12px;color:var(--mute);margin-top:10px}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box}
+.nav{display:flex;justify-content:space-between;margin-top:22px}
+.nav button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 16px;font-size:13px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.savebar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px 24px;font-size:12px;color:var(--mute);display:flex;gap:10px;align-items:center}
+.savebar .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.savebar .dot.off{background:var(--bad)}
+.progress{display:flex;gap:8px;font-size:12px;color:var(--mute);align-items:center;margin:6px 0 0}
+.progress .step{display:flex;align-items:center;gap:5px}
+.progress .dot2{width:16px;height:16px;border-radius:50%;background:#eee;color:#aaa;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.progress .step.ok .dot2{background:var(--ok);color:#fff}
+
+table.tally{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+table.tally th,table.tally td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
+table.tally th{color:var(--mute);font-weight:700;font-size:11px}
+table.tally td.num{text-align:center;font-weight:700}
+tr.advance{background:#e6f5ec}
+.upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
+.upload-grid .slot{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;font-size:12.5px}
+.upload-grid .slot.done{border-color:var(--ok);background:var(--ok-s)}
+.upload-grid .slot input{display:block;margin:10px auto 0}
+</style></head>
+<body>
+<header class="top">
+  <div>
+    <h1>AIFES 2026 グランドフィナーレ・役員予備審査 集計ツール</h1>
+    <div class="who">集計係専用。役員4名から届いた「結果.json」を下に読み込んでください。</div>
+  </div>
+  <div class="stats"><span>読み込み済み <b id="nSubmitted">0</b>/4</span></div>
+  <button id="exportBtn">集計結果をCSVで書き出す</button>
+</header>
+<div class="wrap" style="display:block;max-width:1100px">
+  <div class="detail" style="width:100%">
+    <div id="note" class="gapwarn">4名分そろうまでは暫定表示です（順位は確定しません）。</div>
+    <h3 style="margin-top:0">① 役員4名分のファイルを読み込む</h3>
+    <div class="upload-grid" id="slots"></div>
+
+    <h3>② 集計結果</h3>
+    <p style="font-size:12.5px;color:#707890">
+      合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（上位4部門）。
+      「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
+    </p>
+    <table class="tally">
+      <thead><tr><th>順位</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
+      <tbody id="tallyBody"></tbody>
+    </table>
+  </div>
+</div>
+<script>
+
+const OFFICERS = [{"key": "officer1", "name": "役員A（仮）"}, {"key": "officer2", "name": "役員B（仮）"}, {"key": "officer3", "name": "役員C（仮）"}, {"key": "officer4", "name": "役員D（仮）"}];
+const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "procedure": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22", "colorS": "#FCEAE6"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B", "colorS": "#E1F4F1"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9", "colorS": "#EDE9FB"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900", "colorS": "#FBEEDC"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077", "colorS": "#FBE9F2"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF", "colorS": "#E4EFFB"}], "aiTotal": 66, "aiBand": "A"}];
+let ballots = {}; // officerKey -> {code:rank}
+let reasons = {}; // officerKey -> {code:reason}
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderSlots(){
+  document.getElementById('slots').innerHTML = OFFICERS.map(o=>{
+    const got = !!ballots[o.key];
+    return `<div class="slot ${got?'done':''}">
+      <b>${esc(o.name)}</b><br>${got? '✓ 読み込み済み' : '未読み込み'}
+      <input type="file" accept="application/json" data-key="${o.key}">
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-key]').forEach(inp=>{
+    inp.onchange = (ev)=>{
+      const f = ev.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const data = JSON.parse(reader.result);
+          const map = {}, rmap = {};
+          (data.ranks||[]).forEach(x=>{ if(x.rank) map[x.code]=String(x.rank); rmap[x.code]=x.reason||''; });
+          ballots[inp.dataset.key] = map;
+          reasons[inp.dataset.key] = rmap;
+          renderAll();
+        }catch(e){ alert('読み込みに失敗しました。'); }
+      };
+      reader.readAsText(f);
+    };
+  });
+}
+
+function computeTally(){
+  const rows = ENTRIES.map(e=>{
+    let c1=0,c2=0,c3=0,c4=0;
+    Object.values(ballots).forEach(map=>{
+      const r = map[e.code];
+      if(r==='1') c1++; else if(r==='2') c2++; else if(r==='3') c3++; else if(r==='4') c4++;
+    });
+    const total = c1*10 + c2*8 + c3*7 + c4*6;
+    const protected_ = c1 >= 1;
+    const key = (protected_?100000:0) + total*100 + c1*10 + c2;
+    return {e, c1,c2,c3,c4, total, protected_, key};
+  });
+  const n = Object.keys(ballots).length;
+  rows.sort((a,b)=> b.key - a.key);
+  rows.forEach((r,i)=> r.finalRank = i+1);
+  return {rows, n};
+}
+
+function renderAll(){
+  renderSlots();
+  const {rows, n} = computeTally();
+  const submitted = Object.keys(ballots).length;
+  document.getElementById('nSubmitted').textContent = submitted;
+  const enough = submitted >= 4;
+  document.getElementById('note').style.display = enough ? 'none' : 'block';
+  document.getElementById('tallyBody').innerHTML = rows.map(r=>`
+    <tr class="${enough && r.finalRank<=4 ? 'advance' : ''}">
+      <td class="num">${enough ? r.finalRank : '—'}</td>
+      <td>${esc(r.e.dept)}<div style="color:#888;font-size:11px">${esc(r.e.title)}</div></td>
+      <td class="num">${r.c1}</td><td class="num">${r.c2}</td><td class="num">${r.c3}</td><td class="num">${r.c4}</td>
+      <td class="num">${r.total}</td>
+      <td class="num">${r.protected_ ? '◎' : ''}</td>
+      <td class="num">AI ${r.e.aiTotal}点・${esc(r.e.aiBand)}</td>
+    </tr>`).join('');
+}
+
+function doExport(){
+  const {rows} = computeTally();
+  const lines = ['決勝進出順位,部門,1位票,2位票,3位票,4位票,合計点,1位保護,AI予備審査点,AI予備審査ランク'];
+  rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.protected_?'◎':'', r.e.aiTotal, r.e.aiBand].join(',')));
+  const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = '役員予備審査_集計結果.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+document.getElementById('exportBtn').onclick = doExport;
+renderAll();
+
+</script>
+</body></html>
