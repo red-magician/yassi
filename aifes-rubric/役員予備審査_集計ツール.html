@@ -132,10 +132,10 @@ table.tally th,table.tally td{border-bottom:1px solid var(--line);padding:10px 8
 table.tally th{color:var(--mute);font-weight:700;font-size:11px}
 table.tally td.num{text-align:center;font-weight:700}
 tr.advance{background:#eafaf1}
-.upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
-.upload-grid .slot{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;font-size:12.5px}
+.upload-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:16px 0}
+.upload-grid .slot{min-width:0;border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;font-size:12.5px}
 .upload-grid .slot.done{border-color:var(--ok);background:#eafaf1}
-.upload-grid .slot input{display:block;margin:10px auto 0}
+.upload-grid .slot input{display:block;width:100%;margin:10px auto 0}
 </style></head>
 <body>
 <header>
