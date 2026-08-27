@@ -81,7 +81,7 @@ def flow():
         ("応募", "5〜10部門"),
         ("AI予備審査", "6観点・100点満点"),
         ("役員予備審査", f"{len(OFFICERS)}名・1〜4位を投票", True),
-        ("集計", "点数化＋1位保護＋タイブレーク", True),
+        ("集計", "点数化＋タイブレーク", True),
         ("決勝進出4部門", "9/15 本戦（12名）へ"),
     ]
     out = []
@@ -136,19 +136,21 @@ def points_section():
     </div>"""
 
 
-def protect_section():
+def advance_section():
     return f"""
     <div class="sec">
       <div class="sec-tag">STEP 3</div>
-      <h2>1位保護ルール</h2>
+      <h2>決勝進出4部門の決め方</h2>
       <div class="protect">
-        <span class="tag">1位保護</span>
-        <p>役員{len(OFFICERS)}名のうち<b>誰か1人でも1位に選んだ部門は、合計点にかかわらず無条件で決勝進出</b>とする。</p>
+        <span class="tag">決勝進出</span>
+        <p><b>合計点が高い順に上位4部門</b>が決勝進出となる。1位に選んだ役員がいるというだけで、
+           合計点にかかわらず無条件に決勝進出することはない。</p>
       </div>
       <div class="example">
-        <b>なぜこのルールが要るか：</b>
-        点数だけで選ぶと「3人がそこそこ推す部門」が「1人が熱烈に推す部門」に勝ってしまう。
-        1位保護があることで、役員それぞれの一番好きな部門が必ず決勝に残り、票が割れやすい尖った応募が不利にならない。
+        <b>「1位あり」表示について：</b>
+        集計結果には、誰か1人でも1位に選んだ部門かどうかを参考情報として表示する。
+        これは決勝進出を決めるものではなく、<b>合計点が並んだときのタイブレーク（次のSTEP）</b>の
+        材料として使う。
       </div>
     </div>"""
 
@@ -208,7 +210,7 @@ HTML = f"""<!doctype html>
   {flow()}
   {ai_recap()}
   {points_section()}
-  {protect_section()}
+  {advance_section()}
   {tiebreak_section()}
   {worked_example()}
   <div class="foot">

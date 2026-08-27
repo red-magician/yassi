@@ -160,13 +160,14 @@ tr.advance{background:#eafaf1}
     <div class="panel">
       <h2>② 集計結果</h2>
       <p style="font-size:12.5px;color:var(--mute);margin-bottom:10px">
-        合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（上位4部門）。
-        「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
+        合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（合計点が高い上位4部門）。
+        同点の場合は①1位数→②2位数→③AI予備審査点→④合議の順で決める（1位票が1つあるだけで無条件に
+        決勝進出することはない）。「1位あり」は、誰か1人でも1位に選んだ部門であることを示す参考情報。
         「【デモ】」の部門は動作確認用のダミーです。本番の応募が揃い次第、officer_prelim_data.py の
         GF_ENTRIES を実データに差し替えて再生成してください。
       </p>
       <table class="tally">
-        <thead><tr><th id="rankHead">順位（暫定）</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
+        <thead><tr><th id="rankHead">順位（暫定）</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位あり</th><th>AI予備審査（参考）</th></tr></thead>
         <tbody id="tallyBody"></tbody>
       </table>
     </div>
@@ -214,11 +215,12 @@ function computeTally(){
       if(r==='1') c1++; else if(r==='2') c2++; else if(r==='3') c3++; else if(r==='4') c4++;
     });
     const total = c1*10 + c2*8 + c3*7 + c4*6;
-    const protected_ = c1 >= 1;
+    const hasFirst = c1 >= 1;
+    // 決勝進出は合計点の高い順。1位票の有無だけで無条件に進出することはない。
     // 同点タイブレーク（優先順）：①合計点 ②1位数 ③2位数 ④AI予備審査点 ⑤合議。
     // 各項の桁を独立させ、下位項が上位項の大小関係を絶対に覆さないようにしている。
-    const key = (protected_?1:0)*10000000 + total*100000 + c1*10000 + c2*1000 + Math.round(e.aiTotal);
-    return {e, c1,c2,c3,c4, total, protected_, key};
+    const key = total*100000 + c1*10000 + c2*1000 + Math.round(e.aiTotal);
+    return {e, c1,c2,c3,c4, total, hasFirst, key};
   });
   rows.sort((a,b)=> b.key - a.key);
   rows.forEach((r,i)=> r.finalRank = i+1);
@@ -239,15 +241,15 @@ function renderAll(){
       <td>${esc(r.e.dept)}<div style="color:#888;font-size:11px">${esc(r.e.title)}</div></td>
       <td class="num">${r.c1}</td><td class="num">${r.c2}</td><td class="num">${r.c3}</td><td class="num">${r.c4}</td>
       <td class="num">${r.total}</td>
-      <td class="num">${r.protected_ ? '◎' : ''}</td>
+      <td class="num">${r.hasFirst ? '◎' : ''}</td>
       <td class="num">AI ${r.e.aiTotal}点・${esc(r.e.aiBand)}</td>
     </tr>`).join('');
 }
 
 function doExport(){
   const rows = computeTally();
-  const lines = ['決勝進出順位,部門,1位票,2位票,3位票,4位票,合計点,1位保護,AI予備審査点,AI予備審査ランク'];
-  rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.protected_?'◎':'', r.e.aiTotal, r.e.aiBand].join(',')));
+  const lines = ['決勝進出順位,部門,1位票,2位票,3位票,4位票,合計点,1位あり,AI予備審査点,AI予備審査ランク'];
+  rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.hasFirst?'◎':'', r.e.aiTotal, r.e.aiBand].join(',')));
   const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = '役員予備審査_集計結果.csv';
