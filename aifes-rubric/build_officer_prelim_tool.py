@@ -557,7 +557,9 @@ function computeTally(){
     });
     const total = c1*10 + c2*8 + c3*7 + c4*6;
     const protected_ = c1 >= 1;
-    const key = (protected_?100000:0) + total*100 + c1*10 + c2;
+    // 同点タイブレーク（優先順）：①合計点 ②1位数 ③2位数 ④AI予備審査点 ⑤合議。
+    // 各項の桁を独立させ、下位項が上位項の大小関係を絶対に覆さないようにしている。
+    const key = (protected_?1:0)*10000000 + total*100000 + c1*10000 + c2*1000 + Math.round(e.aiTotal);
     return {e, c1,c2,c3,c4, total, protected_, key};
   });
   rows.sort((a,b)=> b.key - a.key);
