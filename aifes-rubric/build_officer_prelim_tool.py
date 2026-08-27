@@ -575,9 +575,10 @@ function renderAll(){
   document.getElementById('nSubmitted').textContent = submitted;
   const enough = submitted >= 4;
   document.getElementById('note').style.display = enough ? 'none' : 'block';
+  document.getElementById('rankHead').textContent = enough ? '順位' : '順位（暫定）';
   document.getElementById('tallyBody').innerHTML = rows.map(r=>`
     <tr class="${enough && r.finalRank<=4 ? 'advance' : ''}">
-      <td class="num">${enough ? r.finalRank : '—'}</td>
+      <td class="num">${r.finalRank}</td>
       <td>${esc(r.e.dept)}<div style="color:#888;font-size:11px">${esc(r.e.title)}</div></td>
       <td class="num">${r.c1}</td><td class="num">${r.c2}</td><td class="num">${r.c3}</td><td class="num">${r.c4}</td>
       <td class="num">${r.total}</td>
@@ -635,7 +636,7 @@ def render_tally_html():
         「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
       </p>
       <table class="tally">
-        <thead><tr><th>順位</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
+        <thead><tr><th id="rankHead">順位（暫定）</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
         <tbody id="tallyBody"></tbody>
       </table>
     </div>
