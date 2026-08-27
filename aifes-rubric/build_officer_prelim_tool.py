@@ -292,8 +292,7 @@ function renderList(){
   document.getElementById('hDoneTotal').textContent = ENTRIES.length;
   document.getElementById('hBar').style.width = (ENTRIES.length ? done/ENTRIES.length*100 : 0) + '%';
 
-  const realRanked = ENTRIES.filter(e=>!e.demo && rec(e.code).rank).length;
-  document.getElementById('resultsBtnCount').textContent = realRanked;
+  document.getElementById('resultsBtnCount').textContent = done;
 }
 
 function critRow(c){
@@ -371,17 +370,16 @@ function renderMain(){
 function renderAll(){ renderList(); renderMain(); }
 
 function renderResultsModal(){
-  const ranked = ENTRIES.filter(e=>!e.demo && rec(e.code).rank)
+  const ranked = ENTRIES.filter(e=>rec(e.code).rank)
     .sort((a,b)=> (+rec(a.code).rank) - (+rec(b.code).rank));
-  const unranked = ENTRIES.filter(e=>!e.demo && !rec(e.code).rank);
-  const demoRanked = ENTRIES.filter(e=>e.demo && rec(e.code).rank);
+  const unranked = ENTRIES.filter(e=>!rec(e.code).rank);
 
   const rows = ranked.map(e=>{
     const r = rec(e.code);
     return `<div class="result-row" data-code="${e.code}">
       <div class="rnum">${r.rank}位</div>
       <div class="rbody">
-        <div class="rdept">${esc(e.dept)}</div>
+        <div class="rdept">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
         <div class="rtitle">${esc(e.title)}</div>
         ${r.reason.trim() ? `<div class="rreason">${esc(r.reason)}</div>` : `<div class="rreason" style="color:#aab0bd">理由は未入力です</div>`}
       </div>
@@ -391,8 +389,7 @@ function renderResultsModal(){
 
   const body =
     (ranked.length ? rows : `<div class="result-empty">まだ順位をつけた部門がありません。一覧から1〜4位を選んでください。</div>`) +
-    (unranked.length ? `<div class="unranked">順位をつけていない部門（${unranked.length}件）：${unranked.map(e=>esc(e.dept)).join(' / ')}</div>` : '') +
-    (demoRanked.length ? `<div class="unranked">※デモ部門（${demoRanked.map(e=>esc(e.dept)).join(' / ')}）につけた順位は、動作確認用のため最終結果・エクスポートには含まれません。</div>` : '');
+    (unranked.length ? `<div class="unranked">順位をつけていない部門（${unranked.length}件）：${unranked.map(e=>esc(e.dept)).join(' / ')}</div>` : '');
 
   document.getElementById('resultsBody').innerHTML = body;
   document.querySelectorAll('.result-row').forEach(row=>{
@@ -408,7 +405,7 @@ function closeResults(){ document.getElementById('resultsModal').classList.remov
 function doExport(){
   const payload = {
     officer: OFFICER, exportedAt: new Date().toISOString(),
-    ranks: ENTRIES.filter(e=>!e.demo).map(e=>({code:e.code, dept:e.dept, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
+    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, demo:!!e.demo, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
@@ -520,7 +517,7 @@ tr.advance{background:#eafaf1}
 
 TALLY_JS = r"""
 const OFFICERS = __OFFICERS__;
-const ENTRIES = __ENTRIES__.filter(e=>!e.demo);
+const ENTRIES = __ENTRIES__;
 let ballots = {};
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -634,6 +631,8 @@ def render_tally_html():
       <p style="font-size:12.5px;color:var(--mute);margin-bottom:10px">
         合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（上位4部門）。
         「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
+        「【デモ】」の部門は動作確認用のダミーです。本番の応募が揃い次第、officer_prelim_data.py の
+        GF_ENTRIES を実データに差し替えて再生成してください。
       </p>
       <table class="tally">
         <thead><tr><th id="rankHead">順位（暫定）</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
