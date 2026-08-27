@@ -1,118 +1,146 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8">
-<title>AIFES 2026 グランドフィナーレ 役員予備審査 集計</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIFES 2026 グランドフィナーレ 役員予備審査 集計ツール</title>
 <style>
 :root{
-  --bg:#fafbfc; --panel:#fff; --line:#e3e6ee; --ink:#1c2233; --mute:#707890;
-  --accent:#1f3a5f; --accent2:#3a6ea5; --ok:#1f7a4d; --ok-s:#e6f5ec;
-  --warn:#a15900; --warn-s:#fbeedc; --bad:#c2372b; --bad-s:#fbeae8;
-  --radius:12px;
+  --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
+  --gold:#FFCD00; --gold-dim:#c9a300;
+  --paper:#f4f6f9; --card:#ffffff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
+  --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:"Meiryo","游ゴシック","Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-header.top{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;padding:16px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 4px 14px rgba(31,58,95,.25)}
-header.top h1{font-size:16px;margin:0;font-weight:700}
-header.top .who{font-size:13px;opacity:.9}
-header.top .stats{margin-left:auto;display:flex;gap:16px;align-items:center;font-size:13px}
-header.top .stats b{font-size:16px;font-weight:800}
-header.top button{background:#fff;color:var(--accent);border:0;border-radius:8px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer}
-header.top button:hover{opacity:.9}
-header.top label.imp{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:8px;padding:9px 14px;font-size:12px;cursor:pointer}
-.wrap{display:flex;max-width:1320px;margin:0 auto;gap:20px;padding:20px 24px 80px;align-items:flex-start}
-.list{width:300px;flex:none;position:sticky;top:74px}
-.list .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px;max-height:calc(100vh - 100px);overflow:auto}
-.row{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 12px;border-radius:9px;cursor:pointer;margin-bottom:2px}
-.row:hover{background:#f2f4f8}
-.row.sel{background:#eaf0fb;box-shadow:inset 0 0 0 1.5px var(--accent2)}
-.row .t{font-size:13px;font-weight:700;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.row .m{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--mute)}
-.row .badge{font-weight:700;border-radius:6px;padding:2px 7px;font-size:11px}
-.row .rankchip{background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}
-.detail{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px 32px}
-.eyebrow{font-size:12px;color:var(--mute);letter-spacing:.5px}
-.detail h2{font-size:24px;margin:6px 0 2px;color:var(--ink)}
-.meta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:18px}
-.gapwarn{background:var(--warn-s);border:1px solid #f0d19a;color:var(--warn);border-radius:9px;padding:12px 16px;font-size:13px;margin:14px 0}
-section.panel{margin:22px 0;padding:20px 22px;border:1px solid var(--line);border-radius:var(--radius);background:#fcfcfe}
-section.panel h3{margin:0 0 12px;font-size:14px;color:var(--accent)}
-.ainote{background:#f2f7fc;border-left:4px solid var(--accent2);border-radius:8px;padding:12px 16px;font-size:13px;color:#25354a;margin-bottom:14px}
-table.ax{width:100%;border-collapse:collapse;font-size:13px}
-table.ax td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-table.ax td.name{width:34%;font-weight:700}
-table.ax td.name span{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
-table.ax td.lv{width:14%;text-align:center;font-weight:800;font-size:15px}
-table.ax td.txt{color:#333;font-size:12.5px}
-.bar{height:6px;border-radius:4px;background:#eef0f6;overflow:hidden;margin-top:5px}
-.bar i{display:block;height:100%}
-.totalrow{display:flex;align-items:baseline;gap:10px;margin-top:14px}
-.totalrow .num{font-size:30px;font-weight:800;color:var(--accent)}
-.totalrow .band{font-size:13px;font-weight:800;border-radius:7px;padding:3px 10px}
-.band-S{background:#e6f5ec;color:#1f7a4d}
-.band-A{background:#e4effb;color:#155faf}
-.band-B{background:#fbeedc;color:#a15900}
-.band-C{background:#fbeae8;color:#c2372b}
-.links{font-size:13px;color:#333}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Yu Gothic UI","Meiryo","Segoe UI",-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:50;border-bottom:3px solid var(--gold)}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:230px}
+.brand .en{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.brand .jp{font-size:17px;font-weight:700;letter-spacing:.04em}
+.hstat{display:flex;gap:22px;align-items:center;flex:1}
+.hstat .item{display:flex;flex-direction:column;line-height:1.3}
+.hstat .k{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.hstat .v{font-size:18px;font-weight:700}
+.hstat .v small{font-size:11px;font-weight:400;color:#9fb3cd}
+.hbar{width:180px;height:7px;background:rgba(255,255,255,.18);border-radius:4px;overflow:hidden;margin-top:6px}
+.hbar>i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+.judge{display:flex;flex-direction:column;gap:3px}
+.judge label{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.judge input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 9px;border-radius:4px;font:inherit;font-size:13px;width:170px;cursor:default;font-weight:700;letter-spacing:.02em}
+.toolbar{background:var(--navy-deep);padding:8px 22px;display:flex;gap:8px;align-items:center;position:sticky;top:var(--header-h,64px);z-index:49;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparent;padding:6px 13px;transition:.15s}
+.btn{background:rgba(255,255,255,.09);color:#e7edf5;border-color:rgba(255,255,255,.22)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700;border-color:var(--gold)}
+.btn-gold:hover{background:#ffd93a}
+.savestate{margin-left:auto;font-size:11px;color:#9fb3cd;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.dot.off{background:#6b7789}
+.wrap{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - var(--stickytop,110px))}
+.list{background:#fff;border-right:1px solid var(--line);overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px));position:sticky;top:var(--stickytop,110px)}
+.row{padding:11px 13px;border-bottom:1px solid #eef1f6;cursor:pointer;display:flex;gap:9px;align-items:flex-start;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left}
+.row:hover{background:#f7f9fc}
+.row.sel{background:#eef3fa;box-shadow:inset 3px 0 0 var(--gold)}
+.row .st{width:8px;height:8px;border-radius:50%;background:#d3d9e2;margin-top:7px;flex-shrink:0}
+.row.done .st{background:var(--ok)}
+.row .t{font-size:12.5px;font-weight:600;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.row .m{font-size:10.5px;color:var(--mute);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row .sc{margin-left:auto;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0}
+.rank-badge{background:var(--gold);color:var(--navy-deep);font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px}
+.demo-badge{background:#eef1f6;color:var(--mute);font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.04em}
+.main{padding:24px 30px;overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px))}
+.card{max-width:900px;margin:0 auto 34px;padding-top:8px;scroll-margin-top:120px}
+.card + .card{border-top:1px dashed var(--line);padding-top:34px}
+.eyebrow{font-size:10px;letter-spacing:.18em;color:var(--gold-dim);font-weight:700}
+h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(--navy-deep)}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--mute);padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.meta b{color:var(--ink);font-weight:600}
+.demoflag{margin-bottom:14px;padding:9px 13px;background:#eef1f6;border:1px dashed #c7cede;border-radius:6px;font-size:11.5px;color:var(--mute)}
+.gapwarn{margin-bottom:14px;padding:9px 13px;background:#fdf0f2;border:1px solid #f0c2c9;border-radius:6px;font-size:11.5px;color:#8a2b32}
+.gapwarn b{color:var(--warn);margin-right:6px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
+.panel>h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--gold);margin-bottom:15px;display:flex;align-items:center;gap:8px}
+.panel>h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
+.ainote{background:#f6f8fb;border:1px dashed #c9d4e2;border-radius:5px;padding:11px;font-size:12.5px;color:var(--mute);margin-bottom:14px}
+.crit{display:grid;grid-template-columns:1fr 64px 1fr;gap:10px 16px;align-items:center;margin-bottom:12px}
+.crit .cl{font-size:13px;font-weight:600}
+.crit .cl small{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
+.crit .cv{font-size:20px;font-weight:800;text-align:center}
+.crit .cv small{display:block;font-weight:400;color:var(--mute);font-size:10px}
+.crit .cd{font-size:11.5px;color:var(--mute);line-height:1.5}
+.crit .bar{height:5px;border-radius:3px;background:#eef0f6;overflow:hidden;margin-top:5px}
+.crit .bar>i{display:block;height:100%}
+.total{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--navy);color:#fff;border-radius:6px;margin-top:6px}
+.total .lab{font-size:11px;letter-spacing:.1em;color:#9fb3cd}
+.total .num{font-size:30px;font-weight:700;line-height:1}
+.total .num small{font-size:13px;color:#9fb3cd;font-weight:400}
+.total .brk{margin-left:auto}
+.band{font-size:12px;font-weight:800;border-radius:99px;padding:4px 12px;background:var(--gold);color:var(--navy-deep)}
+.links{font-size:13px}
 .links dt{font-weight:700;color:var(--mute);font-size:11px;margin-top:8px}
 .links dd{margin:2px 0 0}
-.rankbtns{display:flex;gap:10px;flex-wrap:wrap}
-.rankbtns button{flex:1;min-width:110px;border:1.5px solid var(--accent2);background:#fff;color:var(--accent2);border-radius:9px;padding:12px 10px;font-weight:700;font-size:13px;cursor:pointer}
-.rankbtns button.on{background:var(--accent2);color:#fff}
-.rankbtns button:hover{opacity:.88}
-.rankhint{font-size:12px;color:var(--mute);margin-top:10px}
-textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box}
-.nav{display:flex;justify-content:space-between;margin-top:22px}
-.nav button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 16px;font-size:13px;cursor:pointer}
-.nav button:disabled{opacity:.35;cursor:default}
-.savebar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px 24px;font-size:12px;color:var(--mute);display:flex;gap:10px;align-items:center}
-.savebar .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
-.savebar .dot.off{background:var(--bad)}
-.progress{display:flex;gap:8px;font-size:12px;color:var(--mute);align-items:center;margin:6px 0 0}
-.progress .step{display:flex;align-items:center;gap:5px}
-.progress .dot2{width:16px;height:16px;border-radius:50%;background:#eee;color:#aaa;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
-.progress .step.ok .dot2{background:var(--ok);color:#fff}
+textarea{width:100%;padding:11px;font:inherit;border:1px solid var(--line);border-radius:5px;resize:vertical;line-height:1.7}
+textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.fl label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
+.fl .hint{font-size:11px;color:var(--mute);font-weight:400}
+.rank-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rank-btn{flex:1;min-width:120px;padding:14px 8px;font-size:14px;font-weight:700;border:2px solid var(--line);background:#fff;color:var(--mute)}
+.rank-btn:hover{border-color:var(--gold);color:var(--navy)}
+.rank-btn.on{background:var(--gold);border-color:var(--gold);color:var(--navy-deep)}
+.rank-hint{margin-top:10px;font-size:11.5px;color:var(--mute);line-height:1.6}
+.rank-hint b{color:var(--gold-dim)}
+.progress{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 14px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:18px}
+.pstep{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);font-weight:600}
+.pstep.ok{color:var(--ok)}
+.pdot{width:20px;height:20px;border-radius:50%;background:#e8ecf2;color:var(--mute);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.pstep.ok .pdot{background:var(--ok);color:#fff}
 
 table.tally{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 table.tally th,table.tally td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
 table.tally th{color:var(--mute);font-weight:700;font-size:11px}
 table.tally td.num{text-align:center;font-weight:700}
-tr.advance{background:#e6f5ec}
+tr.advance{background:#eafaf1}
 .upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
 .upload-grid .slot{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;font-size:12.5px}
-.upload-grid .slot.done{border-color:var(--ok);background:var(--ok-s)}
+.upload-grid .slot.done{border-color:var(--ok);background:#eafaf1}
 .upload-grid .slot input{display:block;margin:10px auto 0}
 </style></head>
 <body>
-<header class="top">
-  <div>
-    <h1>AIFES 2026 グランドフィナーレ・役員予備審査 集計ツール</h1>
-    <div class="who">集計係専用。役員4名から届いた「結果.json」を下に読み込んでください。</div>
+<header>
+  <div class="brand">
+    <div class="en">AIFES 2026 GRAND FINALE</div>
+    <div class="jp">役員予備審査・集計ツール</div>
   </div>
-  <div class="stats"><span>読み込み済み <b id="nSubmitted">0</b>/4</span></div>
-  <button id="exportBtn">集計結果をCSVで書き出す</button>
+  <div class="hstat">
+    <div class="item"><span class="k">読み込み済み</span><span class="v"><span id="nSubmitted">0</span><small> / 4 名</small></span></div>
+  </div>
 </header>
-<div class="wrap" style="display:block;max-width:1100px">
-  <div class="detail" style="width:100%">
-    <div id="note" class="gapwarn">4名分そろうまでは暫定表示です（順位は確定しません）。</div>
-    <h3 style="margin-top:0">① 役員4名分のファイルを読み込む</h3>
-    <div class="upload-grid" id="slots"></div>
-
-    <h3>② 集計結果</h3>
-    <p style="font-size:12.5px;color:#707890">
-      合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（上位4部門）。
-      「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
-    </p>
-    <table class="tally">
-      <thead><tr><th>順位</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
-      <tbody id="tallyBody"></tbody>
-    </table>
+<div class="toolbar">
+  <button class="btn-gold" id="exportBtn">集計結果をCSVで書き出す</button>
+</div>
+<div class="main" style="max-width:1100px;margin:0 auto;max-height:none;overflow:visible">
+  <div class="card" style="max-width:none">
+    <div id="note" class="gapwarn" style="background:#fffbea;border-color:#f0dfa0;color:#7a5b00"><b>準備中</b>4名分そろうまでは暫定表示です（順位は確定しません）。</div>
+    <div class="panel">
+      <h2>① 役員4名分のファイルを読み込む</h2>
+      <div class="upload-grid" id="slots"></div>
+    </div>
+    <div class="panel">
+      <h2>② 集計結果</h2>
+      <p style="font-size:12.5px;color:var(--mute);margin-bottom:10px">
+        合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（上位4部門）。
+        「1位保護」は、誰か1人でも1位に選んだ部門を無条件で決勝進出させるルール（合意事項）。
+      </p>
+      <table class="tally">
+        <thead><tr><th>順位</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位保護</th><th>AI予備審査（参考）</th></tr></thead>
+        <tbody id="tallyBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 <script>
 
 const OFFICERS = [{"key": "officer1", "name": "役員A（仮）"}, {"key": "officer2", "name": "役員B（仮）"}, {"key": "officer3", "name": "役員C（仮）"}, {"key": "officer4", "name": "役員D（仮）"}];
-const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "procedure": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22", "colorS": "#FCEAE6"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B", "colorS": "#E1F4F1"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9", "colorS": "#EDE9FB"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900", "colorS": "#FBEEDC"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077", "colorS": "#FBE9F2"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF", "colorS": "#E4EFFB"}], "aiTotal": 66, "aiBand": "A"}];
-let ballots = {}; // officerKey -> {code:rank}
-let reasons = {}; // officerKey -> {code:reason}
+const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "procedure": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 66, "aiBand": "A", "demo": false}, {"code": "DEMO-2026-001", "dept": "【デモ】DXソリューション本部", "title": "全社基盤化した申請AIエージェント", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 5, "levelText": "廃止・縮小した業務を具体名で挙げられ、業務フロー全体が再設計されている。その進め方が他部門でもそのまま使える形で示されている。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 4, "levelText": "これまで評価されにくかった役割の人が新たな価値を発揮し、その状態が部として定着している。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 4, "levelText": "仕組み化され部門内で自律的に回っている。再利用可能な形で共有され、部として定着している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 5, "levelText": "全社を「面」で引き上げる取り組みになっており、社外・顧客を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。", "color": "#155FAF"}], "aiTotal": 90, "aiBand": "S", "demo": true}, {"code": "DEMO-2026-002", "dept": "【デモ】カスタマーサクセス部", "title": "問い合わせ一次対応をAIで再設計", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 4, "levelText": "業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。新しい進め方が部として定着している。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 4, "levelText": "部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。", "color": "#155FAF"}], "aiTotal": 74, "aiBand": "A", "demo": true}, {"code": "DEMO-2026-003", "dept": "【デモ】ファイナンス統括部", "title": "月次決算資料の下書きをAIで生成", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 56, "aiBand": "B", "demo": true}, {"code": "DEMO-2026-004", "dept": "【デモ】マーケティング推進部", "title": "生成AIでの訴求文言A/Bテスト運用", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 2, "levelText": "既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 2, "levelText": "推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 1, "levelText": "単発の取り組みで、再現の手立てを確認できない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 2, "levelText": "自部門内での最適化にとどまる。外への波及が語られていない。", "color": "#155FAF"}], "aiTotal": 38, "aiBand": "C", "demo": true}, {"code": "DEMO-2026-005", "dept": "【デモ】プロダクト開発部", "title": "レビュー観点をAIで自動チェック", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 54, "aiBand": "B", "demo": true}].filter(e=>!e.demo);
+let ballots = {};
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -131,10 +159,9 @@ function renderSlots(){
       reader.onload = ()=>{
         try{
           const data = JSON.parse(reader.result);
-          const map = {}, rmap = {};
-          (data.ranks||[]).forEach(x=>{ if(x.rank) map[x.code]=String(x.rank); rmap[x.code]=x.reason||''; });
+          const map = {};
+          (data.ranks||[]).forEach(x=>{ if(x.rank) map[x.code]=String(x.rank); });
           ballots[inp.dataset.key] = map;
-          reasons[inp.dataset.key] = rmap;
           renderAll();
         }catch(e){ alert('読み込みに失敗しました。'); }
       };
@@ -155,15 +182,14 @@ function computeTally(){
     const key = (protected_?100000:0) + total*100 + c1*10 + c2;
     return {e, c1,c2,c3,c4, total, protected_, key};
   });
-  const n = Object.keys(ballots).length;
   rows.sort((a,b)=> b.key - a.key);
   rows.forEach((r,i)=> r.finalRank = i+1);
-  return {rows, n};
+  return rows;
 }
 
 function renderAll(){
   renderSlots();
-  const {rows, n} = computeTally();
+  const rows = computeTally();
   const submitted = Object.keys(ballots).length;
   document.getElementById('nSubmitted').textContent = submitted;
   const enough = submitted >= 4;
@@ -180,7 +206,7 @@ function renderAll(){
 }
 
 function doExport(){
-  const {rows} = computeTally();
+  const rows = computeTally();
   const lines = ['決勝進出順位,部門,1位票,2位票,3位票,4位票,合計点,1位保護,AI予備審査点,AI予備審査ランク'];
   rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.protected_?'◎':'', r.e.aiTotal, r.e.aiBand].join(',')));
   const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv'});

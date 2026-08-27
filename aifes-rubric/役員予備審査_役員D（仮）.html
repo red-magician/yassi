@@ -1,105 +1,137 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AIFES 2026 グランドフィナーレ 役員予備審査 — 役員D（仮）</title>
 <style>
 :root{
-  --bg:#fafbfc; --panel:#fff; --line:#e3e6ee; --ink:#1c2233; --mute:#707890;
-  --accent:#1f3a5f; --accent2:#3a6ea5; --ok:#1f7a4d; --ok-s:#e6f5ec;
-  --warn:#a15900; --warn-s:#fbeedc; --bad:#c2372b; --bad-s:#fbeae8;
-  --radius:12px;
+  --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
+  --gold:#FFCD00; --gold-dim:#c9a300;
+  --paper:#f4f6f9; --card:#ffffff; --ink:#1a2233; --mute:#6b7789; --line:#dde3ec;
+  --ok:#1f9d6b; --warn:#c8102e; --amber:#b26a00;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:"Meiryo","游ゴシック","Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
-header.top{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;padding:16px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 4px 14px rgba(31,58,95,.25)}
-header.top h1{font-size:16px;margin:0;font-weight:700}
-header.top .who{font-size:13px;opacity:.9}
-header.top .stats{margin-left:auto;display:flex;gap:16px;align-items:center;font-size:13px}
-header.top .stats b{font-size:16px;font-weight:800}
-header.top button{background:#fff;color:var(--accent);border:0;border-radius:8px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer}
-header.top button:hover{opacity:.9}
-header.top label.imp{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:8px;padding:9px 14px;font-size:12px;cursor:pointer}
-.wrap{display:flex;max-width:1320px;margin:0 auto;gap:20px;padding:20px 24px 80px;align-items:flex-start}
-.list{width:300px;flex:none;position:sticky;top:74px}
-.list .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px;max-height:calc(100vh - 100px);overflow:auto}
-.row{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 12px;border-radius:9px;cursor:pointer;margin-bottom:2px}
-.row:hover{background:#f2f4f8}
-.row.sel{background:#eaf0fb;box-shadow:inset 0 0 0 1.5px var(--accent2)}
-.row .t{font-size:13px;font-weight:700;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.row .m{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11px;color:var(--mute)}
-.row .badge{font-weight:700;border-radius:6px;padding:2px 7px;font-size:11px}
-.row .rankchip{background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}
-.detail{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px 32px}
-.eyebrow{font-size:12px;color:var(--mute);letter-spacing:.5px}
-.detail h2{font-size:24px;margin:6px 0 2px;color:var(--ink)}
-.meta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:18px}
-.gapwarn{background:var(--warn-s);border:1px solid #f0d19a;color:var(--warn);border-radius:9px;padding:12px 16px;font-size:13px;margin:14px 0}
-section.panel{margin:22px 0;padding:20px 22px;border:1px solid var(--line);border-radius:var(--radius);background:#fcfcfe}
-section.panel h3{margin:0 0 12px;font-size:14px;color:var(--accent)}
-.ainote{background:#f2f7fc;border-left:4px solid var(--accent2);border-radius:8px;padding:12px 16px;font-size:13px;color:#25354a;margin-bottom:14px}
-table.ax{width:100%;border-collapse:collapse;font-size:13px}
-table.ax td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-table.ax td.name{width:34%;font-weight:700}
-table.ax td.name span{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
-table.ax td.lv{width:14%;text-align:center;font-weight:800;font-size:15px}
-table.ax td.txt{color:#333;font-size:12.5px}
-.bar{height:6px;border-radius:4px;background:#eef0f6;overflow:hidden;margin-top:5px}
-.bar i{display:block;height:100%}
-.totalrow{display:flex;align-items:baseline;gap:10px;margin-top:14px}
-.totalrow .num{font-size:30px;font-weight:800;color:var(--accent)}
-.totalrow .band{font-size:13px;font-weight:800;border-radius:7px;padding:3px 10px}
-.band-S{background:#e6f5ec;color:#1f7a4d}
-.band-A{background:#e4effb;color:#155faf}
-.band-B{background:#fbeedc;color:#a15900}
-.band-C{background:#fbeae8;color:#c2372b}
-.links{font-size:13px;color:#333}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Yu Gothic UI","Meiryo","Segoe UI",-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:50;border-bottom:3px solid var(--gold)}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:230px}
+.brand .en{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.brand .jp{font-size:17px;font-weight:700;letter-spacing:.04em}
+.hstat{display:flex;gap:22px;align-items:center;flex:1}
+.hstat .item{display:flex;flex-direction:column;line-height:1.3}
+.hstat .k{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.hstat .v{font-size:18px;font-weight:700}
+.hstat .v small{font-size:11px;font-weight:400;color:#9fb3cd}
+.hbar{width:180px;height:7px;background:rgba(255,255,255,.18);border-radius:4px;overflow:hidden;margin-top:6px}
+.hbar>i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+.judge{display:flex;flex-direction:column;gap:3px}
+.judge label{font-size:10px;color:#9fb3cd;letter-spacing:.08em}
+.judge input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 9px;border-radius:4px;font:inherit;font-size:13px;width:170px;cursor:default;font-weight:700;letter-spacing:.02em}
+.toolbar{background:var(--navy-deep);padding:8px 22px;display:flex;gap:8px;align-items:center;position:sticky;top:var(--header-h,64px);z-index:49;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparent;padding:6px 13px;transition:.15s}
+.btn{background:rgba(255,255,255,.09);color:#e7edf5;border-color:rgba(255,255,255,.22)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:700;border-color:var(--gold)}
+.btn-gold:hover{background:#ffd93a}
+.savestate{margin-left:auto;font-size:11px;color:#9fb3cd;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.dot.off{background:#6b7789}
+.wrap{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - var(--stickytop,110px))}
+.list{background:#fff;border-right:1px solid var(--line);overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px));position:sticky;top:var(--stickytop,110px)}
+.row{padding:11px 13px;border-bottom:1px solid #eef1f6;cursor:pointer;display:flex;gap:9px;align-items:flex-start;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left}
+.row:hover{background:#f7f9fc}
+.row.sel{background:#eef3fa;box-shadow:inset 3px 0 0 var(--gold)}
+.row .st{width:8px;height:8px;border-radius:50%;background:#d3d9e2;margin-top:7px;flex-shrink:0}
+.row.done .st{background:var(--ok)}
+.row .t{font-size:12.5px;font-weight:600;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.row .m{font-size:10.5px;color:var(--mute);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row .sc{margin-left:auto;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0}
+.rank-badge{background:var(--gold);color:var(--navy-deep);font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px}
+.demo-badge{background:#eef1f6;color:var(--mute);font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.04em}
+.main{padding:24px 30px;overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px))}
+.card{max-width:900px;margin:0 auto 34px;padding-top:8px;scroll-margin-top:120px}
+.card + .card{border-top:1px dashed var(--line);padding-top:34px}
+.eyebrow{font-size:10px;letter-spacing:.18em;color:var(--gold-dim);font-weight:700}
+h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(--navy-deep)}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--mute);padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.meta b{color:var(--ink);font-weight:600}
+.demoflag{margin-bottom:14px;padding:9px 13px;background:#eef1f6;border:1px dashed #c7cede;border-radius:6px;font-size:11.5px;color:var(--mute)}
+.gapwarn{margin-bottom:14px;padding:9px 13px;background:#fdf0f2;border:1px solid #f0c2c9;border-radius:6px;font-size:11.5px;color:#8a2b32}
+.gapwarn b{color:var(--warn);margin-right:6px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
+.panel>h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--gold);margin-bottom:15px;display:flex;align-items:center;gap:8px}
+.panel>h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
+.ainote{background:#f6f8fb;border:1px dashed #c9d4e2;border-radius:5px;padding:11px;font-size:12.5px;color:var(--mute);margin-bottom:14px}
+.crit{display:grid;grid-template-columns:1fr 64px 1fr;gap:10px 16px;align-items:center;margin-bottom:12px}
+.crit .cl{font-size:13px;font-weight:600}
+.crit .cl small{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
+.crit .cv{font-size:20px;font-weight:800;text-align:center}
+.crit .cv small{display:block;font-weight:400;color:var(--mute);font-size:10px}
+.crit .cd{font-size:11.5px;color:var(--mute);line-height:1.5}
+.crit .bar{height:5px;border-radius:3px;background:#eef0f6;overflow:hidden;margin-top:5px}
+.crit .bar>i{display:block;height:100%}
+.total{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--navy);color:#fff;border-radius:6px;margin-top:6px}
+.total .lab{font-size:11px;letter-spacing:.1em;color:#9fb3cd}
+.total .num{font-size:30px;font-weight:700;line-height:1}
+.total .num small{font-size:13px;color:#9fb3cd;font-weight:400}
+.total .brk{margin-left:auto}
+.band{font-size:12px;font-weight:800;border-radius:99px;padding:4px 12px;background:var(--gold);color:var(--navy-deep)}
+.links{font-size:13px}
 .links dt{font-weight:700;color:var(--mute);font-size:11px;margin-top:8px}
 .links dd{margin:2px 0 0}
-.rankbtns{display:flex;gap:10px;flex-wrap:wrap}
-.rankbtns button{flex:1;min-width:110px;border:1.5px solid var(--accent2);background:#fff;color:var(--accent2);border-radius:9px;padding:12px 10px;font-weight:700;font-size:13px;cursor:pointer}
-.rankbtns button.on{background:var(--accent2);color:#fff}
-.rankbtns button:hover{opacity:.88}
-.rankhint{font-size:12px;color:var(--mute);margin-top:10px}
-textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box}
-.nav{display:flex;justify-content:space-between;margin-top:22px}
-.nav button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 16px;font-size:13px;cursor:pointer}
-.nav button:disabled{opacity:.35;cursor:default}
-.savebar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px 24px;font-size:12px;color:var(--mute);display:flex;gap:10px;align-items:center}
-.savebar .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
-.savebar .dot.off{background:var(--bad)}
-.progress{display:flex;gap:8px;font-size:12px;color:var(--mute);align-items:center;margin:6px 0 0}
-.progress .step{display:flex;align-items:center;gap:5px}
-.progress .dot2{width:16px;height:16px;border-radius:50%;background:#eee;color:#aaa;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
-.progress .step.ok .dot2{background:var(--ok);color:#fff}
+textarea{width:100%;padding:11px;font:inherit;border:1px solid var(--line);border-radius:5px;resize:vertical;line-height:1.7}
+textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.fl label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
+.fl .hint{font-size:11px;color:var(--mute);font-weight:400}
+.rank-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rank-btn{flex:1;min-width:120px;padding:14px 8px;font-size:14px;font-weight:700;border:2px solid var(--line);background:#fff;color:var(--mute)}
+.rank-btn:hover{border-color:var(--gold);color:var(--navy)}
+.rank-btn.on{background:var(--gold);border-color:var(--gold);color:var(--navy-deep)}
+.rank-hint{margin-top:10px;font-size:11.5px;color:var(--mute);line-height:1.6}
+.rank-hint b{color:var(--gold-dim)}
+.progress{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 14px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:18px}
+.pstep{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);font-weight:600}
+.pstep.ok{color:var(--ok)}
+.pdot{width:20px;height:20px;border-radius:50%;background:#e8ecf2;color:var(--mute);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.pstep.ok .pdot{background:var(--ok);color:#fff}
 </style></head>
 <body>
-<header class="top">
-  <div>
-    <h1>AIFES 2026 グランドフィナーレ・役員予備審査</h1>
-    <div class="who">役員D（仮） さん専用ページ</div>
+<header>
+  <div class="brand">
+    <div class="en">AIFES 2026 GRAND FINALE</div>
+    <div class="jp">役員予備審査</div>
   </div>
-  <div class="stats">
-    <span id="hDone"><b>0</b>/1位づけ済み</span>
+  <div class="hstat">
+    <div class="item">
+      <span class="k">進捗</span>
+      <span class="v"><span id="hDoneNum">0</span><small> / <span id="hDoneTotal">6</span> 件（うちデモ 5 件を含む）</small></span>
+      <div class="hbar"><i id="hBar"></i></div>
+    </div>
   </div>
-  <label class="imp">結果を読み込む<input id="importInput" type="file" accept="application/json" style="display:none"></label>
-  <button id="exportBtn">結果をエクスポート</button>
+  <div class="judge">
+    <label>担当役員</label>
+    <input readonly value="役員D（仮）">
+  </div>
 </header>
-<div class="wrap">
-  <div class="list"><div class="card" id="rows"></div></div>
-  <div class="detail" id="detail"></div>
+<div class="toolbar">
+  <label class="btn">結果を読み込む<input id="importInput" type="file" accept="application/json" style="display:none"></label>
+  <button class="btn-gold" id="exportBtn">結果をエクスポート</button>
+  <div class="savestate"><span class="dot" id="saveDot"></span><span id="saveTxt"></span></div>
 </div>
-<div class="savebar"><span class="dot" id="saveDot"></span><span id="saveTxt"></span></div>
+<div class="wrap">
+  <div class="list" id="rows"></div>
+  <div class="main" id="main"></div>
+</div>
 <script>
 
 const OFFICER = {"key": "officer4", "name": "役員D（仮）"};
-const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "procedure": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22", "colorS": "#FCEAE6"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B", "colorS": "#E1F4F1"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9", "colorS": "#EDE9FB"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900", "colorS": "#FBEEDC"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077", "colorS": "#FBE9F2"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF", "colorS": "#E4EFFB"}], "aiTotal": 66, "aiBand": "A"}];
+const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "procedure": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 66, "aiBand": "A", "demo": false}, {"code": "DEMO-2026-001", "dept": "【デモ】DXソリューション本部", "title": "全社基盤化した申請AIエージェント", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 5, "levelText": "廃止・縮小した業務を具体名で挙げられ、業務フロー全体が再設計されている。その進め方が他部門でもそのまま使える形で示されている。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 4, "levelText": "これまで評価されにくかった役割の人が新たな価値を発揮し、その状態が部として定着している。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 4, "levelText": "仕組み化され部門内で自律的に回っている。再利用可能な形で共有され、部として定着している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 5, "levelText": "全社を「面」で引き上げる取り組みになっており、社外・顧客を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。", "color": "#155FAF"}], "aiTotal": 90, "aiBand": "S", "demo": true}, {"code": "DEMO-2026-002", "dept": "【デモ】カスタマーサクセス部", "title": "問い合わせ一次対応をAIで再設計", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 4, "levelText": "業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。新しい進め方が部として定着している。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 4, "levelText": "部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。", "color": "#155FAF"}], "aiTotal": 74, "aiBand": "A", "demo": true}, {"code": "DEMO-2026-003", "dept": "【デモ】ファイナンス統括部", "title": "月次決算資料の下書きをAIで生成", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 56, "aiBand": "B", "demo": true}, {"code": "DEMO-2026-004", "dept": "【デモ】マーケティング推進部", "title": "生成AIでの訴求文言A/Bテスト運用", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 2, "levelText": "既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 2, "levelText": "推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 1, "levelText": "単発の取り組みで、再現の手立てを確認できない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 2, "levelText": "自部門内での最適化にとどまる。外への波及が語られていない。", "color": "#155FAF"}], "aiTotal": 38, "aiBand": "C", "demo": true}, {"code": "DEMO-2026-005", "dept": "【デモ】プロダクト開発部", "title": "レビュー観点をAIで自動チェック", "submitter": "（ダミー）", "primary": "（デモ用のダミーデータです。実データではありません）", "procedure": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 54, "aiBand": "B", "demo": true}];
 const STORE_KEY = 'aifes2026_officer_prelim_' + OFFICER.key;
 
 let state = {};
-let sel = 0;
 let canPersist = false;
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function rec(code){ if(!state[code]) state[code] = {rank:'', reason:''}; return state[code]; }
+function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.aiTotal - x.aiTotal); }
 
 function loadLocal(){
   try{
@@ -116,11 +148,11 @@ function saveLocal(){
 function paintSave(){
   const dot = document.getElementById('saveDot'), txt = document.getElementById('saveTxt');
   if(!dot) return;
-  if(canPersist){ dot.className='dot'; txt.textContent='自動保存 有効（このPC・このブラウザのみ）。作業が終わったら必ず上の「結果をエクスポート」でファイルを書き出してください。'; }
+  if(canPersist){ dot.className='dot'; txt.textContent='自動保存 有効（このPC・このブラウザのみ）。作業が終わったら必ず「結果をエクスポート」でファイルを書き出してください。'; }
   else{ dot.className='dot off'; txt.textContent='自動保存 無効。こまめに「結果をエクスポート」でファイルを書き出してください。'; }
 }
 
-// 同じ順位を別の作品につけたら、元の作品からは自動的に外す（重複防止）
+// 同じ順位を別の部門につけたら、元の部門からは自動的に外す（重複防止）
 function setRank(code, rank){
   const r = rec(code);
   if(String(r.rank) === String(rank)){ r.rank = ''; touch(); return; }
@@ -130,98 +162,108 @@ function setRank(code, rank){
 }
 function touch(){ saveLocal(); renderAll(); }
 
-function bandClass(b){ return 'band-' + (b||'C'); }
-
 function renderList(){
   const box = document.getElementById('rows');
-  const a = ENTRIES.slice().sort((x,y)=> y.aiTotal - x.aiTotal);
-  box.innerHTML = a.map(e=>{
-    const i = ENTRIES.indexOf(e);
+  box.innerHTML = sorted_().map(e=>{
     const r = rec(e.code);
-    return `<button class="row ${i===sel?'sel':''}" data-i="${i}">
-      <div class="t">${esc(e.dept)}</div>
-      <div class="m">
-        <span class="badge ${bandClass(e.aiBand)}" style="background:transparent;color:inherit">AI ${e.aiTotal}点・${esc(e.aiBand)}</span>
-        ${r.rank ? `<span class="rankchip">${r.rank}位</span>` : ''}
+    return `<button class="row ${r.rank?'done':''}" data-code="${e.code}">
+      <span class="st"></span>
+      <div style="flex:1;min-width:0">
+        <div class="t">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
+        <div class="m">
+          <span>AI ${e.aiTotal}点・${esc(e.aiBand)}</span>
+          ${r.rank ? `<span class="rank-badge">${r.rank}位</span>` : ''}
+        </div>
       </div>
     </button>`;
   }).join('');
-  box.querySelectorAll('.row').forEach(el=> el.onclick = ()=>{ sel = +el.dataset.i; renderAll(); window.scrollTo(0,0); });
+  box.querySelectorAll('.row').forEach(el=> el.onclick = ()=>{
+    document.getElementById('card-' + el.dataset.code).scrollIntoView({behavior:'smooth', block:'start'});
+  });
 
   const done = ENTRIES.filter(e=>rec(e.code).rank).length;
-  document.getElementById('hDone').innerHTML = `<b>${done}</b>/${ENTRIES.length}位づけ済み`;
+  document.getElementById('hDoneNum').textContent = done;
+  document.getElementById('hDoneTotal').textContent = ENTRIES.length;
+  document.getElementById('hBar').style.width = (ENTRIES.length ? done/ENTRIES.length*100 : 0) + '%';
 }
 
-function renderDetail(){
-  const e = ENTRIES[sel], r = rec(e.code);
-  const ax = e.criteria.map(c=>`
-    <tr>
-      <td class="name">${esc(c.name)}<span>配点 ${c.weight}点</span></td>
-      <td class="lv" style="color:${c.color}">${c.level || '—'}<div class="bar"><i style="width:${c.level? c.level/5*100:0}%;background:${c.color}"></i></div></td>
-      <td class="txt">${esc(c.levelText)}</td>
-    </tr>`).join('');
+function critRow(c){
+  return `<div class="crit">
+    <div class="cl">${esc(c.name)}<small>配点 ${c.weight}点</small></div>
+    <div class="cv" style="color:${c.color}">${c.level || '—'}<small>/5</small>
+      <div class="bar"><i style="width:${c.level? c.level/5*100:0}%;background:${c.color}"></i></div>
+    </div>
+    <div class="cd">${esc(c.levelText)}</div>
+  </div>`;
+}
 
-  document.getElementById('detail').innerHTML = `
+function cardHtml(e){
+  const r = rec(e.code);
+  return `<div class="card" id="card-${e.code}">
     <div class="eyebrow">${esc(e.code)}</div>
-    <h2>${esc(e.dept)}</h2>
-    <div class="meta"><span>${esc(e.title)}</span><span>提出者：${esc(e.submitter)}</span></div>
+    <h1>${esc(e.dept)}</h1>
+    <div class="meta"><span><b>${esc(e.title)}</b></span><span>提出者：${esc(e.submitter)}</span></div>
 
     <div class="progress">
       ${[['1〜4位を選ぶ', !!r.rank],['理由を書く', !!r.reason.trim()]].map(([lab,ok])=>
-        `<span class="step ${ok?'ok':''}"><span class="dot2">${ok?'✓':'-'}</span>${lab}</span>`).join('')}
+        `<span class="pstep ${ok?'ok':''}"><span class="pdot">${ok?'✓':'-'}</span>${lab}</span>`).join('')}
     </div>
 
-    ${e.gaps.length ? `<div class="gapwarn"><b>提出物の不足</b>：${e.gaps.map(esc).join(' / ')}</div>` : ''}
+    ${e.demo ? `<div class="demoflag">これは動作確認用のダミーエントリーです。実際の応募内容ではありません。</div>` : ''}
+    ${e.gaps.length ? `<div class="gapwarn"><b>提出物の不足</b>${e.gaps.map(esc).join(' / ')}</div>` : ''}
 
-    <section class="panel">
-      <h3>AI予備審査（参考値・編集不可）</h3>
+    <div class="panel">
+      <h2>AI予備審査（参考値）<span>編集不可</span></h2>
       ${e.aiNote ? `<div class="ainote">${esc(e.aiNote)}</div>` : ''}
-      <table class="ax">${ax}</table>
-      <div class="totalrow">
-        <span class="num">${e.aiTotal}</span><span style="color:#888;font-size:13px">/ 100点</span>
-        <span class="band ${bandClass(e.aiBand)}">${esc(e.aiBand)}ランク</span>
+      ${e.criteria.map(critRow).join('')}
+      <div class="total">
+        <div>
+          <div class="lab">最終スコア</div>
+          <div class="num">${e.aiTotal}<small> / 100</small></div>
+        </div>
+        <div class="brk"><span class="band">${esc(e.aiBand)}ランク</span></div>
       </div>
-    </section>
+    </div>
 
-    <section class="panel">
-      <h3>提出物</h3>
+    <div class="panel">
+      <h2>提出物</h2>
       <dl class="links">
         <dt>作品</dt><dd>${esc(e.primary || '未登録')}</dd>
-        <dt>手順書・補足資料</dt><dd>${esc(e.procedure || '未登録')}</dd>
+        ${e.procedure ? `<dt>手順書・補足資料</dt><dd>${esc(e.procedure)}</dd>` : ''}
       </dl>
-    </section>
+    </div>
 
-    <section class="panel">
-      <h3>STEP 1：1〜4位を選ぶ</h3>
-      <div class="rankbtns">
-        ${[1,2,3,4].map(n=>`<button class="${String(r.rank)===String(n)?'on':''}" data-rank="${n}">${n}位に選ぶ</button>`).join('')}
+    <div class="panel">
+      <h2>STEP 1：1〜4位を選ぶ</h2>
+      <div class="rank-btns">
+        ${[1,2,3,4].map(n=>`<button class="rank-btn ${String(r.rank)===String(n)?'on':''}" data-code="${e.code}" data-rank="${n}">${n}位に選ぶ</button>`).join('')}
       </div>
-      <div class="rankhint">${r.rank ? `<b>${r.rank}位</b>に選んでいます。もう一度押すと解除できます。同じ順位を他の部門につけると、こちらの順位は自動で外れます。` : '決勝に進めたい順に、1位から選んでください。選ばない部門はそのままで構いません。'}</div>
-    </section>
+      <div class="rank-hint">${r.rank ? `<b>${r.rank}位</b>に選んでいます。もう一度押すと解除できます。同じ順位を他の部門につけると、こちらの順位は自動で外れます。` : '決勝に進めたい順に、1位から選んでください。選ばない部門はそのままで構いません。'}</div>
+    </div>
 
-    <section class="panel">
-      <h3>STEP 2：理由を書く（任意・集計係が参照します）</h3>
-      <textarea id="fReason" rows="3" placeholder="例）AIの点数以上に、部門全体を巻き込んだ広がり方に説得力がある。">${esc(r.reason)}</textarea>
-    </section>
-
-    <div class="nav">
-      <button id="prev" ${sel===0?'disabled':''}>← 前の部門</button>
-      <button id="next" ${sel===ENTRIES.length-1?'disabled':''}>次の部門 →</button>
-    </div>`;
-
-  document.querySelectorAll('[data-rank]').forEach(b=> b.onclick = ()=> setRank(e.code, b.dataset.rank));
-  const ta = document.getElementById('fReason');
-  if(ta) ta.oninput = ()=>{ r.reason = ta.value; saveLocal(); };
-  document.getElementById('prev').onclick = ()=>{ if(sel>0){ sel--; renderAll(); window.scrollTo(0,0); } };
-  document.getElementById('next').onclick = ()=>{ if(sel<ENTRIES.length-1){ sel++; renderAll(); window.scrollTo(0,0); } };
+    <div class="panel">
+      <h2>STEP 2：理由を書く<span>任意・集計係が参照します</span></h2>
+      <div class="fl">
+        <textarea data-code="${e.code}" rows="3" placeholder="例）AIの点数以上に、部門全体を巻き込んだ広がり方に説得力がある。">${esc(r.reason)}</textarea>
+      </div>
+    </div>
+  </div>`;
 }
 
-function renderAll(){ renderList(); renderDetail(); }
+function renderMain(){
+  document.getElementById('main').innerHTML = sorted_().map(cardHtml).join('');
+  document.querySelectorAll('[data-rank]').forEach(b=> b.onclick = ()=> setRank(b.dataset.code, b.dataset.rank));
+  document.querySelectorAll('textarea[data-code]').forEach(ta=>{
+    ta.oninput = ()=>{ rec(ta.dataset.code).reason = ta.value; saveLocal(); };
+  });
+}
+
+function renderAll(){ renderList(); renderMain(); }
 
 function doExport(){
   const payload = {
     officer: OFFICER, exportedAt: new Date().toISOString(),
-    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
+    ranks: ENTRIES.filter(e=>!e.demo).map(e=>({code:e.code, dept:e.dept, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
@@ -241,11 +283,20 @@ function doImport(file){
   reader.readAsText(file);
 }
 
+function fitSticky(){
+  const h = document.querySelector('header').offsetHeight;
+  const t = document.querySelector('.toolbar').offsetHeight;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+  document.documentElement.style.setProperty('--stickytop', (h + t) + 'px');
+}
+
 loadLocal();
 document.getElementById('exportBtn').onclick = doExport;
 document.getElementById('importInput').onchange = (ev)=>{ if(ev.target.files[0]) doImport(ev.target.files[0]); };
 paintSave();
 renderAll();
+fitSticky();
+window.addEventListener('resize', fitSticky);
 
 </script>
 </body></html>
