@@ -51,16 +51,26 @@ GF_ENTRIES = [
 ] + [
     dict(
         code=f"DEMO-2026-{i:03d}", dept=f"【デモ】{dept}", title=title, submitter="（ダミー）",
-        primary="（デモ用のダミーデータです。実データではありません）", procedure="",
-        levels=levels, ai_note="※動作確認用のダミーエントリーです。実際の応募内容ではありません。",
+        primary=primary, procedure=procedure,
+        levels=levels, ai_note="※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。",
         gaps=[], demo=True,
     )
-    for i, (dept, title, levels) in enumerate([
-        ("DXソリューション本部", "全社基盤化した申請AIエージェント", {"C1": 5, "C2": 4, "C3": 4, "C4": 4, "C5": 4, "C6": 5}),
-        ("カスタマーサクセス部", "問い合わせ一次対応をAIで再設計", {"C1": 4, "C2": 4, "C3": 3, "C4": 3, "C5": 3, "C6": 4}),
-        ("ファイナンス統括部", "月次決算資料の下書きをAIで生成", {"C1": 3, "C2": 3, "C3": 2, "C4": 3, "C5": 2, "C6": 3}),
-        ("マーケティング推進部", "生成AIでの訴求文言A/Bテスト運用", {"C1": 2, "C2": 2, "C3": 2, "C4": 2, "C5": 1, "C6": 2}),
-        ("プロダクト開発部", "レビュー観点をAIで自動チェック", {"C1": 3, "C2": 3, "C3": 2, "C4": 2, "C5": 2, "C6": 3}),
+    for i, (dept, title, levels, primary, procedure) in enumerate([
+        ("DXソリューション本部", "全社基盤化した申請AIエージェント", {"C1": 5, "C2": 4, "C3": 4, "C4": 4, "C5": 4, "C6": 5},
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%84%B1%E3%83%BBCopilot%20Studio%E5%AE%A3%E8%A8%80.html",
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%89%8B%E9%A0%86%E6%9B%B8_%E6%89%8B%E9%A0%86%E6%9B%B8%20(2).html"),
+        ("カスタマーサクセス部", "問い合わせ一次対応をAIで再設計", {"C1": 4, "C2": 4, "C3": 3, "C4": 3, "C5": 3, "C6": 4},
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-explanation.html",
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-procedure%20(1).html"),
+        ("ファイナンス統括部", "月次決算資料の下書きをAIで生成", {"C1": 3, "C2": 3, "C3": 2, "C4": 3, "C5": 2, "C6": 3},
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%AA%AC%E6%98%8E%E8%B3%87%E6%96%99.html",
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E5%B0%86%E6%9D%A5%E5%83%8F.png"),
+        ("マーケティング推進部", "生成AIでの訴求文言A/Bテスト運用", {"C1": 2, "C2": 2, "C3": 2, "C4": 2, "C5": 1, "C6": 2},
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/yamane-fes.html",
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%89%8B%E9%A0%86%E6%9B%B8_%E6%89%8B%E9%A0%86%E6%9B%B8%20(1)%20(3).html"),
+        ("プロダクト開発部", "レビュー観点をAIで自動チェック", {"C1": 3, "C2": 3, "C3": 2, "C4": 2, "C5": 2, "C6": 3},
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%80%90%E6%9C%AC%E7%95%AA%E4%BD%9C%E6%A5%AD%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%80%91AI%20%E3%81%AB%E3%82%88%E3%82%8B%E4%BA%8B%E5%89%8D%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E5%93%81%E8%B3%AA%E3%82%92%E5%BA%95%E4%B8%8A%E3%81%92.html",
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%9C%AC%E7%95%AA%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E5%88%A9%E7%94%A8%E6%89%8B%E9%A0%86.pdf"),
     ], start=1)
 ]
 

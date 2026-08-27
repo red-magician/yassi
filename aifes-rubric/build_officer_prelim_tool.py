@@ -134,9 +134,24 @@ h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(-
 .total .num small{font-size:13px;color:#9fb3cd;font-weight:400}
 .total .brk{margin-left:auto}
 .band{font-size:12px;font-weight:800;border-radius:99px;padding:4px 12px;background:var(--gold);color:var(--navy-deep)}
-.links{font-size:13px}
-.links dt{font-weight:700;color:var(--mute);font-size:11px;margin-top:8px}
-.links dd{margin:2px 0 0}
+.plain-links{font-size:13px}
+.plain-links dt{font-weight:700;color:var(--mute);font-size:11px;margin-top:8px}
+.plain-links dd{margin:2px 0 0}
+.resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.resource-card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fbfcfe}
+.resource-card.empty{color:var(--mute);font-size:12.5px}
+.resource-head{display:flex;gap:10px;align-items:flex-start}
+.resource-icon{flex-shrink:0;width:26px;height:26px;border-radius:6px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.resource-icon.proc{background:var(--gold-dim);color:var(--navy-deep)}
+.resource-title{font-size:12.5px;font-weight:700;color:var(--ink)}
+.resource-url{font-size:10.5px;color:var(--mute);word-break:break-all;margin-top:2px;max-height:2.6em;overflow:hidden}
+.resource-actions{display:flex;gap:8px;margin-top:10px}
+.resource-actions a{flex:1;text-align:center;background:var(--navy);color:#fff;text-decoration:none;font-size:12px;font-weight:600;padding:7px 10px;border-radius:5px}
+.resource-actions a:hover{background:var(--navy-soft)}
+.resource-actions button{background:#fff;color:var(--navy);border:1px solid var(--navy);font-size:12px;padding:7px 10px}
+.resource-actions button:hover{background:#eef3fa}
+.resource-actions button.copied{background:var(--ok);color:#fff;border-color:var(--ok)}
+@media (max-width:640px){.resource-grid{grid-template-columns:1fr}}
 textarea{width:100%;padding:11px;font:inherit;border:1px solid var(--line);border-radius:5px;resize:vertical;line-height:1.7}
 textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 .fl label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
@@ -184,6 +199,45 @@ let canPersist = false;
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function rec(code){ if(!state[code]) state[code] = {rank:'', reason:''}; return state[code]; }
 function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.aiTotal - x.aiTotal); }
+
+// ---------- 提出物リンク ----------
+function isUrl(s){ return typeof s === 'string' && /^https?:\/\//i.test(s.trim()); }
+function shortResourceName(url){
+  try{
+    const clean = url.split('#')[0].split('?')[0];
+    const last = clean.substring(clean.lastIndexOf('/') + 1) || clean;
+    return decodeURIComponent(last).replace(/[_-]/g, ' ');
+  }catch(_){ return url; }
+}
+function resourceCard(label, val, kind){
+  if(!isUrl(val)){
+    return `<div class="resource-card empty"><b>${esc(label)}</b><br>${val ? esc(val) : 'リンクが登録されていません'}</div>`;
+  }
+  const name = shortResourceName(val);
+  return `<div class="resource-card">
+    <div class="resource-head">
+      <span class="resource-icon ${kind==='proc'?'proc':''}">${kind==='proc'?'順':'作'}</span>
+      <div style="min-width:0">
+        <div class="resource-title">${esc(label)}：${esc(name || val)}</div>
+        <div class="resource-url">${esc(val)}</div>
+      </div>
+    </div>
+    <div class="resource-actions">
+      <a href="${esc(val)}" target="_blank" rel="noopener">開く ↗</a>
+      <button type="button" data-copy-text="${esc(val)}">URLをコピー</button>
+    </div>
+  </div>`;
+}
+function bindResourceCopy(){
+  document.querySelectorAll('[data-copy-text]').forEach(btn=>{
+    btn.onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(btn.dataset.copyText); }
+      catch(_){}
+      btn.textContent = 'コピーしました'; btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = 'URLをコピー'; btn.classList.remove('copied'); }, 1500);
+    };
+  });
+}
 
 function loadLocal(){
   try{
@@ -282,10 +336,10 @@ function cardHtml(e){
 
     <div class="panel">
       <h2>提出物</h2>
-      <dl class="links">
-        <dt>作品</dt><dd>${esc(e.primary || '未登録')}</dd>
-        ${e.procedure ? `<dt>手順書・補足資料</dt><dd>${esc(e.procedure)}</dd>` : ''}
-      </dl>
+      <div class="resource-grid">
+        ${resourceCard('作品', e.primary, 'work')}
+        ${resourceCard('手順書・補足資料', e.procedure, 'proc')}
+      </div>
     </div>
 
     <div class="panel">
@@ -311,6 +365,7 @@ function renderMain(){
   document.querySelectorAll('textarea[data-code]').forEach(ta=>{
     ta.oninput = ()=>{ rec(ta.dataset.code).reason = ta.value; saveLocal(); };
   });
+  bindResourceCopy();
 }
 
 function renderAll(){ renderList(); renderMain(); }
