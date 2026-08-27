@@ -51,7 +51,7 @@ def entries_payload():
         total = ai_total(e)
         out.append(dict(
             code=e["code"], dept=e["dept"], title=e["title"], submitter=e["submitter"],
-            primary=e["primary"], procedure=e["procedure"], gaps=e["gaps"],
+            primary=e["primary"], attachment=e["attachment"], gaps=e["gaps"],
             aiNote=e["ai_note"], criteria=crits, aiTotal=total, aiBand=ai_band(total),
             demo=e.get("demo", False),
         ))
@@ -142,7 +142,7 @@ h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(-
 .resource-card.empty{color:var(--mute);font-size:12.5px}
 .resource-head{display:flex;gap:10px;align-items:flex-start}
 .resource-icon{flex-shrink:0;width:26px;height:26px;border-radius:6px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-.resource-icon.proc{background:var(--gold-dim);color:var(--navy-deep)}
+.resource-icon.note{background:var(--gold-dim);color:var(--navy-deep)}
 .resource-title{font-size:12.5px;font-weight:700;color:var(--ink)}
 .resource-url{font-size:10.5px;color:var(--mute);word-break:break-all;margin-top:2px;max-height:2.6em;overflow:hidden}
 .resource-actions{display:flex;gap:8px;margin-top:10px}
@@ -216,7 +216,7 @@ function resourceCard(label, val, kind){
   const name = shortResourceName(val);
   return `<div class="resource-card">
     <div class="resource-head">
-      <span class="resource-icon ${kind==='proc'?'proc':''}">${kind==='proc'?'順':'作'}</span>
+      <span class="resource-icon ${kind==='note'?'note':''}">${kind==='note'?'資':'作'}</span>
       <div style="min-width:0">
         <div class="resource-title">${esc(label)}：${esc(name || val)}</div>
         <div class="resource-url">${esc(val)}</div>
@@ -335,10 +335,10 @@ function cardHtml(e){
     </div>
 
     <div class="panel">
-      <h2>提出物</h2>
+      <h2>提出物<span>GFに手順書の提出はありません</span></h2>
       <div class="resource-grid">
         ${resourceCard('作品', e.primary, 'work')}
-        ${resourceCard('手順書・補足資料', e.procedure, 'proc')}
+        ${e.attachment ? resourceCard('補足資料', e.attachment, 'note') : ''}
       </div>
     </div>
 

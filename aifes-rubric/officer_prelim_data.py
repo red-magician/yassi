@@ -35,7 +35,7 @@ GF_ENTRIES = [
         title="AIで生んだ時間を、人を育てる時間に変えた。",
         submitter="Ochi, Kazumi",
         primary="（本文はSharePoint上のHTML提出物）",
-        procedure="補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ",
+        attachment="補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ",
         levels={"C1": 3, "C2": 4, "C3": 3, "C4": 4, "C5": 3, "C6": 3},
         ai_note=(
             "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。"
@@ -46,31 +46,28 @@ GF_ENTRIES = [
     ),
     # --- 以下、応募が揃い次第この形式で追加 ---
     # dict(code="GRANDFINALE-2026-0000XX", dept="", title="", submitter="",
-    #      primary="", procedure="", levels={"C1":0,"C2":0,"C3":0,"C4":0,"C5":0,"C6":0},
+    #      primary="", attachment="", levels={"C1":0,"C2":0,"C3":0,"C4":0,"C5":0,"C6":0},
     #      ai_note="", gaps=[]),
 ] + [
     dict(
         code=f"DEMO-2026-{i:03d}", dept=f"【デモ】{dept}", title=title, submitter="（ダミー）",
-        primary=primary, procedure=procedure,
+        primary=primary, attachment=attachment,
         levels=levels, ai_note="※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。",
         gaps=[], demo=True,
     )
-    for i, (dept, title, levels, primary, procedure) in enumerate([
+    # GFには手順書の提出はない。作品リンクのみ／作品＋補足資料ありの両パターンを見せる。
+    for i, (dept, title, levels, primary, attachment) in enumerate([
         ("DXソリューション本部", "全社基盤化した申請AIエージェント", {"C1": 5, "C2": 4, "C3": 4, "C4": 4, "C5": 4, "C6": 5},
          "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%84%B1%E3%83%BBCopilot%20Studio%E5%AE%A3%E8%A8%80.html",
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%89%8B%E9%A0%86%E6%9B%B8_%E6%89%8B%E9%A0%86%E6%9B%B8%20(2).html"),
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-explanation.html"),
         ("カスタマーサクセス部", "問い合わせ一次対応をAIで再設計", {"C1": 4, "C2": 4, "C3": 3, "C4": 3, "C5": 3, "C6": 4},
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-explanation.html",
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-procedure%20(1).html"),
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/yamane-fes.html", ""),
         ("ファイナンス統括部", "月次決算資料の下書きをAIで生成", {"C1": 3, "C2": 3, "C3": 2, "C4": 3, "C5": 2, "C6": 3},
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%AA%AC%E6%98%8E%E8%B3%87%E6%96%99.html",
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E5%B0%86%E6%9D%A5%E5%83%8F.png"),
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%AA%AC%E6%98%8E%E8%B3%87%E6%96%99.html", ""),
         ("マーケティング推進部", "生成AIでの訴求文言A/Bテスト運用", {"C1": 2, "C2": 2, "C3": 2, "C4": 2, "C5": 1, "C6": 2},
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/yamane-fes.html",
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%89%8B%E9%A0%86%E6%9B%B8_%E6%89%8B%E9%A0%86%E6%9B%B8%20(1)%20(3).html"),
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%80%90%E6%9C%AC%E7%95%AA%E4%BD%9C%E6%A5%AD%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%80%91AI%20%E3%81%AB%E3%82%88%E3%82%8B%E4%BA%8B%E5%89%8D%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E5%93%81%E8%B3%AA%E3%82%92%E5%BA%95%E4%B8%8A%E3%81%92.html", ""),
         ("プロダクト開発部", "レビュー観点をAIで自動チェック", {"C1": 3, "C2": 3, "C3": 2, "C4": 2, "C5": 2, "C6": 3},
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%80%90%E6%9C%AC%E7%95%AA%E4%BD%9C%E6%A5%AD%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%80%91AI%20%E3%81%AB%E3%82%88%E3%82%8B%E4%BA%8B%E5%89%8D%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E5%93%81%E8%B3%AA%E3%82%92%E5%BA%95%E4%B8%8A%E3%81%92.html",
-         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E6%9C%AC%E7%95%AA%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E5%88%A9%E7%94%A8%E6%89%8B%E9%A0%86.pdf"),
+         "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/PMO%20AI-collab-act.html", ""),
     ], start=1)
 ]
 
