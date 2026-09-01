@@ -64,7 +64,7 @@ table.plain td.num{text-align:center;font-weight:700;color:var(--navy)}
   <p>AI予備審査から決勝進出4部門が決まるまでの流れと、同点になったときの優先順位（タイブレーク）を1枚にまとめたもの。役員予備審査ツール（HTML）の集計ロジックと完全に一致する。</p>
 </header>
 <main>
-  <div class="flow"><div class="flow-step"><b>応募</b><span>5〜10部門</span></div><div class="flow-arw">→</div><div class="flow-step"><b>AI予備審査</b><span>6観点・100点満点</span></div><div class="flow-arw">→</div><div class="flow-step hl"><b>役員予備審査</b><span>4名・1〜4位を投票</span></div><div class="flow-arw">→</div><div class="flow-step hl"><b>集計</b><span>点数化＋タイブレーク</span></div><div class="flow-arw">→</div><div class="flow-step"><b>決勝進出4部門</b><span>9/15 本戦（12名）へ</span></div></div>
+  <div class="flow"><div class="flow-step"><b>応募</b><span>13部門</span></div><div class="flow-arw">→</div><div class="flow-step"><b>AI予備審査</b><span>6観点・100点満点</span></div><div class="flow-arw">→</div><div class="flow-step hl"><b>役員予備審査</b><span>4名・1〜4位を投票</span></div><div class="flow-arw">→</div><div class="flow-step hl"><b>集計</b><span>点数化＋タイブレーク</span></div><div class="flow-arw">→</div><div class="flow-step"><b>決勝進出4部門</b><span>9/15 本戦（12名）へ</span></div></div>
   
     <div class="sec">
       <div class="sec-tag">STEP 1</div>
@@ -109,28 +109,28 @@ table.plain td.num{text-align:center;font-weight:700;color:var(--navy)}
       <div class="sec-tag">STEP 4</div>
       <h2>同点になったときの優先順位</h2>
       <p class="lead">合計点が並んだ場合、以下の順で機械的に上位を決める。人の判断が入るのは、それでも並んだ最後の1点だけ。</p>
-      <ol class="tb-list"><li class=""><b>合計点（1位×10 + 2位×8 + 3位×7 + 4位×6）が高い方を上位とする</b></li><li class=""><b>1位に選んだ役員の人数が多い方を上位とする</b></li><li class=""><b>2位に選んだ役員の人数が多い方を上位とする</b></li><li class=""><b>AI予備審査の点数（6観点・100点満点）が高い方を上位とする</b></li><li class="final"><b>それでも並ぶ場合は、事務局・役員の合議で決定する</b></li></ol>
+      <ol class="tb-list"><li class=""><b>合計点（1位×10 + 2位×8 + 3位×7 + 4位×6）が高い方を上位とする</b></li><li class=""><b>1位に選んだ役員の人数が多い方を上位とする</b></li><li class=""><b>2位に選んだ役員の人数が多い方を上位とする</b></li><li class=""><b>AI予備審査の点数（3回採点の平均）が高い方を上位とする</b></li><li class="final"><b>それでも並ぶ場合は、事務局・役員の合議で決定する</b></li></ol>
     </div>
   
     <div class="sec worked">
-      <div class="sec-tag">実例</div>
-      <h2>タイブレークの実際の動き</h2>
-      <p class="lead">4名の投票結果、2部門がまったく同じ得票（1位1票・2位1票・3位1票・4位1票＝31点）になったケース。</p>
+      <div class="sec-tag">想定例</div>
+      <h2>タイブレークの動き方（仮のケース）</h2>
+      <p class="lead">実際の投票結果ではなく、動き方を示すための仮の例。4名の投票結果、2部門がまったく同じ得票（1位1票・2位1票・3位1票・4位1票＝31点）になったと仮定する。</p>
       <table class="plain">
         <thead><tr><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>AI予備審査</th><th>結果</th></tr></thead>
         <tbody>
           <tr>
-            <td>カスタマーサクセス部</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
-            <td class="num">31</td><td class="num">74点</td><td class="win">上位</td>
+            <td>CMS本部 MSC</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
+            <td class="num">31</td><td class="num">63.3点</td><td class="win">上位</td>
           </tr>
           <tr>
             <td>HR戦略本部 人材開発部</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
-            <td class="num">31</td><td class="num">66点</td><td>下位</td>
+            <td class="num">31</td><td class="num">59.3点</td><td>下位</td>
           </tr>
         </tbody>
       </table>
       <div class="verdict">
-        合計点・1位票数・2位票数がすべて同じため、④のAI予備審査点まで進み、74点のカスタマーサクセス部が上位と判定される。
+        合計点・1位票数・2位票数がすべて同じため、④のAI予備審査点まで進み、63.3点のCMS本部 MSCが上位と判定される。
       </div>
     </div>
   <div class="foot">

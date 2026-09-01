@@ -7,8 +7,11 @@ decision-board-design スキルの assets/board.css と部品をそのまま使�
 """
 import pathlib
 
-SKILL = pathlib.Path("/root/.claude/skills/synced/decision-board-design")
-CSS = (SKILL / "assets" / "board.css").read_text(encoding="utf-8")
+# 同期先のパスにセッションIDが挟まることがあるため、都度グロブで探す。
+_candidates = sorted(pathlib.Path("/root/.claude/skills/synced").glob("**/decision-board-design/assets/board.css"))
+if not _candidates:
+    raise FileNotFoundError("decision-board-design スキルの board.css が見つかりません。スキルを再同期してください。")
+CSS = _candidates[0].read_text(encoding="utf-8")
 
 ICO = dict(
     doc='<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/>',
@@ -101,7 +104,7 @@ HTML = f"""<title>グランドフィナーレの審査、この設計で決め�
   <h1>グランドフィナーレの審査、この設計で決め切れるか<q>？</q>
       <em>― 決まったこと／残る論点 ―</em></h1>
   <p class="sub">上司資料の26論点のうち<b>18が確定</b>しました。残るのは運用系の5項目です。
-     応募は5〜10件、予備審査は役員4名、最終審査は12名という前提で組み直しています。</p>
+     応募は13件、予備審査は役員4名、最終審査は12名という前提で組み直しています。</p>
 </div>
 
 <div class="two-a">
@@ -109,7 +112,7 @@ HTML = f"""<title>グランドフィナーレの審査、この設計で決め�
     <div class="pre-lab">前提</div>
     <div class="pre-body">
       <div class="flow" style="flex:1">
-        <div class="flow-step">{ico('doc')}<b>応募資料</b><span>5〜10件</span></div>
+        <div class="flow-step">{ico('doc')}<b>応募資料</b><span>13件</span></div>
         <span class="flow-arw">→</span>
         <div class="flow-step">{ico('ai')}<b>AI予備審査</b><span>6観点で整理・根拠抽出</span></div>
         <span class="flow-arw">→</span>

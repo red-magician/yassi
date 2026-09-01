@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AIFES 2026 グランドフィナーレ 役員予備審査 — 役員C（仮）</title>
+<title>AIFES 2026 グランドフィナーレ 役員予備審査 — 伊藤 英啓</title>
 <style>
 :root{
   --navy:#143058; --navy-deep:#0d2140; --navy-soft:#2a4a76;
@@ -45,7 +45,6 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .row .m{font-size:10.5px;color:var(--mute);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row .sc{margin-left:auto;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0}
 .rank-badge{background:var(--gold);color:var(--navy-deep);font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px}
-.demo-badge{background:#eef1f6;color:var(--mute);font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.04em}
 .main{padding:24px 30px;overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px))}
 .card{max-width:900px;margin:0 auto 34px;padding-top:8px;scroll-margin-top:120px}
 .card + .card{border-top:1px dashed var(--line);padding-top:34px}
@@ -53,21 +52,16 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(--navy-deep)}
 .meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--mute);padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
 .meta b{color:var(--ink);font-weight:600}
-.demoflag{margin-bottom:14px;padding:9px 13px;background:#eef1f6;border:1px dashed #c7cede;border-radius:6px;font-size:11.5px;color:var(--mute)}
 .gapwarn{margin-bottom:14px;padding:9px 13px;background:#fdf0f2;border:1px solid #f0c2c9;border-radius:6px;font-size:11.5px;color:#8a2b32}
 .gapwarn b{color:var(--warn);margin-right:6px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
 .panel>h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--gold);margin-bottom:15px;display:flex;align-items:center;gap:8px}
 .panel>h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
 .ainote{background:#f6f8fb;border:1px dashed #c9d4e2;border-radius:5px;padding:11px;font-size:12.5px;color:var(--mute);margin-bottom:14px}
-.crit{display:grid;grid-template-columns:1fr 64px 1fr;gap:10px 16px;align-items:center;margin-bottom:12px}
-.crit .cl{font-size:13px;font-weight:600}
-.crit .cl small{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
-.crit .cv{font-size:20px;font-weight:800;text-align:center}
-.crit .cv small{display:block;font-weight:400;color:var(--mute);font-size:10px}
-.crit .cd{font-size:11.5px;color:var(--mute);line-height:1.5}
-.crit .bar{height:5px;border-radius:3px;background:#eef0f6;overflow:hidden;margin-top:5px}
-.crit .bar>i{display:block;height:100%}
+.passrow{display:flex;gap:10px;margin-bottom:14px}
+.passbox{flex:1;text-align:center;border:1px solid var(--line);border-radius:8px;padding:10px 8px;background:#fbfcfe}
+.passbox .pl{font-size:10.5px;color:var(--mute);letter-spacing:.04em}
+.passbox .pv{font-size:20px;font-weight:800;color:var(--navy);margin-top:4px}
 .total{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--navy);color:#fff;border-radius:6px;margin-top:6px}
 .total .lab{font-size:11px;letter-spacing:.1em;color:#9fb3cd}
 .total .num{font-size:30px;font-weight:700;line-height:1}
@@ -136,13 +130,13 @@ textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
   <div class="hstat">
     <div class="item">
       <span class="k">進捗</span>
-      <span class="v"><span id="hDoneNum">0</span><small> / <span id="hDoneTotal">6</span> 件（うちデモ 5 件を含む）</small></span>
+      <span class="v"><span id="hDoneNum">0</span><small> / <span id="hDoneTotal">13</span> 件</small></span>
       <div class="hbar"><i id="hBar"></i></div>
     </div>
   </div>
   <div class="judge">
     <label>担当役員</label>
-    <input readonly value="役員C（仮）">
+    <input readonly value="伊藤 英啓">
   </div>
 </header>
 <div class="toolbar">
@@ -160,7 +154,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
     <div class="mhead">
       <div>
         <h3>あなたの最終結果</h3>
-        <div class="sub">役員C（仮） さんが選んだ1〜4位</div>
+        <div class="sub">伊藤 英啓 さんが選んだ1〜4位</div>
       </div>
       <button id="resultsClose">閉じる ✕</button>
     </div>
@@ -169,8 +163,8 @@ textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 </div>
 <script>
 
-const OFFICER = {"key": "officer3", "name": "役員C（仮）"};
-const ENTRIES = [{"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "（本文はSharePoint上のHTML提出物）", "attachment": "補足資料①：施策補足資料 / 補足資料②：新入社員のAIについての反応まとめ", "gaps": [], "aiNote": "F2（特定個人1名の成果）は「全員で取り組んだ」との確認により解除。C6は人材開発部の性質上、育成した人材が他部門へ配属されることによる波及を今回に限り加点材料として考慮（配属後の追跡データはまだ本文になし）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 66, "aiBand": "A", "demo": false}, {"code": "DEMO-2026-001", "dept": "【デモ】DXソリューション本部", "title": "全社基盤化した申請AIエージェント", "submitter": "（ダミー）", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%84%B1%E3%83%BBCopilot%20Studio%E5%AE%A3%E8%A8%80.html", "attachment": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/ai-fes-explanation.html", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 5, "levelText": "廃止・縮小した業務を具体名で挙げられ、業務フロー全体が再設計されている。その進め方が他部門でもそのまま使える形で示されている。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 4, "levelText": "これまで評価されにくかった役割の人が新たな価値を発揮し、その状態が部として定着している。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 4, "levelText": "効果が定量で示され、創出した時間の使い道も部として定着している。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 4, "levelText": "仕組み化され部門内で自律的に回っている。再利用可能な形で共有され、部として定着している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 5, "levelText": "全社を「面」で引き上げる取り組みになっており、社外・顧客を一歩先へ引き上げる伴走まで射程に入っている。データ基盤など経営レベルの課題提起を伴う。", "color": "#155FAF"}], "aiTotal": 90, "aiBand": "S", "demo": true}, {"code": "DEMO-2026-002", "dept": "【デモ】カスタマーサクセス部", "title": "問い合わせ一次対応をAIで再設計", "submitter": "（ダミー）", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/yamane-fes.html", "attachment": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 4, "levelText": "業務プロセスの一部を作り直し、廃止・統合した工程が具体的にある。新しい進め方が部として定着している。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 4, "levelText": "部門の過半が継続的に使用し、複数チームに広がっている。推進役も複数名いて、部として定着している。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 3, "levelText": "担当者の広がりや役割の変化が取り組みとして見える。ただし特定の人の成長にとどまる。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 3, "levelText": "手順やナレッジは残っており取り組みとして見える。ただし運用は推進者の関与に依存している。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 4, "levelText": "部門間連携がAIとデータで「当たり前」に成立し、他部門への展開実績がある。全社視点での課題提起ができている。", "color": "#155FAF"}], "aiTotal": 74, "aiBand": "A", "demo": true}, {"code": "DEMO-2026-003", "dept": "【デモ】ファイナンス統括部", "title": "月次決算資料の下書きをAIで生成", "submitter": "（ダミー）", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E8%AA%AC%E6%98%8E%E8%B3%87%E6%96%99.html", "attachment": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 3, "levelText": "効果は示されており取り組みとして見える。ただし浮いた時間の行き先が語られていない。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 56, "aiBand": "B", "demo": true}, {"code": "DEMO-2026-004", "dept": "【デモ】マーケティング推進部", "title": "生成AIでの訴求文言A/Bテスト運用", "submitter": "（ダミー）", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/SoloSubmissions/%E3%82%BD%E3%83%AD%E3%83%A9%E3%82%A4%E3%83%96%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%80%90%E6%9C%AC%E7%95%AA%E4%BD%9C%E6%A5%AD%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A3%9C%E5%8A%A9%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%80%91AI%20%E3%81%AB%E3%82%88%E3%82%8B%E4%BA%8B%E5%89%8D%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E5%93%81%E8%B3%AA%E3%82%92%E5%BA%95%E4%B8%8A%E3%81%92.html", "attachment": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 2, "levelText": "既存業務のかたちは変えず、部分的にAIを当てはめて時短している。業務の要否そのものは問われていない。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 2, "levelText": "推進者とその周辺の数名にとどまる。部門としての広がりは語られていない。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 1, "levelText": "単発の取り組みで、再現の手立てを確認できない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 2, "levelText": "自部門内での最適化にとどまる。外への波及が語られていない。", "color": "#155FAF"}], "aiTotal": 38, "aiBand": "C", "demo": true}, {"code": "DEMO-2026-005", "dept": "【デモ】プロダクト開発部", "title": "レビュー観点をAIで自動チェック", "submitter": "（ダミー）", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/CollabSubmissions/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A2%E3%82%AF%E3%83%88%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/PMO%20AI-collab-act.html", "attachment": "", "gaps": [], "aiNote": "※動作確認用のダミーエントリーです。実際の応募内容ではありません（リンク先は集計ツールの実データを流用しているため開けます）。", "criteria": [{"id": "C1", "name": "業務変革", "weight": 20, "level": 3, "levelText": "既存業務の必要性を問い直した形跡があり、取り組みとして見える。ただし実行は既存フローへのAI組み込みにとどまる。", "color": "#C13A22"}, {"id": "C2", "name": "組織への広がり・定着", "weight": 20, "level": 3, "levelText": "一部チームには広がっており、取り組みとして見える。ただし使う人と使わない人の差が大きい。", "color": "#07756B"}, {"id": "C3", "name": "人・チームの変化", "weight": 10, "level": 2, "levelText": "従来から前に出ていた人が引き続き担っている。人の変化は限定的。", "color": "#6244C9"}, {"id": "C4", "name": "成果と創出時間の活用", "weight": 10, "level": 2, "levelText": "効果が定性的・体感的な記述にとどまる。", "color": "#A15900"}, {"id": "C5", "name": "再現性・資産化", "weight": 10, "level": 2, "levelText": "個人の熱意で回っており、その人が抜ければ止まる。仕組み化のプロセスが語られていない。", "color": "#B93077"}, {"id": "C6", "name": "他部門・全社への波及と未来", "weight": 30, "level": 3, "levelText": "他部門への共有・展開の動きが取り組みとして見える。ただしまだ点の連携にとどまる。", "color": "#155FAF"}], "aiTotal": 54, "aiBand": "B", "demo": true}];
+const OFFICER = {"key": "officer2", "name": "伊藤 英啓"};
+const ENTRIES = [{"code": "GRANDFINALE-2026-000012", "dept": "CMS本部 沖縄事業所", "title": "人の可能性を信じているからこそ_私たちはAIをサービスにして_AIを仕組化する", "submitter": "Goya, Saki", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E4%BA%BA%E3%81%AE%E5%8F%AF%E8%83%BD%E6%80%A7%E3%82%92%E4%BF%A1%E3%81%98%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%E3%82%89%E3%81%93%E3%81%9D_%E7%A7%81%E3%81%9F%E3%81%A1%E3%81%AFAI%E3%82%92%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E3%81%AB%E3%81%97%E3%81%A6_AI%E3%82%92%E4%BB%95%E7%B5%84%E5%8C%96%E3%81%99%E3%82%8B.html", "r1": 90, "r2": 90, "r3": 98, "avg": 92.7, "band": "S", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000017", "dept": "AIX本部 AIセールス部", "title": "マルチAIの徹底活用による提案プロセスBPRの事業成果！", "submitter": "Kaga, Yuji", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%83%9E%E3%83%AB%E3%83%81AI%E3%81%AE%E5%BE%B9%E5%BA%95%E6%B4%BB%E7%94%A8%E3%81%AB%E3%82%88%E3%82%8B%E6%8F%90%E6%A1%88%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9BPR%E3%81%AE%E4%BA%8B%E6%A5%AD%E6%88%90%E6%9E%9C%EF%BC%81.html", "r1": 76, "r2": 76, "r3": 84, "avg": 78.7, "band": "A", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000008", "dept": "製造事業本部 CS2部", "title": "AIを使う本部からAIで顧客価値を生む本部へ~製造事業本部が挑んだ変化のストーリー~", "submitter": "Hosomizu, Hiroki", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/AI%E3%82%92%E4%BD%BF%E3%81%86%E6%9C%AC%E9%83%A8%E3%81%8B%E3%82%89AI%E3%81%A7%E9%A1%A7%E5%AE%A2%E4%BE%A1%E5%80%A4%E3%82%92%E7%94%9F%E3%82%80%E6%9C%AC%E9%83%A8%E3%81%B8~%E8%A3%BD%E9%80%A0%E4%BA%8B%E6%A5%AD%E6%9C%AC%E9%83%A8%E3%81%8C%E6%8C%91%E3%82%93%E3%81%A0%E5%A4%89%E5%8C%96%E3%81%AE%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AA%E3%83%BC~.html", "r1": 68, "r2": 68, "r3": 72, "avg": 69.3, "band": "A", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000025", "dept": "ネクストスケープ", "title": "AIの話が自然に集まる場所を、会社の中につくった", "submitter": "Yanai, Masahiro", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/AI%E3%81%AE%E8%A9%B1%E3%81%8C%E8%87%AA%E7%84%B6%E3%81%AB%E9%9B%86%E3%81%BE%E3%82%8B%E5%A0%B4%E6%89%80%E3%82%92%E3%80%81%E4%BC%9A%E7%A4%BE%E3%81%AE%E4%B8%AD%E3%81%AB%E3%81%A4%E3%81%8F%E3%81%A3%E3%81%9F.html", "r1": 66, "r2": 66, "r3": 68, "avg": 66.7, "band": "A", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000028", "dept": "トヨタ事業本部 CI部", "title": "AIを仲間に、人がやるべき仕事を人に取り戻す", "submitter": "Mizutani, Tomoaki", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%83%88%E3%83%A8%E3%82%BF%E6%9C%AC%E9%83%A8CI%E9%83%A8_%E3%82%AF%E3%82%99%E3%83%A9%E3%83%B3%E3%83%88%E3%82%99%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC.html", "r1": 66, "r2": 64, "r3": 70, "avg": 66.7, "band": "A", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000020", "dept": "GRC本部 法務・コンプライアンス部", "title": "現場主導でAIを育てる＿AI育成・改善の現場実践・活用モデル", "submitter": "Kakishima, Naoki", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E7%8F%BE%E5%A0%B4%E4%B8%BB%E5%B0%8E%E3%81%A7AI%E3%82%92%E8%82%B2%E3%81%A6%E3%82%8B%EF%BC%BFAI%E8%82%B2%E6%88%90%E3%83%BB%E6%94%B9%E5%96%84%E3%81%AE%E7%8F%BE%E5%A0%B4%E5%AE%9F%E8%B7%B5%E3%83%BB%E6%B4%BB%E7%94%A8%E3%83%A2%E3%83%87%E3%83%AB.html", "r1": 64, "r2": 66, "r3": 68, "avg": 66, "band": "A", "aiNote": "PDF全文確認で、1～10営業日→15～20分のBPR、全社スキル化を確認。+19.3点。"}, {"code": "GRANDFINALE-2026-000026", "dept": "ERP（US）", "title": "Expense System 再構築 － ユーザー駆動自動開発", "submitter": "Hiroyuki Tomomasa", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/AIFES2026_GRANDFINALE_%E5%BF%9C%E5%8B%9F%E8%B3%87%E6%96%99_Expense%E8%87%AA%E5%8B%95%E9%96%8B%E7%99%BA.html", "r1": 66, "r2": 66, "r3": 66, "avg": 66, "band": "A", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000024", "dept": "CMS本部 MSC", "title": "MSCの現場知見をAIにつなぎ、お客様価値と事業成長へ", "submitter": "Hamada, Kentaro", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/MSC%E3%81%AE%E7%8F%BE%E5%A0%B4%E7%9F%A5%E8%A6%8B%E3%82%92AI%E3%81%AB%E3%81%A4%E3%81%AA%E3%81%8E%E3%80%81%E3%81%8A%E5%AE%A2%E6%A7%98%E4%BE%A1%E5%80%A4%E3%81%A8%E4%BA%8B%E6%A5%AD%E6%88%90%E9%95%B7%E3%81%B8.html", "r1": 64, "r2": 62, "r3": 64, "avg": 63.3, "band": "B", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000005", "dept": "HR戦略本部 人材開発部", "title": "AIで生んだ時間を、人を育てる時間に変えた。", "submitter": "Ochi, Kazumi", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/grandfinale_entry_HRD.html", "r1": 60, "r2": 60, "r3": 58, "avg": 59.3, "band": "B", "aiNote": "PDFで残業約31%減、約42時間削減を確認。評価根拠を補強。"}, {"code": "GRANDFINALE-2026-000014", "dept": "HR戦略本部 人事部", "title": "猫の手も借りたい人事部、AIの手を借りることにした。", "submitter": "Katsumata, Yumi", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E7%8C%AB%E3%81%AE%E6%89%8B%E3%82%82%E5%80%9F%E3%82%8A%E3%81%9F%E3%81%84%E4%BA%BA%E4%BA%8B%E9%83%A8%E3%80%81AI%E3%81%AE%E6%89%8B%E3%82%92%E5%80%9F%E3%82%8A%E3%82%8B%E3%81%93%E3%81%A8%E3%81%AB%E3%81%97%E3%81%9F%E3%80%82.html", "r1": 60, "r2": 56, "r3": 60, "avg": 58.7, "band": "B", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000016", "dept": "HR戦略本部 採用センター 新卒採用課", "title": "面接もインターンシップも、Copilotが標準装備の新卒採用チームへ。", "submitter": "Yamanouchi, Yurie", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E9%9D%A2%E6%8E%A5%E3%82%82%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%83%E3%83%97%E3%82%82%E3%80%81Copilot%E3%81%8C%E6%A8%99%E6%BA%96%E8%A3%85%E5%82%99%E3%81%AE%E6%96%B0%E5%8D%92%E6%8E%A1%E7%94%A8%E3%83%81%E3%83%BC%E3%83%A0%E3%81%B8%E3%80%82.html", "r1": 58, "r2": 58, "r3": 54, "avg": 56.7, "band": "B", "aiNote": "3回採点後、追加資料による重要な変更なし。"}, {"code": "GRANDFINALE-2026-000015", "dept": "ホンダ事業本部", "title": "AIフロンティア～AI実践による事業変革と競争力強化への挑戦～", "submitter": "Yoshizawa, Hirokazu", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/AI%E3%83%95%E3%83%AD%E3%83%B3%E3%83%86%E3%82%A3%E3%82%A2%EF%BD%9EAI%E5%AE%9F%E8%B7%B5%E3%81%AB%E3%82%88%E3%82%8B%E4%BA%8B%E6%A5%AD%E5%A4%89%E9%9D%A9%E3%81%A8%E7%AB%B6%E4%BA%89%E5%8A%9B%E5%BC%B7%E5%8C%96%E3%81%B8%E3%81%AE%E6%8C%91%E6%88%A6%EF%BD%9E.html", "r1": 50, "r2": 50, "r3": 48, "avg": 49.3, "band": "C", "aiNote": "HTML→PDFは本文欠落。原本PPTXで全文確認しC3/C4を上方修正。"}, {"code": "GRANDFINALE-2026-000023", "dept": "ME事業本部", "title": "PptxGenJS Presentation", "submitter": "Akiyama, Masamichi", "primary": "https://jbsbpos1.sharepoint.com/sites/Guest-JBSAISUMMERFESTIVAL2026/GrandFinaleSubmissions/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%95%E3%82%A3%E3%83%8A%E3%83%BC%E3%83%AC%E6%8A%95%E7%A8%BF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0/%E3%83%AC%E3%82%A4%E3%83%A46%E3%81%AB%E3%82%88%E3%82%8BAI%E5%8D%94%E5%83%8D%E5%9E%8B%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E9%96%8B%E7%99%BA.pptx", "r1": 42, "r2": 46, "r3": 44, "avg": 44, "band": "C", "aiNote": "PPTX/PDFでL1評価中・L4検討中・L6構想段階を確認。F3を裏付け。"}];
 const STORE_KEY = 'aifes2026_officer_prelim_' + OFFICER.key;
 
 let state = {};
@@ -178,7 +172,7 @@ let canPersist = false;
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function rec(code){ if(!state[code]) state[code] = {rank:'', reason:''}; return state[code]; }
-function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.aiTotal - x.aiTotal); }
+function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.avg - x.avg); }
 
 // ---------- 提出物リンク ----------
 function isUrl(s){ return typeof s === 'string' && /^https?:\/\//i.test(s.trim()); }
@@ -255,9 +249,9 @@ function renderList(){
     return `<button class="row ${r.rank?'done':''}" data-code="${e.code}">
       <span class="st"></span>
       <div style="flex:1;min-width:0">
-        <div class="t">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
+        <div class="t">${esc(e.dept)}</div>
         <div class="m">
-          <span>AI ${e.aiTotal}点・${esc(e.aiBand)}</span>
+          <span>AI ${e.avg}点・${esc(e.band)}</span>
           ${r.rank ? `<span class="rank-badge">${r.rank}位</span>` : ''}
         </div>
       </div>
@@ -275,16 +269,6 @@ function renderList(){
   document.getElementById('resultsBtnCount').textContent = done;
 }
 
-function critRow(c){
-  return `<div class="crit">
-    <div class="cl">${esc(c.name)}<small>配点 ${c.weight}点</small></div>
-    <div class="cv" style="color:${c.color}">${c.level || '—'}<small>/5</small>
-      <div class="bar"><i style="width:${c.level? c.level/5*100:0}%;background:${c.color}"></i></div>
-    </div>
-    <div class="cd">${esc(c.levelText)}</div>
-  </div>`;
-}
-
 function cardHtml(e){
   const r = rec(e.code);
   return `<div class="card" id="card-${e.code}">
@@ -297,19 +281,19 @@ function cardHtml(e){
         `<span class="pstep ${ok?'ok':''}"><span class="pdot">${ok?'✓':'-'}</span>${lab}</span>`).join('')}
     </div>
 
-    ${e.demo ? `<div class="demoflag">これは動作確認用のダミーエントリーです。実際の応募内容ではありません。</div>` : ''}
-    ${e.gaps.length ? `<div class="gapwarn"><b>提出物の不足</b>${e.gaps.map(esc).join(' / ')}</div>` : ''}
-
     <div class="panel">
-      <h2>AI予備審査（参考値）<span>編集不可</span></h2>
+      <h2>AI予備審査（参考値）<span>同一内容を3回独立採点・編集不可</span></h2>
       ${e.aiNote ? `<div class="ainote">${esc(e.aiNote)}</div>` : ''}
-      ${e.criteria.map(critRow).join('')}
+      <div class="passrow">
+        ${[['1回目',e.r1],['2回目',e.r2],['3回目',e.r3]].map(([lab,v])=>
+          `<div class="passbox"><div class="pl">${lab}</div><div class="pv">${v}</div></div>`).join('')}
+      </div>
       <div class="total">
         <div>
-          <div class="lab">最終スコア</div>
-          <div class="num">${e.aiTotal}<small> / 100</small></div>
+          <div class="lab">平均点</div>
+          <div class="num">${e.avg}<small> / 100</small></div>
         </div>
-        <div class="brk"><span class="band">${esc(e.aiBand)}ランク</span></div>
+        <div class="brk"><span class="band">${esc(e.band)}ランク</span></div>
       </div>
     </div>
 
@@ -317,7 +301,6 @@ function cardHtml(e){
       <h2>提出物<span>GFに手順書の提出はありません</span></h2>
       <div class="resource-grid">
         ${resourceCard('作品', e.primary, 'work')}
-        ${e.attachment ? resourceCard('補足資料', e.attachment, 'note') : ''}
       </div>
     </div>
 
@@ -359,11 +342,11 @@ function renderResultsModal(){
     return `<div class="result-row" data-code="${e.code}">
       <div class="rnum">${r.rank}位</div>
       <div class="rbody">
-        <div class="rdept">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
+        <div class="rdept">${esc(e.dept)}</div>
         <div class="rtitle">${esc(e.title)}</div>
         ${r.reason.trim() ? `<div class="rreason">${esc(r.reason)}</div>` : `<div class="rreason" style="color:#aab0bd">理由は未入力です</div>`}
       </div>
-      <div class="rsc">AI ${e.aiTotal}点<br>${esc(e.aiBand)}ランク</div>
+      <div class="rsc">AI ${e.avg}点<br>${esc(e.band)}ランク</div>
     </div>`;
   }).join('');
 
@@ -385,7 +368,7 @@ function closeResults(){ document.getElementById('resultsModal').classList.remov
 function doExport(){
   const payload = {
     officer: OFFICER, exportedAt: new Date().toISOString(),
-    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, demo:!!e.demo, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
+    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const a = document.createElement('a');

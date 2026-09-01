@@ -8,25 +8,15 @@
 Excel「04_役員予備審査投票」シートとは完全に独立（2026-08-27 ユーザー合意）。
 配色は以前使っていた「AIFES2026_役員審査_伊藤英啓_コラボアクト」のネイビー×ゴールドに合わせている。
 データは officer_prelim_data.py（OFFICERS / GF_ENTRIES）が唯一の定義元。
-役員は点数をつけない。AI予備審査（rubric_data.py）の結果を参考値として見た上で、
+GF_ENTRIES は実際のAI予備審査結果（同一内容を3回独立採点した平均・判定・監査ログ）を
+そのまま転記した実データ13件。役員は点数をつけない。この結果を参考値として見た上で、
 1〜4位を選び、理由を書くだけ。Copilot連携・審査員別ペルソナ文書は用意しない。
 一覧で1件ずつ切り替えるのではなく、全エントリーの評価パネルを縦に並べて一気に見られる構成にしている。
 """
 import html
 import json
 
-from rubric_data import CRITERIA
-from officer_prelim_data import OFFICERS, GF_ENTRIES, ai_total, ai_band
-
-# 参照ツール（伊藤英啓さん・コラボアクト版）のCSS変数をそのまま踏襲した6観点用の色。
-CID_COLOR = {
-    "C1": "#C13A22",
-    "C2": "#07756B",
-    "C3": "#6244C9",
-    "C4": "#A15900",
-    "C5": "#B93077",
-    "C6": "#155FAF",
-}
+from officer_prelim_data import OFFICERS, GF_ENTRIES
 
 
 def E(s):
@@ -40,20 +30,10 @@ def js_embed(obj):
 def entries_payload():
     out = []
     for e in GF_ENTRIES:
-        crits = []
-        for c in CRITERIA:
-            lv = e["levels"].get(c["id"], 0)
-            level_text = c["levels"][5 - lv] if lv else "（未評価）"
-            crits.append(dict(
-                id=c["id"], name=c["name"], weight=c["weight"], level=lv,
-                levelText=level_text, color=CID_COLOR[c["id"]],
-            ))
-        total = ai_total(e)
         out.append(dict(
             code=e["code"], dept=e["dept"], title=e["title"], submitter=e["submitter"],
-            primary=e["primary"], attachment=e["attachment"], gaps=e["gaps"],
-            aiNote=e["ai_note"], criteria=crits, aiTotal=total, aiBand=ai_band(total),
-            demo=e.get("demo", False),
+            primary=e["primary"], r1=e["r1"], r2=e["r2"], r3=e["r3"],
+            avg=e["avg"], band=e["band"], aiNote=e["ai_note"],
         ))
     return out
 
@@ -105,7 +85,6 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 .row .m{font-size:10.5px;color:var(--mute);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row .sc{margin-left:auto;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0}
 .rank-badge{background:var(--gold);color:var(--navy-deep);font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px}
-.demo-badge{background:#eef1f6;color:var(--mute);font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.04em}
 .main{padding:24px 30px;overflow-y:auto;max-height:calc(100vh - var(--stickytop,110px))}
 .card{max-width:900px;margin:0 auto 34px;padding-top:8px;scroll-margin-top:120px}
 .card + .card{border-top:1px dashed var(--line);padding-top:34px}
@@ -113,21 +92,16 @@ button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid transparen
 h1{font-size:22px;line-height:1.45;margin:4px 0 12px;font-weight:700;color:var(--navy-deep)}
 .meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--mute);padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
 .meta b{color:var(--ink);font-weight:600}
-.demoflag{margin-bottom:14px;padding:9px 13px;background:#eef1f6;border:1px dashed #c7cede;border-radius:6px;font-size:11.5px;color:var(--mute)}
 .gapwarn{margin-bottom:14px;padding:9px 13px;background:#fdf0f2;border:1px solid #f0c2c9;border-radius:6px;font-size:11.5px;color:#8a2b32}
 .gapwarn b{color:var(--warn);margin-right:6px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
 .panel>h2{font-size:11px;letter-spacing:.14em;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--gold);margin-bottom:15px;display:flex;align-items:center;gap:8px}
 .panel>h2 span{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--mute);font-weight:400}
 .ainote{background:#f6f8fb;border:1px dashed #c9d4e2;border-radius:5px;padding:11px;font-size:12.5px;color:var(--mute);margin-bottom:14px}
-.crit{display:grid;grid-template-columns:1fr 64px 1fr;gap:10px 16px;align-items:center;margin-bottom:12px}
-.crit .cl{font-size:13px;font-weight:600}
-.crit .cl small{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:2px}
-.crit .cv{font-size:20px;font-weight:800;text-align:center}
-.crit .cv small{display:block;font-weight:400;color:var(--mute);font-size:10px}
-.crit .cd{font-size:11.5px;color:var(--mute);line-height:1.5}
-.crit .bar{height:5px;border-radius:3px;background:#eef0f6;overflow:hidden;margin-top:5px}
-.crit .bar>i{display:block;height:100%}
+.passrow{display:flex;gap:10px;margin-bottom:14px}
+.passbox{flex:1;text-align:center;border:1px solid var(--line);border-radius:8px;padding:10px 8px;background:#fbfcfe}
+.passbox .pl{font-size:10.5px;color:var(--mute);letter-spacing:.04em}
+.passbox .pv{font-size:20px;font-weight:800;color:var(--navy);margin-top:4px}
 .total{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--navy);color:#fff;border-radius:6px;margin-top:6px}
 .total .lab{font-size:11px;letter-spacing:.1em;color:#9fb3cd}
 .total .num{font-size:30px;font-weight:700;line-height:1}
@@ -198,7 +172,7 @@ let canPersist = false;
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function rec(code){ if(!state[code]) state[code] = {rank:'', reason:''}; return state[code]; }
-function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.aiTotal - x.aiTotal); }
+function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.avg - x.avg); }
 
 // ---------- 提出物リンク ----------
 function isUrl(s){ return typeof s === 'string' && /^https?:\/\//i.test(s.trim()); }
@@ -275,9 +249,9 @@ function renderList(){
     return `<button class="row ${r.rank?'done':''}" data-code="${e.code}">
       <span class="st"></span>
       <div style="flex:1;min-width:0">
-        <div class="t">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
+        <div class="t">${esc(e.dept)}</div>
         <div class="m">
-          <span>AI ${e.aiTotal}点・${esc(e.aiBand)}</span>
+          <span>AI ${e.avg}点・${esc(e.band)}</span>
           ${r.rank ? `<span class="rank-badge">${r.rank}位</span>` : ''}
         </div>
       </div>
@@ -295,16 +269,6 @@ function renderList(){
   document.getElementById('resultsBtnCount').textContent = done;
 }
 
-function critRow(c){
-  return `<div class="crit">
-    <div class="cl">${esc(c.name)}<small>配点 ${c.weight}点</small></div>
-    <div class="cv" style="color:${c.color}">${c.level || '—'}<small>/5</small>
-      <div class="bar"><i style="width:${c.level? c.level/5*100:0}%;background:${c.color}"></i></div>
-    </div>
-    <div class="cd">${esc(c.levelText)}</div>
-  </div>`;
-}
-
 function cardHtml(e){
   const r = rec(e.code);
   return `<div class="card" id="card-${e.code}">
@@ -317,19 +281,19 @@ function cardHtml(e){
         `<span class="pstep ${ok?'ok':''}"><span class="pdot">${ok?'✓':'-'}</span>${lab}</span>`).join('')}
     </div>
 
-    ${e.demo ? `<div class="demoflag">これは動作確認用のダミーエントリーです。実際の応募内容ではありません。</div>` : ''}
-    ${e.gaps.length ? `<div class="gapwarn"><b>提出物の不足</b>${e.gaps.map(esc).join(' / ')}</div>` : ''}
-
     <div class="panel">
-      <h2>AI予備審査（参考値）<span>編集不可</span></h2>
+      <h2>AI予備審査（参考値）<span>同一内容を3回独立採点・編集不可</span></h2>
       ${e.aiNote ? `<div class="ainote">${esc(e.aiNote)}</div>` : ''}
-      ${e.criteria.map(critRow).join('')}
+      <div class="passrow">
+        ${[['1回目',e.r1],['2回目',e.r2],['3回目',e.r3]].map(([lab,v])=>
+          `<div class="passbox"><div class="pl">${lab}</div><div class="pv">${v}</div></div>`).join('')}
+      </div>
       <div class="total">
         <div>
-          <div class="lab">最終スコア</div>
-          <div class="num">${e.aiTotal}<small> / 100</small></div>
+          <div class="lab">平均点</div>
+          <div class="num">${e.avg}<small> / 100</small></div>
         </div>
-        <div class="brk"><span class="band">${esc(e.aiBand)}ランク</span></div>
+        <div class="brk"><span class="band">${esc(e.band)}ランク</span></div>
       </div>
     </div>
 
@@ -337,7 +301,6 @@ function cardHtml(e){
       <h2>提出物<span>GFに手順書の提出はありません</span></h2>
       <div class="resource-grid">
         ${resourceCard('作品', e.primary, 'work')}
-        ${e.attachment ? resourceCard('補足資料', e.attachment, 'note') : ''}
       </div>
     </div>
 
@@ -379,11 +342,11 @@ function renderResultsModal(){
     return `<div class="result-row" data-code="${e.code}">
       <div class="rnum">${r.rank}位</div>
       <div class="rbody">
-        <div class="rdept">${esc(e.dept)}${e.demo?' <span class=\"demo-badge\">デモ</span>':''}</div>
+        <div class="rdept">${esc(e.dept)}</div>
         <div class="rtitle">${esc(e.title)}</div>
         ${r.reason.trim() ? `<div class="rreason">${esc(r.reason)}</div>` : `<div class="rreason" style="color:#aab0bd">理由は未入力です</div>`}
       </div>
-      <div class="rsc">AI ${e.aiTotal}点<br>${esc(e.aiBand)}ランク</div>
+      <div class="rsc">AI ${e.avg}点<br>${esc(e.band)}ランク</div>
     </div>`;
   }).join('');
 
@@ -405,7 +368,7 @@ function closeResults(){ document.getElementById('resultsModal').classList.remov
 function doExport(){
   const payload = {
     officer: OFFICER, exportedAt: new Date().toISOString(),
-    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, demo:!!e.demo, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
+    ranks: ENTRIES.map(e=>({code:e.code, dept:e.dept, rank: rec(e.code).rank || null, reason: rec(e.code).reason || ''})),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
@@ -448,9 +411,6 @@ window.addEventListener('resize', fitSticky);
 
 def render_officer_html(officer):
     entries = entries_payload()
-    real_n = sum(1 for e in entries if not e["demo"])
-    demo_n = len(entries) - real_n
-    demo_note = f"（うちデモ {demo_n} 件を含む）" if demo_n else ""
     body = f"""<!doctype html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -465,7 +425,7 @@ def render_officer_html(officer):
   <div class="hstat">
     <div class="item">
       <span class="k">進捗</span>
-      <span class="v"><span id="hDoneNum">0</span><small> / <span id="hDoneTotal">{len(entries)}</span> 件{demo_note}</small></span>
+      <span class="v"><span id="hDoneNum">0</span><small> / <span id="hDoneTotal">{len(entries)}</span> 件</small></span>
       <div class="hbar"><i id="hBar"></i></div>
     </div>
   </div>
@@ -560,7 +520,7 @@ function computeTally(){
     // 決勝進出は合計点の高い順。1位票の有無だけで無条件に進出することはない。
     // 同点タイブレーク（優先順）：①合計点 ②1位数 ③2位数 ④AI予備審査点 ⑤合議。
     // 各項の桁を独立させ、下位項が上位項の大小関係を絶対に覆さないようにしている。
-    const key = total*100000 + c1*10000 + c2*1000 + Math.round(e.aiTotal);
+    const key = total*100000 + c1*10000 + c2*1000 + Math.round(e.avg);
     return {e, c1,c2,c3,c4, total, hasFirst, key};
   });
   rows.sort((a,b)=> b.key - a.key);
@@ -583,14 +543,14 @@ function renderAll(){
       <td class="num">${r.c1}</td><td class="num">${r.c2}</td><td class="num">${r.c3}</td><td class="num">${r.c4}</td>
       <td class="num">${r.total}</td>
       <td class="num">${r.hasFirst ? '◎' : ''}</td>
-      <td class="num">AI ${r.e.aiTotal}点・${esc(r.e.aiBand)}</td>
+      <td class="num">AI ${r.e.avg}点・${esc(r.e.band)}</td>
     </tr>`).join('');
 }
 
 function doExport(){
   const rows = computeTally();
   const lines = ['決勝進出順位,部門,1位票,2位票,3位票,4位票,合計点,1位あり,AI予備審査点,AI予備審査ランク'];
-  rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.hasFirst?'◎':'', r.e.aiTotal, r.e.aiBand].join(',')));
+  rows.forEach(r=> lines.push([r.finalRank, r.e.dept, r.c1, r.c2, r.c3, r.c4, r.total, r.hasFirst?'◎':'', r.e.avg, r.e.band].join(',')));
   const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = '役員予備審査_集計結果.csv';
@@ -635,8 +595,6 @@ def render_tally_html():
         合計点＝1位×10 + 2位×8 + 3位×7 + 4位×6。緑色の行は決勝進出（合計点が高い上位4部門）。
         同点の場合は①1位数→②2位数→③AI予備審査点→④合議の順で決める（1位票が1つあるだけで無条件に
         決勝進出することはない）。「1位あり」は、誰か1人でも1位に選んだ部門であることを示す参考情報。
-        「【デモ】」の部門は動作確認用のダミーです。本番の応募が揃い次第、officer_prelim_data.py の
-        GF_ENTRIES を実データに差し替えて再生成してください。
       </p>
       <table class="tally">
         <thead><tr><th id="rankHead">順位（暫定）</th><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>1位あり</th><th>AI予備審査（参考）</th></tr></thead>

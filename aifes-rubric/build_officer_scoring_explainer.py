@@ -13,7 +13,7 @@
 import html
 
 from rubric_data import CRITERIA, WEIGHTS, BANDS
-from officer_prelim_data import OFFICERS, POINTS_BY_RANK, TIEBREAK_OFFICER
+from officer_prelim_data import OFFICERS, GF_ENTRIES, POINTS_BY_RANK, TIEBREAK_OFFICER
 
 
 def E(s):
@@ -78,7 +78,7 @@ table.plain td.num{text-align:center;font-weight:700;color:var(--navy)}
 
 def flow():
     steps = [
-        ("応募", "5〜10部門"),
+        ("応募", f"{len(GF_ENTRIES)}部門"),
         ("AI予備審査", "6観点・100点満点"),
         ("役員予備審査", f"{len(OFFICERS)}名・1〜4位を投票", True),
         ("集計", "点数化＋タイブレーク", True),
@@ -170,26 +170,28 @@ def tiebreak_section():
 
 
 def worked_example():
-    return """
+    a = next(e for e in GF_ENTRIES if e["dept"] == "CMS本部 MSC")
+    b = next(e for e in GF_ENTRIES if e["dept"] == "HR戦略本部 人材開発部")
+    return f"""
     <div class="sec worked">
-      <div class="sec-tag">実例</div>
-      <h2>タイブレークの実際の動き</h2>
-      <p class="lead">4名の投票結果、2部門がまったく同じ得票（1位1票・2位1票・3位1票・4位1票＝31点）になったケース。</p>
+      <div class="sec-tag">想定例</div>
+      <h2>タイブレークの動き方（仮のケース）</h2>
+      <p class="lead">実際の投票結果ではなく、動き方を示すための仮の例。4名の投票結果、2部門がまったく同じ得票（1位1票・2位1票・3位1票・4位1票＝31点）になったと仮定する。</p>
       <table class="plain">
         <thead><tr><th>部門</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>合計点</th><th>AI予備審査</th><th>結果</th></tr></thead>
         <tbody>
           <tr>
-            <td>カスタマーサクセス部</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
-            <td class="num">31</td><td class="num">74点</td><td class="win">上位</td>
+            <td>{E(a['dept'])}</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
+            <td class="num">31</td><td class="num">{a['avg']}点</td><td class="win">上位</td>
           </tr>
           <tr>
-            <td>HR戦略本部 人材開発部</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
-            <td class="num">31</td><td class="num">66点</td><td>下位</td>
+            <td>{E(b['dept'])}</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">1</td>
+            <td class="num">31</td><td class="num">{b['avg']}点</td><td>下位</td>
           </tr>
         </tbody>
       </table>
       <div class="verdict">
-        合計点・1位票数・2位票数がすべて同じため、④のAI予備審査点まで進み、74点のカスタマーサクセス部が上位と判定される。
+        合計点・1位票数・2位票数がすべて同じため、④のAI予備審査点まで進み、{a['avg']}点の{E(a['dept'])}が上位と判定される。
       </div>
     </div>"""
 
