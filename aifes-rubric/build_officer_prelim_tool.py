@@ -178,6 +178,9 @@ function sorted_(){ return ENTRIES.slice().sort((x,y)=> y.avg - x.avg); }
 function isUrl(s){ return typeof s === 'string' && /^https?:\/\//i.test(s.trim()); }
 function shortResourceName(url){
   try{
+    const u = new URL(url);
+    const entry = u.searchParams.get('entry');
+    if(entry) return `審査ビューア（エントリー #${entry}）`;
     const clean = url.split('#')[0].split('?')[0];
     const last = clean.substring(clean.lastIndexOf('/') + 1) || clean;
     return decodeURIComponent(last).replace(/[_-]/g, ' ');
